@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mr. Goddard's Escape Room</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080810;
+    --panel: #0f0f1a;
+    --panel2: #13131f;
+    --border: #2a2a45;
+    --gold: #c9a84c;
+    --gold2: #e8c96d;
+    --red2: #c0392b;
+    --green: #1a6b3a;
+    --green2: #27ae60;
+    --text: #d4c9b0;
+    --text-dim: #6a6255;
+    --glow: rgba(201,168,76,0.15);
+    --glow2: rgba(201,168,76,0.45);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:'Crimson Text',serif; min-height:100vh; overflow-x:hidden; }
+  body::before { content:''; position:fixed; inset:0; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E"); pointer-events:none; z-index:9999; opacity:0.5; }
+  body::after { content:''; position:fixed; inset:0; background:radial-gradient(ellipse at center,transparent 35%,rgba(0,0,0,0.88) 100%); pointer-events:none; z-index:9998; }
+
+  #particles { position:fixed; inset:0; pointer-events:none; z-index:1; }
+  .particle { position:absolute; width:2px; height:2px; background:var(--gold); border-radius:50%; opacity:0; animation:float-up linear infinite; }
+  @keyframes float-up { 0%{transform:translateY(100vh);opacity:0} 10%{opacity:0.5} 90%{opacity:0.2} 100%{transform:translateY(-20px) translateX(25px);opacity:0} }
+
+  .screen { display:none; position:relative; z-index:10; }
+  .screen.active { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; padding:2rem; }
+
+  /* ── INTRO ── */
+  #intro { text-align:center; background:radial-gradient(ellipse 60% 40% at 50% 30%,rgba(201,168,76,0.07) 0%,transparent 70%),var(--bg); }
+
+  .case-stamp { font-family:'Share Tech Mono',monospace; font-size:0.68rem; letter-spacing:0.4em; color:var(--text-dim); text-transform:uppercase; margin-bottom:1.5rem; animation:fadeIn 2s ease 0.5s both; }
+  .title-main { font-family:'Cinzel Decorative',serif; font-size:clamp(2rem,5vw,3.8rem); font-weight:700; color:var(--gold2); text-shadow:0 0 60px rgba(201,168,76,0.5),0 0 120px rgba(201,168,76,0.2); line-height:1.1; animation:fadeIn 2s ease 1s both; }
+  .title-sub  { font-family:'Cinzel Decorative',serif; font-size:clamp(0.9rem,2vw,1.4rem); color:var(--gold); opacity:0.7; margin-top:0.5rem; animation:fadeIn 2s ease 1.5s both; letter-spacing:0.1em; }
+  .divider    { width:200px; height:1px; background:linear-gradient(to right,transparent,var(--gold),transparent); margin:1.8rem auto; animation:fadeIn 2s ease 2s both; }
+
+  .case-file { max-width:600px; background:rgba(201,168,76,0.04); border:1px solid rgba(201,168,76,0.15); border-top:2px solid var(--gold); padding:1.8rem 2.2rem; text-align:left; animation:fadeIn 2s ease 2.5s both; margin-bottom:1.8rem; position:relative; }
+  .case-file::before { content:'CLASSIFIED'; position:absolute; top:0.6rem; right:1rem; font-family:'Share Tech Mono',monospace; font-size:0.55rem; letter-spacing:0.2em; color:var(--red2); opacity:0.45; }
+  .case-label { font-family:'Share Tech Mono',monospace; font-size:0.6rem; letter-spacing:0.3em; color:var(--gold); text-transform:uppercase; margin-bottom:0.8rem; }
+  .case-title { font-family:'Cinzel Decorative',serif; font-size:0.95rem; color:var(--gold2); margin-bottom:0.9rem; }
+  .case-body  { font-size:1.02rem; line-height:1.85; color:var(--text); }
+  .case-body p { margin-bottom:0.8rem; }
+  .case-body p:last-child { margin-bottom:0; }
+  .case-body strong { color:var(--gold2); font-style:normal; }
+  .case-body em { color:var(--text-dim); }
+
+  .name-section { animation:fadeIn 2s ease 3s both; display:flex; flex-direction:column; align-items:center; gap:0.55rem; margin-bottom:1.4rem; }
+  .name-label   { font-family:'Share Tech Mono',monospace; font-size:0.62rem; letter-spacing:0.3em; color:var(--gold); text-transform:uppercase; }
+  .name-input   { background:var(--panel); border:1px solid var(--border); border-bottom:2px solid var(--gold); color:var(--gold2); font-family:'Crimson Text',serif; font-size:1.1rem; padding:0.65rem 1.1rem; outline:none; width:300px; transition:border-color 0.2s,box-shadow 0.2s; }
+  .name-input:focus { border-bottom-color:var(--gold2); box-shadow:0 0 20px var(--glow); }
+  .name-input::placeholder { color:var(--text-dim); font-style:italic; }
+
+  .btn-primary { font-family:'Cinzel Decorative',serif; font-size:0.85rem; letter-spacing:0.15em; color:var(--bg); background:linear-gradient(135deg,var(--gold) 0%,var(--gold2) 50%,var(--gold) 100%); background-size:200% 200%; border:none; padding:0.9rem 2.2rem; cursor:pointer; clip-path:polygon(12px 0%,100% 0%,calc(100% - 12px) 100%,0% 100%); transition:all 0.3s; animation:fadeIn 2s ease 3.2s both,shimmer 3s ease infinite; text-transform:uppercase; font-weight:700; }
+  .btn-primary:hover { box-shadow:0 0 30px var(--glow2); transform:scale(1.05); }
+  @keyframes shimmer { 0%,100%{background-position:left center} 50%{background-position:right center} }
+  .music-note { margin-top:0.9rem; font-size:0.72rem; color:var(--text-dim); font-family:'Share Tech Mono',monospace; letter-spacing:0.08em; animation:fadeIn 2s ease 3.5s both; }
+
+  /* ── GAME ── */
+  #game { justify-content:flex-start; padding:0; background:radial-gradient(ellipse 80% 50% at 50% 0%,rgba(201,168,76,0.04) 0%,transparent 60%),var(--bg); }
+
+  .game-header { width:100%; display:flex; align-items:center; justify-content:space-between; padding:0.8rem 1.4rem; border-bottom:1px solid var(--border); background:var(--panel); position:sticky; top:0; z-index:100; gap:0.8rem; flex-wrap:wrap; }
+  .header-title { font-family:'Cinzel Decorative',serif; font-size:0.72rem; color:var(--gold); letter-spacing:0.08em; white-space:nowrap; }
+  .progress-wrap { display:flex; align-items:center; gap:0.4rem; flex:1; justify-content:center; min-width:120px; }
+  .pip { width:24px; height:4px; background:var(--border); border-radius:2px; transition:background 0.5s,box-shadow 0.5s; }
+  .pip.done    { background:var(--green2); box-shadow:0 0 8px rgba(39,174,96,0.5); }
+  .pip.current { background:var(--gold);   box-shadow:0 0 8px var(--glow2); }
+  .header-right { display:flex; align-items:center; gap:0.65rem; }
+  .timer-display { font-family:'Share Tech Mono',monospace; font-size:0.95rem; color:var(--gold2); letter-spacing:0.1em; }
+  .timer-display.urgent { color:var(--red2); animation:pulse 0.5s ease infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  .music-toggle { background:none; border:1px solid var(--border); color:var(--text-dim); font-family:'Share Tech Mono',monospace; font-size:0.58rem; letter-spacing:0.1em; padding:0.32rem 0.6rem; cursor:pointer; transition:all 0.2s; text-transform:uppercase; }
+  .music-toggle:hover,.music-toggle.on { border-color:var(--gold); color:var(--gold); }
+
+  .question-area { width:100%; max-width:760px; margin:0 auto; padding:1.8rem 1.4rem; flex:1; display:flex; flex-direction:column; gap:1.1rem; }
+  .room-label { font-family:'Share Tech Mono',monospace; font-size:0.65rem; letter-spacing:0.38em; color:var(--text-dim); text-transform:uppercase; }
+
+  .story-snippet { background:rgba(201,168,76,0.04); border:1px solid rgba(201,168,76,0.14); border-left:3px solid var(--gold); padding:0.85rem 1rem; font-style:italic; font-size:0.93rem; color:var(--text-dim); line-height:1.75; display:none; }
+  .story-snippet.visible { display:block; animation:fadeIn 0.6s ease 0.2s both; }
+
+  .question-card { background:var(--panel); border:1px solid var(--border); border-top:3px solid var(--gold); padding:1.7rem; box-shadow:0 0 40px rgba(0,0,0,0.5),inset 0 0 60px rgba(201,168,76,0.02); animation:slideIn 0.5s ease both; }
+  @keyframes slideIn { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+
+  .q-topic  { font-family:'Share Tech Mono',monospace; font-size:0.6rem; letter-spacing:0.3em; color:var(--gold); text-transform:uppercase; margin-bottom:0.7rem; opacity:0.8; }
+  .q-number { font-family:'Cinzel Decorative',serif; font-size:0.68rem; color:var(--text-dim); margin-bottom:0.4rem; }
+  .q-text   { font-size:1.12rem; line-height:1.75; color:var(--text); margin-bottom:1.2rem; }
+  .q-text .math { font-family:'Share Tech Mono',monospace; background:rgba(201,168,76,0.08); padding:0.08em 0.35em; border-radius:3px; font-size:0.9em; color:var(--gold2); }
+
+  .venn-wrap { margin:0.4rem auto 1rem; display:flex; justify-content:center; }
+
+  .choices { display:grid; grid-template-columns:1fr 1fr; gap:0.6rem; margin-bottom:0.7rem; }
+  .choice-btn { background:var(--panel2); border:1px solid var(--border); color:var(--text); font-family:'Crimson Text',serif; font-size:1.02rem; padding:0.75rem 0.9rem; cursor:pointer; transition:all 0.2s; text-align:left; display:flex; align-items:center; gap:0.65rem; }
+  .choice-btn:hover { border-color:var(--gold); color:var(--gold2); background:rgba(201,168,76,0.05); }
+  .choice-btn.correct { border-color:var(--green2); background:rgba(39,174,96,0.1); color:var(--green2); }
+  .choice-btn.wrong   { border-color:var(--red2); background:rgba(192,57,43,0.1); color:var(--red2); animation:shake 0.4s ease; }
+  .choice-letter { font-family:'Cinzel Decorative',serif; font-size:0.68rem; color:var(--gold); min-width:1rem; opacity:0.8; }
+
+  .input-wrap   { display:flex; gap:0.6rem; align-items:stretch; margin-bottom:0.7rem; }
+  .answer-input { flex:1; background:var(--panel2); border:1px solid var(--border); border-bottom:2px solid var(--gold); color:var(--gold2); font-family:'Share Tech Mono',monospace; font-size:1.12rem; padding:0.75rem 1rem; outline:none; transition:border-color 0.2s,box-shadow 0.2s; }
+  .answer-input:focus   { border-bottom-color:var(--gold2); box-shadow:0 0 20px var(--glow); }
+  .answer-input.correct { border-color:var(--green2); color:var(--green2); }
+  .answer-input.wrong   { border-color:var(--red2); color:var(--red2); animation:shake 0.4s ease; }
+  .submit-btn { font-family:'Share Tech Mono',monospace; font-size:0.72rem; letter-spacing:0.12em; color:var(--bg); background:var(--gold); border:none; padding:0 1.2rem; cursor:pointer; transition:all 0.2s; text-transform:uppercase; }
+  .submit-btn:hover { background:var(--gold2); box-shadow:0 0 16px var(--glow2); }
+
+  @keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-7px)} 40%{transform:translateX(7px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)} }
+
+  .feedback { font-size:0.93rem; padding:0.65rem 0.85rem; border-left:3px solid transparent; font-style:italic; min-height:2.1rem; transition:all 0.3s; line-height:1.5; }
+  .feedback.correct { border-color:var(--green2); color:var(--green2); background:rgba(39,174,96,0.06); }
+  .feedback.wrong   { border-color:var(--red2);   color:var(--red2);   background:rgba(192,57,43,0.06); }
+
+  .hint-text { font-size:0.78rem; color:var(--text-dim); font-family:'Share Tech Mono',monospace; margin-top:0.4rem; line-height:1.6; }
+  .hint-text span { color:var(--gold); }
+
+  .attempts-bar { display:flex; gap:0.38rem; margin-top:0.55rem; }
+  .attempt-dot  { width:7px; height:7px; border-radius:50%; background:var(--border); transition:background 0.3s; }
+  .attempt-dot.used { background:var(--red2); }
+
+  .next-btn { font-family:'Cinzel Decorative',serif; font-size:0.78rem; letter-spacing:0.12em; color:var(--bg); background:linear-gradient(135deg,var(--green) 0%,var(--green2) 100%); border:none; padding:0.85rem 1.9rem; cursor:pointer; clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%); transition:all 0.2s; display:none; margin-top:0.3rem; align-self:flex-end; }
+  .next-btn:hover { box-shadow:0 0 18px rgba(39,174,96,0.4); transform:scale(1.03); }
+  .next-btn.visible { display:block; animation:fadeIn 0.5s ease both; }
+
+  /* ── COMPLETE ── */
+  #complete { justify-content:flex-start; padding:2rem 1rem 4rem; background:radial-gradient(ellipse 70% 50% at 50% 20%,rgba(39,174,96,0.07) 0%,transparent 60%),var(--bg); }
+  .complete-inner { width:100%; max-width:700px; margin:0 auto; display:flex; flex-direction:column; align-items:center; gap:1.1rem; }
+
+  .complete-icon  { font-size:3.2rem; animation:popIn 0.6s cubic-bezier(0.34,1.56,0.64,1) both; }
+  @keyframes popIn { from{transform:scale(0) rotate(-20deg);opacity:0} to{transform:scale(1) rotate(0);opacity:1} }
+  .complete-title { font-family:'Cinzel Decorative',serif; font-size:clamp(1.5rem,4vw,2.6rem); color:var(--green2); text-shadow:0 0 40px rgba(39,174,96,0.5); animation:fadeIn 1s ease 0.4s both; text-align:center; }
+  .complete-time  { font-family:'Share Tech Mono',monospace; font-size:1rem; color:var(--gold2); animation:fadeIn 1s ease 0.8s both; }
+
+  .score-grid { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; animation:fadeIn 1s ease 1.2s both; }
+  .score-box  { text-align:center; padding:0.85rem 1.2rem; border:1px solid var(--border); background:var(--panel); }
+  .score-val  { font-family:'Cinzel Decorative',serif; font-size:1.7rem; color:var(--gold2); display:block; }
+  .score-lbl  { font-family:'Share Tech Mono',monospace; font-size:0.58rem; letter-spacing:0.16em; color:var(--text-dim); text-transform:uppercase; margin-top:0.2rem; display:block; }
+
+  .mystery-message { max-width:480px; font-size:1rem; font-style:italic; line-height:1.85; color:var(--text-dim); text-align:center; animation:fadeIn 1s ease 1.6s both; }
+
+  /* SUBMISSION */
+  .submission-panel { width:100%; animation:fadeIn 1s ease 2s both; }
+  .sub-label  { font-family:'Share Tech Mono',monospace; font-size:0.62rem; letter-spacing:0.3em; color:var(--gold); text-transform:uppercase; margin-bottom:0.5rem; }
+  .sub-title  { font-family:'Cinzel Decorative',serif; font-size:0.95rem; color:var(--gold2); margin-bottom:0.7rem; }
+  .gen-btn    { font-family:'Cinzel Decorative',serif; font-size:0.78rem; letter-spacing:0.12em; color:var(--bg); background:linear-gradient(135deg,var(--gold) 0%,var(--gold2) 100%); border:none; padding:0.8rem 1.9rem; cursor:pointer; clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%); transition:all 0.2s; text-transform:uppercase; font-weight:700; }
+  .gen-btn:hover { box-shadow:0 0 22px var(--glow2); transform:scale(1.03); }
+
+  .summary-wrap { margin-top:0.9rem; display:none; }
+  .summary-wrap.visible { display:block; animation:fadeIn 0.5s ease both; }
+  .summary-textarea { width:100%; min-height:310px; background:var(--panel); color:#9fd4b0; border:1px solid var(--border); border-top:2px solid var(--green2); padding:1.1rem; font-family:'Share Tech Mono',monospace; font-size:0.72rem; line-height:1.65; resize:vertical; outline:none; }
+  .copy-row   { display:flex; align-items:center; gap:0.7rem; margin-top:0.7rem; flex-wrap:wrap; }
+  .copy-btn   { padding:0.65rem 1.4rem; background:var(--gold); color:var(--bg); border:none; font-family:'Cinzel Decorative',serif; font-size:0.72rem; font-weight:700; cursor:pointer; clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%); transition:all 0.2s; text-transform:uppercase; letter-spacing:0.1em; }
+  .copy-btn:hover { background:var(--gold2); box-shadow:0 0 18px var(--glow2); }
+  .copy-confirm { color:var(--green2); font-family:'Share Tech Mono',monospace; font-size:0.72rem; display:none; letter-spacing:0.1em; }
+  .classroom-steps { margin-top:0.85rem; background:rgba(201,168,76,0.04); border:1px solid rgba(201,168,76,0.12); padding:0.9rem 1.1rem; color:var(--text-dim); font-size:0.8rem; line-height:1.75; }
+  .classroom-steps strong { color:var(--gold); }
+
+  .btn-restart { font-family:'Cinzel Decorative',serif; font-size:0.78rem; letter-spacing:0.12em; color:var(--bg); background:linear-gradient(135deg,var(--gold) 0%,var(--gold2) 100%); border:none; padding:0.8rem 1.9rem; cursor:pointer; clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%); transition:all 0.3s; text-transform:uppercase; font-weight:700; animation:fadeIn 1s ease 2.2s both; }
+  .btn-restart:hover { box-shadow:0 0 22px var(--glow2); transform:scale(1.05); }
+
+  /* DOOR */
+  .door-overlay { position:fixed; inset:0; z-index:9997; display:flex; pointer-events:none; opacity:0; transition:opacity 0.1s; }
+  .door-overlay.active { pointer-events:all; opacity:1; }
+  .door-left,.door-right { flex:1; background:var(--bg); transition:transform 0.8s cubic-bezier(0.76,0,0.24,1); }
+  .door-left  { transform-origin:left;  border-right:1px solid var(--gold); }
+  .door-right { transform-origin:right; border-left:1px solid var(--gold); }
+  .door-overlay.open .door-left  { transform:scaleX(0); }
+  .door-overlay.open .door-right { transform:scaleX(0); }
+
+  @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+  ::-webkit-scrollbar { width:5px; }
+  ::-webkit-scrollbar-track { background:var(--bg); }
+  ::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+
+  @media(max-width:520px){
+    .choices{grid-template-columns:1fr}
+    .score-grid{gap:0.7rem}
+  }
+</style>
+</head>
+<body>
+
+<!-- Background music: royalty-free mystery tracks -->
+<audio id="bgMusic" loop preload="auto">
+  <source src="https://cdn.pixabay.com/audio/2024/05/10/audio_6d5e3e0694.mp3" type="audio/mpeg">
+  <source src="https://cdn.pixabay.com/audio/2022/10/30/audio_946e4a8a6e.mp3" type="audio/mpeg">
+</audio>
+<audio id="sfxCorrect" preload="auto"><source src="https://cdn.pixabay.com/audio/2022/03/24/audio_3914e609ba.mp3" type="audio/mpeg"></audio>
+<audio id="sfxWrong"   preload="auto"><source src="https://cdn.pixabay.com/audio/2022/03/15/audio_8c28e5e428.mp3" type="audio/mpeg"></audio>
+<audio id="sfxUnlock"  preload="auto"><source src="https://cdn.pixabay.com/audio/2022/01/18/audio_d0c6ff1fba.mp3" type="audio/mpeg"></audio>
+
+<div class="door-overlay" id="doorOverlay"><div class="door-left"></div><div class="door-right"></div></div>
+<div id="particles"></div>
+
+<!-- ══ INTRO ══ -->
+<div class="screen active" id="intro">
+  <div class="case-stamp">● IB Mathematics AA / AI SL  ·  Probability &amp; Logarithms ●</div>
+  <div class="title-main">Mr. Goddard's</div>
+  <div class="title-sub">Escape Room</div>
+  <div class="divider"></div>
+
+  <div class="case-file">
+    <div class="case-label">Case File · Incident Report · The Goddard Institute · Winter, 1924</div>
+    <div class="case-title">The Disappearance of Dr. Elias Venn</div>
+    <div class="case-body">
+      <p>It is the winter of 1924. <strong>Dr. Elias Venn</strong> — the Institute's most celebrated mathematician, renowned across Europe for his work on probability theory — has vanished without trace from his private study.</p>
+      <p>Investigators arrived to find the study <strong>locked from the inside</strong>. Eight mechanical combination locks, each sealed with a mathematical cipher drawn from Dr. Venn's own research, bar every exit. His notes suggest the locks must be broken <em>in sequence</em> — and only by someone who truly understands the mathematics he devoted his life to.</p>
+      <p>You have been sent in. The locks are connected to <strong>probability systems and logarithmic equations</strong> from Dr. Venn's final, unfinished paper.</p>
+      <p><em>Solve each cipher. Break each seal. Escape before the mechanisms reset at midnight — and uncover the truth of what happened in this room.</em></p>
+    </div>
+  </div>
+
+  <div class="name-section">
+    <div class="name-label">Investigator Identity</div>
+    <input class="name-input" id="studentName" type="text" placeholder="Enter your full name..." autocomplete="name">
+  </div>
+
+  <button class="btn-primary" id="startBtn">Enter the Study</button>
+  <div class="music-note">♪ Allow audio for the full atmospheric experience</div>
+</div>
+
+<!-- ══ GAME ══ -->
+<div class="screen" id="game">
+  <div class="game-header">
+    <div class="header-title">Mr. Goddard's Escape Room</div>
+    <div class="progress-wrap" id="progressPips"></div>
+    <div class="header-right">
+      <div class="timer-display" id="timerDisplay">00:00</div>
+      <button class="music-toggle" id="musicToggle">♪ ON</button>
+    </div>
+  </div>
+
+  <div class="question-area">
+    <div class="room-label"    id="roomLabel"></div>
+    <div class="story-snippet" id="storySnippet"></div>
+    <div class="question-card" id="questionCard">
+      <div class="q-topic"  id="qTopic"></div>
+      <div class="q-number" id="qNumber"></div>
+      <div class="q-text"   id="qText"></div>
+      <div class="venn-wrap" id="vennWrap"></div>
+      <div id="answerArea"></div>
+      <div class="feedback"    id="feedback"></div>
+      <div class="hint-text"   id="hintText"></div>
+      <div class="attempts-bar" id="attemptsBar"></div>
+    </div>
+    <button class="next-btn" id="nextBtn">Unlock Next Chamber →</button>
+  </div>
+</div>
+
+<!-- ══ COMPLETE ══ -->
+<div class="screen" id="complete">
+  <div class="complete-inner">
+    <div class="complete-icon">🔓</div>
+    <div class="complete-title">The Study is Unlocked</div>
+    <div class="divider"></div>
+    <div class="complete-time" id="completeTime"></div>
+
+    <div class="score-grid">
+      <div class="score-box"><span class="score-val" id="scoreCorrect">-</span><span class="score-lbl">First Attempt</span></div>
+      <div class="score-box"><span class="score-val" id="scoreTime">-</span><span class="score-lbl">Time Taken</span></div>
+      <div class="score-box"><span class="score-val" id="scoreTotal">-</span><span class="score-lbl">Final Score</span></div>
+    </div>
+
+    <p class="mystery-message" id="mysteryMessage"></p>
+
+    <div class="submission-panel">
+      <div class="sub-label">Submit Your Work</div>
+      <div class="sub-title">Generate Your Investigation Report</div>
+      <button class="gen-btn" id="genBtn">Generate Report</button>
+      <div class="summary-wrap" id="summaryWrap">
+        <textarea class="summary-textarea" id="summaryText" readonly></textarea>
+        <div class="copy-row">
+          <button class="copy-btn" id="copyBtn">Copy to Clipboard</button>
+          <span class="copy-confirm" id="copyConfirm">✓ Copied!</span>
+        </div>
+        <div class="classroom-steps">
+          <strong>How to submit to Mr. Goddard:</strong><br>
+          1. Click <strong>Copy to Clipboard</strong> above<br>
+          2. Open <strong>Google Classroom</strong> and find the Escape Room assignment<br>
+          3. Click <strong>Add private comment</strong> or the assignment response box<br>
+          4. Paste with <strong>Ctrl+V</strong> (or <strong>Cmd+V</strong> on Mac / long-press → Paste on iPad)<br>
+          5. Click <strong>Submit</strong> ✓
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-restart" onclick="location.reload()">Escape Again</button>
+  </div>
+</div>
+
+<script>
+// ══ QUESTIONS ══
+const ALL_QUESTIONS = [
+  {
+    id:'q1', topic:'Probability · Venn Diagrams',
+    story:'You find a dusty ledger on Dr. Venn\'s desk. Ink-stained pages record the drinking habits of a mathematics seminar. A cipher lock is stamped with a number.',
+    question:'In a class, students were asked which drinks they bought today. The Venn diagram shows the results.<br><br>How many students bought <em>at least one</em> drink?',
+    venn:'drinks', type:'typed', answer:['21'],
+    hint:'Add every student inside the circles — both circles include the intersection.',
+    wrongMessages:['Not quite. Count all students inside either circle, including the overlap.','The intersection (3) belongs to both circles. Add: 10 + 3 + 8 = ?']
+  },
+  {
+    id:'q2', topic:'Probability · Venn Diagrams',
+    story:'A second page of the ledger. The same seminar data — but a different cipher asks for a percentage.',
+    question:'Using the same drinks Venn diagram, what <em>percentage</em> of students bought <em>both</em> drinks?<br><br>(Total students = 23. Round to 1 decimal place.)',
+    venn:'drinks', type:'mc', choices:['13.0%','43.5%','8.7%','30.4%'], correctAnswer:'13.0%',
+    hint:'3 students out of 23 total bought both. Percentage = (3 ÷ 23) × 100.',
+    wrongMessages:['Check your denominator — total students is 23 (including the 2 outside the circles).','The formula is (part ÷ whole) × 100. Part = 3, whole = 23.']
+  },
+  {
+    id:'q3', topic:'Probability · Venn Diagrams',
+    story:'A locker in the corner of the study. A brass plate is engraved with one of Dr. Venn\'s favourite sports-day probability problems.',
+    question:'In a class of 30 students: 14 play <em>basketball (A)</em>, 12 play <em>football (B)</em>, and 7 play <em>neither</em>.<br><br>Find <span class="math">P(exactly one sport)</span>.',
+    type:'mc', choices:['2/3','9/30','11/30','17/30'], correctAnswer:'2/3',
+    hint:'Find the overlap: 14+12+7 = 33 > 30, so overlap = 3. Basketball only = 11, football only = 9. Total exactly one = 20.',
+    wrongMessages:['Find the overlap first: total across both circles is 14+12=26, but only 30−7=23 play sport, so overlap = 3.','Basketball only = 11, football only = 9. Exactly one sport = 20. Write as a fraction of 30.']
+  },
+  {
+    id:'q4', topic:'Probability · Independence',
+    story:'A cipher box bolted to the writing desk. The dial is marked with decimal probabilities. Dr. Venn\'s notes read: "Independence is the key."',
+    question:'<span class="math">p(A) = 0.4</span>, <span class="math">p(B) = 0.3</span>. Events A and B are <em>independent</em>.<br><br>Find <span class="math">p(A ∪ B)</span>.',
+    type:'typed', answer:['0.58'],
+    hint:'For independent events: p(A∩B) = p(A) × p(B). Then use the addition rule: p(A∪B) = p(A) + p(B) − p(A∩B).',
+    wrongMessages:['Start with independence: p(A∩B) = 0.4 × 0.3 = 0.12. Then apply the addition rule.','p(A∪B) = 0.4 + 0.3 − 0.12 = ?']
+  },
+  {
+    id:'q5', topic:'Probability · Independence',
+    story:'Behind a portrait of Gottfried Leibniz — a wall safe. The combination is a single probability value, hidden inside a union equation.',
+    question:'A and B are <em>independent</em> events.<br><span class="math">p(A) = 0.3</span>&nbsp; and &nbsp;<span class="math">p(A ∪ B) = 0.65</span>.<br><br>Find <span class="math">p(B)</span>.',
+    type:'typed', answer:['0.5'],
+    hint:'Set up: 0.65 = 0.3 + p(B) − 0.3·p(B). Collect p(B) terms: 0.35 = 0.7·p(B).',
+    wrongMessages:['Write the addition rule with independence: 0.65 = 0.3 + p(B) − 0.3 × p(B).','0.35 = 0.7 × p(B). Divide both sides by 0.7.']
+  },
+  {
+    id:'q6', topic:'Probability · Conditional',
+    story:'A locked chest beneath the floorboards. Inside, a folded note in Dr. Venn\'s handwriting: "Given C has occurred — what then is the probability of B?"',
+    question:'Events B and C: <span class="math">p(B) = 0.45</span>, <span class="math">p(C) = 0.6</span>, <span class="math">p(B ∪ C) = 0.8</span>.<br><br>Find <span class="math">p(B | C)</span>.',
+    type:'mc', choices:['5/12','1/4','9/16','3/8'], correctAnswer:'5/12',
+    hint:'Step 1: p(B∩C) = p(B) + p(C) − p(B∪C) = 0.45 + 0.6 − 0.8 = 0.25. Step 2: p(B|C) = 0.25 ÷ 0.6.',
+    wrongMessages:['Use the addition rule first: p(B∩C) = 0.45 + 0.6 − 0.8.','p(B∩C) = 0.25. Now apply: p(B|C) = p(B∩C) ÷ p(C) = 0.25 ÷ 0.6 — simplify the fraction.']
+  },
+  {
+    id:'q7', topic:'Logarithms',
+    story:'A coded message carved into the windowsill. Three logarithmic values. The cipher demands you combine them using the laws from Dr. Venn\'s final paper.',
+    question:'Given &nbsp;<span class="math">log₃ P = 5</span>&nbsp; and &nbsp;<span class="math">log₃ Q = 7</span>, find:<br><br><span class="math">log₃ (P / 9Q)</span>',
+    type:'typed', answer:['-4'],
+    hint:'Use log laws: log(P/9Q) = log P − log 9 − log Q. Remember: log₃ 9 = log₃(3²) = 2.',
+    wrongMessages:['Split using log laws: log₃(P/9Q) = log₃P − log₃9 − log₃Q. Evaluate each term.','log₃P = 5, log₃9 = 2, log₃Q = 7. So: 5 − 2 − 7 = ?']
+  },
+  {
+    id:'q8', topic:'Logarithms · Exponential Equations',
+    story:'The final door. One last brass combination dial. An exponential equation is engraved in the metal. Solve it — and you walk free.',
+    question:'Solve for <span class="math">k</span>:<br><br><span class="math">15 × 3<sup>k+2</sup> = 9<sup>k+1</sup></span><br><br>The exact answer has the form &nbsp;<span class="math">ln5/ln3 + c</span>&nbsp; where c is an integer.<br>What is <span class="math">c</span>?',
+    type:'mc', choices:['c = 1','c = −1','c = 2','c = 0'], correctAnswer:'c = 1',
+    hint:'Write 9^(k+1) = 3^(2k+2). Then 15 × 3^(k+2) = 3^(2k+2), so 5 = 3^(k−1). Take ln of both sides.',
+    wrongMessages:['Rewrite: 9^(k+1) = (3²)^(k+1) = 3^(2k+2). Now equate with 15 × 3^(k+2).','Dividing: 5 = 3^(k−1). Take ln: ln5 = (k−1)ln3. Rearrange: k = ln5/ln3 + 1. So c = ?']
+  }
+];
+
+const STORY_BEATS = [
+  'The heavy oak door swings shut behind you. Eight locks. Silence. Begin.',
+  'The first seal breaks. A mechanism deep in the wall groans and shifts.',
+  'Another cipher solved. Somewhere beneath the floorboards, a counterweight drops.',
+  'Halfway through. The candles flicker. Dr. Venn\'s scattered notes surround you.',
+  'Five seals broken. The air in the study feels different — expectant.',
+  'The sixth lock clicks open. A sliver of gaslight appears beneath the final door.',
+  'One chamber remains. Dr. Venn\'s last equation stands between you and freedom.',
+  'The final cipher. Everything hinges on this moment. Focus.'
+];
+
+const CORRECT_MSGS = [
+  '✓ The first lock surrenders. The mechanism clicks into place.',
+  '✓ Correct. The tumblers align. A second seal is broken.',
+  '✓ Dr. Venn would approve. The third chamber yields.',
+  '✓ Precise. The fourth lock releases with a satisfying clunk.',
+  '✓ The safe responds. Your logic is impeccable.',
+  '✓ Flawless. The sixth seal dissolves in the candlelight.',
+  '✓ The logarithm submits. One cipher remains.',
+  '✓ The final door swings open. You are free.'
+];
+
+const ESCAPE_MESSAGES = [
+  'The investigation is complete. Dr. Venn\'s study surrenders its last secret.',
+  'Eight ciphers. Eight seals. All broken by mathematical precision.',
+  'You escaped the study. The truth of Dr. Venn\'s disappearance remains... mysterious.',
+  'Logic and probability — the only keys that truly matter in this room.',
+  'Mr. Goddard receives your report. He is deeply satisfied.'
+];
+
+// ══ STATE ══
+let questions=[], currentIdx=0, attempts=0, correctFirst=0;
+let elapsedSeconds=0, timerInterval=null, musicOn=false, currentLocked=false;
+let studentName='', answerLog=[];
+
+// ══ PARTICLES ══
+function createParticles(){
+  const c=document.getElementById('particles');
+  for(let i=0;i<18;i++){
+    const p=document.createElement('div'); p.className='particle';
+    p.style.left=Math.random()*100+'vw';
+    p.style.animationDuration=(9+Math.random()*12)+'s';
+    p.style.animationDelay=(Math.random()*16)+'s';
+    c.appendChild(p);
+  }
+}
+
+// ══ VENN ══
+function getDrinksVenn(){
+  return `<svg width="288" height="152" viewBox="0 0 288 152" xmlns="http://www.w3.org/2000/svg">
+    <rect width="288" height="152" rx="3" fill="#0f0f1a" stroke="#2a2a45" stroke-width="1"/>
+    <text x="8" y="146" fill="#2a2a45" font-size="10" font-family="monospace">ξ</text>
+    <circle cx="112" cy="76" r="51" fill="rgba(201,168,76,0.06)" stroke="#c9a84c" stroke-width="1.5" opacity="0.85"/>
+    <circle cx="170" cy="76" r="51" fill="rgba(201,168,76,0.06)" stroke="#c9a84c" stroke-width="1.5" opacity="0.85"/>
+    <text x="95"  y="21" fill="#c9a84c" font-size="11" font-family="monospace">A</text>
+    <text x="170" y="21" fill="#c9a84c" font-size="11" font-family="monospace">B</text>
+    <text x="83"  y="81" fill="#d4c9b0" font-size="16" text-anchor="middle" font-family="monospace">10</text>
+    <text x="141" y="81" fill="#e8c96d" font-size="16" text-anchor="middle" font-family="monospace">3</text>
+    <text x="198" y="81" fill="#d4c9b0" font-size="16" text-anchor="middle" font-family="monospace">8</text>
+    <text x="14"  y="138" fill="#d4c9b0" font-size="14" font-family="monospace">2</text>
+  </svg>`;
+}
+
+// ══ TIMER ══
+function startTimer(){ timerInterval=setInterval(()=>{ elapsedSeconds++; const m=String(Math.floor(elapsedSeconds/60)).padStart(2,'0'),s=String(elapsedSeconds%60).padStart(2,'0'); const el=document.getElementById('timerDisplay'); el.textContent=m+':'+s; el.classList.toggle('urgent',elapsedSeconds>600); },1000); }
+function stopTimer(){ clearInterval(timerInterval); }
+function formatTime(sec){ return Math.floor(sec/60)+'m '+(sec%60)+'s'; }
+
+// ══ MUSIC ══
+const bgMusic=document.getElementById('bgMusic'); bgMusic.volume=0.22;
+function tryPlayMusic(){
+  bgMusic.play().then(()=>{
+    musicOn=true;
+    const btn=document.getElementById('musicToggle');
+    if(btn){btn.textContent='♪ ON'; btn.classList.add('on');}
+  }).catch(()=>{
+    musicOn=false;
+    const btn=document.getElementById('musicToggle');
+    if(btn){btn.textContent='♪ OFF'; btn.classList.remove('on');}
+  });
+}
+function toggleMusic(){
+  musicOn=!musicOn;
+  const btn=document.getElementById('musicToggle');
+  if(musicOn){ tryPlayMusic(); }
+  else{ bgMusic.pause(); btn.textContent='♪ OFF'; btn.classList.remove('on'); }
+}
+function playSfx(id){ const el=document.getElementById(id); if(!el)return; el.currentTime=0; el.volume=0.4; el.play().catch(()=>{}); }
+
+// ══ UTILS ══
+function shuffle(arr){ const a=[...arr]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+function showScreen(id){ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+function buildPips(){ const w=document.getElementById('progressPips'); w.innerHTML=''; questions.forEach((_,i)=>{const d=document.createElement('div'); d.className='pip'+(i<currentIdx?' done':i===currentIdx?' current':''); w.appendChild(d);}); }
+function doorTransition(cb){ const o=document.getElementById('doorOverlay'); o.classList.add('active'); o.classList.remove('open'); setTimeout(()=>{ cb(); setTimeout(()=>{ o.classList.add('open'); setTimeout(()=>o.classList.remove('active','open'),900); },100); },400); }
+
+// ══ RENDER ══
+function renderQuestion(){
+  const q=questions[currentIdx]; attempts=0; currentLocked=false;
+  document.getElementById('roomLabel').textContent=`Seal ${currentIdx+1} of ${questions.length}`;
+  const sn=document.getElementById('storySnippet'); sn.textContent=STORY_BEATS[currentIdx]||''; sn.classList.add('visible');
+  document.getElementById('qTopic').textContent=q.topic;
+  document.getElementById('qNumber').textContent=`Cipher ${String(currentIdx+1).padStart(2,'0')}`;
+  document.getElementById('qText').innerHTML=q.question;
+  document.getElementById('vennWrap').innerHTML=q.venn==='drinks'?getDrinksVenn():'';
+  const area=document.getElementById('answerArea'); area.innerHTML='';
+  document.getElementById('feedback').textContent=''; document.getElementById('feedback').className='feedback';
+  document.getElementById('hintText').innerHTML=''; document.getElementById('attemptsBar').innerHTML='';
+  document.getElementById('nextBtn').classList.remove('visible');
+  const bar=document.getElementById('attemptsBar');
+  for(let i=0;i<3;i++){const d=document.createElement('div'); d.className='attempt-dot'; d.id=`dot-${i}`; bar.appendChild(d);}
+  if(q.type==='mc'){
+    const grid=document.createElement('div'); grid.className='choices';
+    // Shuffle choices so correct answer isn't always option A
+    const shuffledChoices = shuffle([...q.choices]);
+    ['A','B','C','D'].forEach((L,i)=>{ const btn=document.createElement('button'); btn.className='choice-btn'; btn.innerHTML=`<span class="choice-letter">${L}</span>${shuffledChoices[i]}`; btn.dataset.choice=shuffledChoices[i]; btn.onclick=()=>handleMC(shuffledChoices[i],btn,q); grid.appendChild(btn); });
+    area.appendChild(grid);
+  } else {
+    const wrap=document.createElement('div'); wrap.className='input-wrap';
+    const input=document.createElement('input'); input.className='answer-input'; input.placeholder='Enter your answer...'; input.type='text'; input.id='typedInput'; input.autocomplete='off';
+    input.onkeydown=e=>{if(e.key==='Enter')handleTyped(q,input);};
+    const sub=document.createElement('button'); sub.className='submit-btn'; sub.textContent='Submit'; sub.onclick=()=>handleTyped(q,input);
+    wrap.appendChild(input); wrap.appendChild(sub); area.appendChild(wrap);
+    setTimeout(()=>input.focus(),100);
+  }
+  buildPips();
+}
+
+// ══ HANDLERS ══
+function handleMC(chosen,btn,q){
+  if(currentLocked)return;
+  const all=document.querySelectorAll('.choice-btn'); all.forEach(b=>b.disabled=true);
+  if(chosen===q.correctAnswer){ btn.classList.add('correct'); logAnswer(q,chosen,true); showCorrect(q); }
+  else{ btn.classList.add('wrong'); all.forEach(b=>b.disabled=false); btn.disabled=true; showWrong(q); }
+}
+function handleTyped(q,input){
+  if(currentLocked)return;
+  const val=input.value.trim(); if(!val)return;
+  const norm=val.toLowerCase().replace(/\s/g,'');
+  const ok=q.answer.some(a=>{ const an=a.toLowerCase().replace(/\s/g,''); if(an===norm)return true; try{return Math.abs(parseFloat(an)-parseFloat(norm))<0.005;}catch{return false;} });
+  if(ok){ input.classList.add('correct'); input.disabled=true; logAnswer(q,val,true); showCorrect(q); }
+  else{ input.classList.add('wrong'); input.value=''; setTimeout(()=>{input.classList.remove('wrong');input.focus();},500); showWrong(q); }
+}
+
+// ══ LOG ══
+function logAnswer(q,ans,correct){ answerLog=answerLog.filter(e=>e.id!==q.id); answerLog.push({id:q.id,topic:q.topic,studentAnswer:ans,correct,attemptsUsed:attempts+1}); }
+
+// ══ FEEDBACK ══
+function showCorrect(q){ currentLocked=true; playSfx('sfxCorrect'); if(attempts===0)correctFirst++; const fb=document.getElementById('feedback'); fb.className='feedback correct'; fb.textContent=CORRECT_MSGS[currentIdx]||'✓ Correct.'; document.getElementById('nextBtn').classList.add('visible'); }
+function showWrong(q){ attempts++; playSfx('sfxWrong'); const dot=document.getElementById(`dot-${Math.min(attempts-1,2)}`); if(dot)dot.classList.add('used'); const fb=document.getElementById('feedback'); fb.className='feedback wrong'; const msg=(q.wrongMessages&&q.wrongMessages[attempts-1])?q.wrongMessages[attempts-1]:'That\'s not right. Try again.'; fb.textContent=`✗ ${msg}`; if(attempts>=2){document.getElementById('hintText').innerHTML=`<span>Hint:</span> ${q.hint}`;} }
+
+// ══ NEXT ══
+function nextQuestion(){ playSfx('sfxUnlock'); currentIdx++; if(currentIdx>=questions.length){showComplete();return;} doorTransition(()=>{const c=document.getElementById('questionCard'); c.style.animation='none'; c.offsetHeight; c.style.animation=''; renderQuestion();}); }
+
+// ══ COMPLETE ══
+function showComplete(){
+  stopTimer(); bgMusic.pause();
+  doorTransition(()=>{
+    showScreen('complete');
+    document.getElementById('completeTime').textContent=`Time: ${formatTime(elapsedSeconds)}`;
+    const timeBonus=Math.max(0,Math.floor((600-elapsedSeconds)/10));
+    const total=(correctFirst*10)+timeBonus;
+    document.getElementById('scoreCorrect').textContent=`${correctFirst}/8`;
+    document.getElementById('scoreTime').textContent=formatTime(elapsedSeconds);
+    document.getElementById('scoreTotal').textContent=total;
+    document.getElementById('mysteryMessage').textContent=ESCAPE_MESSAGES[Math.floor(Math.random()*ESCAPE_MESSAGES.length)];
+  });
+}
+
+// ══ REPORT ══
+function generateReport(){
+  const name=studentName||'Unknown Investigator';
+  const now=new Date().toLocaleString('en-GB');
+  const lines=[];
+  lines.push('╔════════════════════════════════════════════════════════════════╗');
+  lines.push('║       MR. GODDARD\'S ESCAPE ROOM — INVESTIGATION REPORT       ║');
+  lines.push('╚════════════════════════════════════════════════════════════════╝');
+  lines.push('');
+  lines.push(`  Investigator : ${name}`);
+  lines.push(`  Submitted    : ${now}`);
+  lines.push(`  Time Taken   : ${formatTime(elapsedSeconds)}`);
+  lines.push(`  Score        : ${correctFirst}/8 first attempt`);
+  lines.push('');
+  lines.push('────────────────────────────────────────────────────────────────');
+  lines.push('  CIPHER LOG');
+  lines.push('────────────────────────────────────────────────────────────────');
+  questions.forEach((q,i)=>{
+    const entry=answerLog.find(e=>e.id===q.id);
+    const icon=entry?(entry.correct?'✅':'❌'):'⬜';
+    const ans=entry?entry.studentAnswer:'(not answered)';
+    const att=entry?`${entry.attemptsUsed} attempt${entry.attemptsUsed!==1?'s':''}`:'—';
+    const tmp=document.createElement('div'); tmp.innerHTML=q.question;
+    const qShort=tmp.textContent.replace(/\s+/g,' ').trim().substring(0,62);
+    lines.push('');
+    lines.push(`  ${icon}  Cipher ${String(i+1).padStart(2,'0')}  [${q.topic}]`);
+    lines.push(`      Q: ${qShort}${qShort.length>=62?'…':''}`);
+    lines.push(`      Your answer : ${ans}   (${att})`);
+  });
+  lines.push('');
+  lines.push('────────────────────────────────────────────────────────────────');
+  lines.push(`  First-attempt correct : ${correctFirst} / 8`);
+  lines.push(`  Total time            : ${formatTime(elapsedSeconds)}`);
+  lines.push('────────────────────────────────────────────────────────────────');
+  lines.push('  Generated by Mr. Goddard\'s Escape Room · IB Maths AA / AI SL');
+  lines.push('────────────────────────────────────────────────────────────────');
+  return lines.join('\n');
+}
+
+// ══ EVENTS ══
+document.getElementById('startBtn').addEventListener('click',()=>{
+  studentName=(document.getElementById('studentName').value||'').trim();
+  questions=shuffle(ALL_QUESTIONS); currentIdx=0; correctFirst=0; elapsedSeconds=0; answerLog=[];
+  // Start music on user gesture (required by browsers)
+  tryPlayMusic();
+  doorTransition(()=>{ showScreen('game'); renderQuestion(); startTimer(); });
+});
+document.getElementById('nextBtn').addEventListener('click',nextQuestion);
+document.getElementById('musicToggle').addEventListener('click',toggleMusic);
+document.getElementById('genBtn').addEventListener('click',()=>{
+  document.getElementById('summaryText').value=generateReport();
+  const w=document.getElementById('summaryWrap'); w.classList.add('visible');
+  w.scrollIntoView({behavior:'smooth',block:'start'});
+});
+document.getElementById('copyBtn').addEventListener('click',()=>{
+  const ta=document.getElementById('summaryText'), conf=document.getElementById('copyConfirm');
+  const show=()=>{ conf.style.display='inline'; setTimeout(()=>conf.style.display='none',3000); };
+  if(navigator.clipboard){ navigator.clipboard.writeText(ta.value).then(show).catch(()=>{ta.select();document.execCommand('copy');show();}); }
+  else{ ta.select(); document.execCommand('copy'); show(); }
+});
+
+createParticles();
+</script>
+</body>
+</html>
