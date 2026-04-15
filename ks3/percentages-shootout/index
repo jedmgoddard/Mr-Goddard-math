@@ -8,17 +8,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;700;900&display=swap');
 
 :root {
-  --grass:   #1a7a2e;
-  --dkgrass: #145f23;
-  --gold:    #f5c518;
-  --white:   #ffffff;
-  --navy:    #0e1b3d;
-  --dknavy:  #070f22;
-  --red:     #e63946;
-  --green:   #2dc653;
-  --grey:    #8899aa;
-  --ltgrey:  #c8d4e4;
-  --panel:   rgba(7,15,34,0.94);
+  --gold:   #f5c518;
+  --white:  #ffffff;
+  --navy:   #0e1b3d;
+  --dknavy: #070f22;
+  --red:    #e63946;
+  --green:  #2dc653;
+  --grey:   #8899aa;
+  --ltgrey: #c8d4e4;
+  --panel:  rgba(7,15,34,0.94);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -31,16 +29,11 @@ body {
   min-height: 100vh;
 }
 
-/* ── Pitch stripes background ── */
 body::before {
   content: '';
   position: fixed; inset: 0; z-index: 0;
   background:
-    repeating-linear-gradient(
-      0deg,
-      transparent 0px, transparent 55px,
-      rgba(0,0,0,0.07) 55px, rgba(0,0,0,0.07) 110px
-    ),
+    repeating-linear-gradient(0deg, transparent 0px, transparent 55px, rgba(0,0,0,0.07) 55px, rgba(0,0,0,0.07) 110px),
     linear-gradient(175deg, #0f5c1e 0%, #1a7a2e 40%, #145f23 100%);
 }
 
@@ -86,7 +79,7 @@ body::before {
 .name-input:focus { border-color: var(--gold); }
 .name-note { font-size: 0.73rem; color: var(--grey); font-style: italic; }
 
-/* ── Progress (penalty dots) ── */
+/* ── Progress dots ── */
 .progress-strip {
   position: relative; z-index: 10;
   background: rgba(7,15,34,0.88);
@@ -113,34 +106,95 @@ body::before {
   max-width: 720px; margin: 28px auto 0; padding: 0 16px;
 }
 
-/* ── Goal SVG ── */
-.goal-wrap { display: flex; justify-content: center; margin-bottom: 20px; position: relative; }
-.goal-svg { width: min(400px, 100%); }
-.goal-net { fill: none; stroke: rgba(255,255,255,0.18); stroke-width: 1; }
-.goal-post { fill: none; stroke: #dde4ee; stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; }
-.goal-ground { fill: rgba(255,255,255,0.08); }
+/* ── Goal container ── */
+.goal-wrap {
+  display: flex; justify-content: center;
+  margin-bottom: 20px;
+  position: relative;
+  user-select: none;
+}
 
-/* Ball */
+/* The SVG goal is the sizing anchor */
+.goal-svg { width: min(420px, 100%); display: block; }
+
+/* ── Overlay zones — absolutely positioned over the SVG ── */
+/* These sit inside .goal-wrap, which is position:relative */
+.zones-overlay {
+  position: absolute;
+  /* Match the SVG viewBox ratio 420/210 = 2:1 */
+  /* We'll size and position via JS after render */
+  top: 0; left: 50%; transform: translateX(-50%);
+  display: none; /* hidden until correct answer */
+  pointer-events: none;
+}
+.zones-overlay.visible {
+  display: block;
+  pointer-events: all;
+}
+
+/* Each zone is a clickable rectangle */
+.goal-zone {
+  position: absolute;
+  cursor: pointer;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  background: rgba(245,197,24,0.0);
+  transition: background 0.15s, border-color 0.15s;
+  display: flex; align-items: center; justify-content: center;
+}
+.goal-zone:hover {
+  background: rgba(245,197,24,0.18);
+  border-color: rgba(245,197,24,0.6);
+}
+.goal-zone .zone-arrow {
+  font-size: 1.4rem;
+  opacity: 0;
+  transition: opacity 0.15s;
+  pointer-events: none;
+}
+.goal-zone:hover .zone-arrow { opacity: 1; }
+
+/* Shoot-here prompt */
+.shoot-prompt {
+  position: absolute;
+  bottom: -8px; left: 50%; transform: translateX(-50%);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1rem; letter-spacing: 2px;
+  color: var(--gold);
+  animation: promptpulse 0.8s ease-in-out infinite;
+  white-space: nowrap;
+  pointer-events: none;
+  display: none;
+}
+.shoot-prompt.visible { display: block; }
+@keyframes promptpulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+/* ── Ball ── */
 .ball-svg {
   position: absolute;
-  width: 52px; height: 52px;
-  left: 50%; bottom: -10px;
+  width: 48px; height: 48px;
+  left: 50%; bottom: -8px;
   transform: translateX(-50%);
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.6));
   transition: none;
-  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5));
+  z-index: 20;
+  pointer-events: none;
 }
 .ball-svg.shooting {
-  transition: left 0.55s cubic-bezier(.2,.8,.4,1), bottom 0.55s cubic-bezier(.2,.8,.4,1), transform 0.55s ease;
+  transition: left 0.5s cubic-bezier(.15,.8,.3,1),
+              bottom 0.5s cubic-bezier(.15,.8,.3,1),
+              transform 0.5s ease,
+              opacity 0.5s ease;
 }
-.ball-svg.reset-pos { transition: none; }
 
-/* Result flash */
+/* ── Result flash ── */
 .result-flash {
-  position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
-  font-family: 'Bebas Neue', sans-serif; font-size: 2.4rem; letter-spacing: 3px;
+  position: absolute; top: 8px; left: 50%; transform: translateX(-50%);
+  font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem; letter-spacing: 3px;
   opacity: 0; pointer-events: none; white-space: nowrap;
-  text-shadow: 0 2px 12px rgba(0,0,0,0.6);
-  transition: opacity 0.2s;
+  text-shadow: 0 2px 16px rgba(0,0,0,0.7);
+  transition: opacity 0.25s;
+  z-index: 30;
 }
 .result-flash.show { opacity: 1; }
 .result-flash.goal { color: var(--green); }
@@ -156,29 +210,18 @@ body::before {
   box-shadow: 0 8px 32px rgba(0,0,0,0.5);
   margin-bottom: 18px;
 }
-.q-header {
-  display: flex; align-items: center; gap: 10px; margin-bottom: 14px;
-}
+.q-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
 .q-num {
   font-family: 'Bebas Neue', sans-serif;
   background: var(--gold); color: var(--navy);
   padding: 3px 11px; border-radius: 20px;
   font-size: 1rem; letter-spacing: 1px; white-space: nowrap;
 }
-.q-topic {
-  font-size: 0.72rem; font-weight: 700; letter-spacing: 1px;
-  text-transform: uppercase; color: var(--grey);
-}
-.q-text {
-  font-size: 1.05rem; font-weight: 700; color: var(--white);
-  line-height: 1.45; margin-bottom: 18px;
-}
+.q-topic { font-size: 0.72rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--grey); }
+.q-text { font-size: 1.05rem; font-weight: 700; color: var(--white); line-height: 1.45; margin-bottom: 18px; }
 
-/* ── Answer options ── */
-.options-grid {
-  display: grid; grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
+/* ── MCQ options ── */
+.options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .opt-btn {
   padding: 12px 14px;
   background: rgba(255,255,255,0.06);
@@ -187,20 +230,14 @@ body::before {
   color: var(--white); font-family: inherit;
   font-size: 0.95rem; font-weight: 600;
   cursor: pointer; text-align: left;
-  transition: all 0.18s; position: relative;
-  overflow: hidden;
+  transition: all 0.18s;
 }
-.opt-btn:hover:not(:disabled) {
-  background: rgba(245,197,24,0.12);
-  border-color: var(--gold);
-  transform: translateY(-1px);
-}
+.opt-btn:hover:not(:disabled) { background: rgba(245,197,24,0.12); border-color: var(--gold); transform: translateY(-1px); }
 .opt-btn:disabled { cursor: default; }
 .opt-btn.correct { background: rgba(45,198,83,0.18); border-color: var(--green); color: var(--green); }
 .opt-btn.wrong   { background: rgba(230,57,70,0.18);  border-color: var(--red);   color: var(--red); }
-.opt-btn.reveal  { background: rgba(45,198,83,0.1);   border-color: rgba(45,198,83,0.4); color: rgba(45,198,83,0.7); }
 
-/* Typed answer */
+/* ── Typed answer ── */
 .typed-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .typed-input {
   flex: 1; min-width: 130px; max-width: 220px;
@@ -217,16 +254,14 @@ body::before {
   padding: 10px 22px;
   background: var(--gold); color: var(--navy);
   border: none; border-radius: 9px;
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 1.1rem; letter-spacing: 1.5px;
-  cursor: pointer; transition: transform 0.12s, background 0.15s;
-  white-space: nowrap;
+  font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 1.5px;
+  cursor: pointer; transition: transform 0.12s, background 0.15s; white-space: nowrap;
 }
 .shoot-btn:hover { background: #d4a800; transform: scale(1.04); }
 .shoot-btn:active { transform: scale(0.96); }
 .shoot-btn:disabled { background: var(--grey); cursor: default; transform: none; }
 
-/* Feedback line */
+/* ── Feedback ── */
 .q-feedback {
   margin-top: 11px; font-size: 0.88rem; font-weight: 700;
   display: none; padding: 7px 12px; border-radius: 7px;
@@ -234,22 +269,21 @@ body::before {
 .q-feedback.correct { display: block; background: rgba(45,198,83,0.15); color: var(--green); }
 .q-feedback.wrong   { display: block; background: rgba(230,57,70,0.15);  color: var(--red); }
 
-/* ── Nav buttons ── */
+/* ── Nav ── */
 .nav-row { display: flex; justify-content: center; gap: 12px; margin-bottom: 30px; }
 .nav-btn {
   padding: 12px 30px;
   background: rgba(255,255,255,0.08);
   border: 2px solid rgba(255,255,255,0.15);
   border-radius: 10px; color: var(--white);
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 1.1rem; letter-spacing: 1.5px;
+  font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 1.5px;
   cursor: pointer; transition: all 0.18s;
 }
 .nav-btn:hover { background: rgba(245,197,24,0.12); border-color: var(--gold); }
 .nav-btn.primary { background: var(--gold); color: var(--navy); border-color: var(--gold); }
 .nav-btn.primary:hover { background: #d4a800; }
 
-/* ── Final summary ── */
+/* ── Final screen ── */
 #finalScreen {
   display: none;
   position: relative; z-index: 10;
@@ -263,81 +297,33 @@ body::before {
   box-shadow: 0 10px 40px rgba(0,0,0,0.6);
   text-align: center;
 }
-.final-card h2 {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 2.4rem; letter-spacing: 3px; color: var(--gold);
-  margin-bottom: 6px;
-}
-.final-score {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 4rem; letter-spacing: 2px; color: var(--white);
-  line-height: 1;
-}
+.final-card h2 { font-family: 'Bebas Neue', sans-serif; font-size: 2.4rem; letter-spacing: 3px; color: var(--gold); margin-bottom: 6px; }
+.final-score { font-family: 'Bebas Neue', sans-serif; font-size: 4rem; letter-spacing: 2px; color: var(--white); line-height: 1; }
 .final-score span { color: var(--gold); }
 .final-stars { font-size: 2rem; margin: 8px 0 4px; }
 .final-msg { color: var(--grey); font-size: 1rem; margin-bottom: 22px; }
 
-/* Breakdown table */
-.breakdown {
-  width: 100%; border-collapse: collapse;
-  margin-bottom: 22px; text-align: left;
-  font-size: 0.82rem;
-}
-.breakdown th {
-  background: rgba(245,197,24,0.12);
-  color: var(--gold); padding: 8px 10px;
-  font-weight: 700; letter-spacing: 0.5px;
-  border-bottom: 1px solid rgba(245,197,24,0.2);
-}
+.breakdown { width: 100%; border-collapse: collapse; margin-bottom: 22px; text-align: left; font-size: 0.82rem; }
+.breakdown th { background: rgba(245,197,24,0.12); color: var(--gold); padding: 8px 10px; font-weight: 700; letter-spacing: 0.5px; border-bottom: 1px solid rgba(245,197,24,0.2); }
 .breakdown td { padding: 7px 10px; border-bottom: 1px solid rgba(255,255,255,0.06); color: var(--ltgrey); }
 .breakdown tr:last-child td { border-bottom: none; }
 .breakdown .icon-cell { width: 28px; text-align: center; }
 
-/* Gen submission */
+/* Submission */
 .gen-section { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; margin-top: 6px; }
-.gen-section h3 {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 1.2rem; letter-spacing: 1.5px; color: var(--gold);
-  margin-bottom: 12px;
-}
-.gen-btn {
-  padding: 11px 26px;
-  background: rgba(45,198,83,0.15);
-  border: 2px solid var(--green); border-radius: 10px;
-  color: var(--green); font-family: 'Bebas Neue', sans-serif;
-  font-size: 1.1rem; letter-spacing: 1.5px;
-  cursor: pointer; transition: all 0.18s;
-}
+.gen-section h3 { font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; letter-spacing: 1.5px; color: var(--gold); margin-bottom: 12px; }
+.gen-btn { padding: 11px 26px; background: rgba(45,198,83,0.15); border: 2px solid var(--green); border-radius: 10px; color: var(--green); font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 1.5px; cursor: pointer; transition: all 0.18s; }
 .gen-btn:hover { background: rgba(45,198,83,0.28); }
 .summary-text-wrap { margin-top: 14px; display: none; text-align: left; }
-.summary-textarea {
-  width: 100%; min-height: 280px;
-  background: rgba(0,0,0,0.5); color: #7fffbc;
-  border: 2px solid rgba(45,198,83,0.4); border-radius: 10px;
-  padding: 13px; font-family: 'Courier New', monospace;
-  font-size: 0.78rem; line-height: 1.65; resize: vertical; outline: none;
-}
+.summary-textarea { width: 100%; min-height: 280px; background: rgba(0,0,0,0.5); color: #7fffbc; border: 2px solid rgba(45,198,83,0.4); border-radius: 10px; padding: 13px; font-family: 'Courier New', monospace; font-size: 0.78rem; line-height: 1.65; resize: vertical; outline: none; }
 .copy-row { display: flex; align-items: center; gap: 12px; margin-top: 10px; flex-wrap: wrap; }
-.copy-btn {
-  padding: 9px 22px; background: var(--gold); color: var(--navy);
-  border: none; border-radius: 8px;
-  font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 1px;
-  cursor: pointer; transition: transform 0.12s;
-}
+.copy-btn { padding: 9px 22px; background: var(--gold); color: var(--navy); border: none; border-radius: 8px; font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 1px; cursor: pointer; transition: transform 0.12s; }
 .copy-btn:hover { background: #d4a800; transform: scale(1.03); }
 .copy-confirm { color: var(--green); font-weight: 700; font-size: 0.85rem; display: none; }
-.classroom-steps {
-  margin-top: 12px; background: rgba(0,0,0,0.3);
-  border-radius: 8px; padding: 11px 14px;
-  color: var(--grey); font-size: 0.78rem; line-height: 1.75; text-align: left;
-}
+.classroom-steps { margin-top: 12px; background: rgba(0,0,0,0.3); border-radius: 8px; padding: 11px 14px; color: var(--grey); font-size: 0.78rem; line-height: 1.75; text-align: left; }
 .classroom-steps strong { color: var(--gold); }
 
-.footer {
-  position: relative; z-index: 10;
-  text-align: center; padding: 18px;
-  color: rgba(136,153,170,0.5); font-size: 0.75rem;
-}
+.footer { position: relative; z-index: 10; text-align: center; padding: 18px; color: rgba(136,153,170,0.5); font-size: 0.75rem; }
 
 @media (max-width: 480px) {
   .options-grid { grid-template-columns: 1fr; }
@@ -348,85 +334,88 @@ body::before {
 </head>
 <body>
 
-<!-- Pitch bg rendered by CSS -->
-
-<!-- ── HEADER ── -->
 <div class="header">
   <div class="header-icon">⚽</div>
   <div class="header-titles">
     <h1>MR. GODDARD'S PENALTY SHOOTOUT</h1>
-    <p>Percentages Edition — Answer correctly to score!</p>
+    <p>Percentages Edition — Answer correctly, then pick your spot!</p>
   </div>
   <div class="score-pill" id="scoreDisplay">0 GOALS</div>
 </div>
 
-<!-- ── NAME BANNER ── -->
 <div class="name-banner">
   <label for="playerName">⚽ Player Name:</label>
   <input class="name-input" id="playerName" type="text" placeholder="Type your full name" autocomplete="name">
   <span class="name-note">Appears on your submission for Mr. Goddard</span>
 </div>
 
-<!-- ── PROGRESS DOTS ── -->
 <div class="progress-strip">
   <span class="prog-label">PENALTIES:</span>
   <div class="balls-row" id="ballsRow"></div>
 </div>
 
-<!-- ── GAME AREA ── -->
 <div class="game-area" id="gameArea">
 
-  <!-- Goal graphic -->
-  <div class="goal-wrap">
-    <svg class="goal-svg" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
-      <!-- Net grid -->
+  <!-- Goal + ball + zones -->
+  <div class="goal-wrap" id="goalWrap">
+
+    <!-- Static goal SVG -->
+    <svg class="goal-svg" id="goalSvg" viewBox="0 0 420 210" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <pattern id="net" width="20" height="20" patternUnits="userSpaceOnUse">
-          <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(255,255,255,0.14)" stroke-width="0.8"/>
+        <pattern id="net" width="21" height="21" patternUnits="userSpaceOnUse">
+          <path d="M21 0L0 0 0 21" fill="none" stroke="rgba(255,255,255,0.13)" stroke-width="0.8"/>
         </pattern>
       </defs>
-      <rect x="20" y="10" width="360" height="170" fill="url(#net)" class="goal-net"/>
-      <!-- Posts -->
-      <polyline points="20,185 20,10 380,10 380,185" class="goal-post"/>
-      <line x1="20" y1="185" x2="380" y2="185" stroke="#dde4ee" stroke-width="5"/>
-      <!-- Crossbar shadow -->
-      <line x1="20" y1="10" x2="380" y2="10" stroke="rgba(0,0,0,0.3)" stroke-width="3" stroke-dasharray="0"/>
+      <!-- Net fill -->
+      <rect x="18" y="8" width="384" height="180" fill="url(#net)"/>
+      <!-- Posts & crossbar -->
+      <polyline points="18,195 18,8 402,8 402,195" fill="none" stroke="#dde4ee" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+      <!-- Ground line -->
+      <line x1="18" y1="195" x2="402" y2="195" stroke="#dde4ee" stroke-width="6"/>
     </svg>
+
+    <!-- Clickable zones overlay (sized/positioned by JS) -->
+    <div class="zones-overlay" id="zonesOverlay">
+      <!-- 6 zones: top-left, top-centre, top-right, bottom-left, bottom-centre, bottom-right -->
+      <!-- Populated by JS -->
+    </div>
+
+    <!-- Shoot-here prompt -->
+    <div class="shoot-prompt" id="shootPrompt">⚽ PICK YOUR SPOT!</div>
 
     <!-- Ball -->
     <svg class="ball-svg" id="ballSvg" viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg">
       <circle cx="26" cy="26" r="25" fill="white" stroke="#ccc" stroke-width="1"/>
-      <polygon points="26,6 32,17 22,17" fill="#222"/>
-      <polygon points="42,20 36,28 44,34" fill="#222"/>
-      <polygon points="36,44 26,38 30,28" fill="#222"/>
-      <polygon points="16,44 22,34 10,34" fill="#222"/>
-      <polygon points="10,20 18,28 8,32" fill="#222"/>
+      <polygon points="26,4 31,16 21,16" fill="#222"/>
+      <polygon points="44,18 37,27 45,34" fill="#222"/>
+      <polygon points="37,46 26,39 30,28" fill="#222"/>
+      <polygon points="15,46 22,35 10,34" fill="#222"/>
+      <polygon points="8,18 19,27 11,34" fill="#222"/>
       <circle cx="26" cy="26" r="7" fill="#222"/>
     </svg>
 
     <!-- Result flash -->
-    <div class="result-flash" id="resultFlash">GOAL!</div>
+    <div class="result-flash" id="resultFlash"></div>
   </div>
 
   <!-- Question card -->
   <div class="q-card" id="qCard">
     <div class="q-header">
       <span class="q-num" id="qNum">Q1 / 10</span>
-      <span class="q-topic" id="qTopic">Percentage of an Amount</span>
+      <span class="q-topic" id="qTopic"></span>
     </div>
-    <div class="q-text" id="qText">Loading...</div>
+    <div class="q-text" id="qText"></div>
     <div id="qAnswerArea"></div>
     <div class="q-feedback" id="qFeedback"></div>
   </div>
 
-  <!-- Nav -->
   <div class="nav-row" id="navRow" style="display:none;">
     <button class="nav-btn primary" id="nextBtn" onclick="nextQuestion()">NEXT PENALTY →</button>
   </div>
 
 </div>
 
-<!-- ── FINAL SCREEN ── -->
+<!-- Final screen -->
 <div id="finalScreen">
   <div class="final-card">
     <h2>⚽ FULL TIME!</h2>
@@ -469,9 +458,9 @@ body::before {
 <div class="footer">Mr. Goddard's Penalty Shootout · Percentages · ⚽</div>
 
 <script>
-// ── Questions ────────────────────────────────────────────────────────────────
-// Topics: percentage of amount, % increase/decrease, reverse percentage, % change
-// NO compound interest or depreciation. Based on crack-the-code worksheet style.
+// ─────────────────────────────────────────────────────────────────────────────
+// QUESTIONS
+// ─────────────────────────────────────────────────────────────────────────────
 const QUESTIONS = [
   {
     topic: "Percentage of an Amount",
@@ -485,7 +474,7 @@ const QUESTIONS = [
     topic: "Percentage Increase",
     text: "Increase £45 by 12%.",
     type: "typed",
-    answer: "50.40",
+    answer: "£50.40",
     accepts: ["50.40","£50.40","50.4","£50.4"],
     solution: "£45 × 1.12 = £50.40"
   },
@@ -517,9 +506,9 @@ const QUESTIONS = [
     topic: "Reverse Percentage",
     text: "If 45% is 18 cm, what is 100%?",
     type: "typed",
-    answer: "40",
+    answer: "40 cm",
     accepts: ["40","40cm","40 cm"],
-    solution: "1% = 18 ÷ 45 = 0.4 cm. So 100% = 40 cm"
+    solution: "1% = 18 ÷ 45 = 0.4 cm, so 100% = 40 cm"
   },
   {
     topic: "Percentage Change",
@@ -533,7 +522,7 @@ const QUESTIONS = [
     topic: "Reverse Percentage",
     text: "Zara earns £12.96 per hour after a 10% pay cut. What was her original hourly wage?",
     type: "typed",
-    answer: "14.40",
+    answer: "£14.40",
     accepts: ["14.40","£14.40","14.4","£14.4"],
     solution: "£12.96 ÷ 0.90 = £14.40"
   },
@@ -555,30 +544,121 @@ const QUESTIONS = [
   }
 ];
 
-// ── State ────────────────────────────────────────────────────────────────────
-let current   = 0;
-let answered  = false;
-let results   = []; // {topic, text, studentAns, correct, scored}
-let goals     = 0;
+// ─────────────────────────────────────────────────────────────────────────────
+// ZONE DEFINITIONS  (as % of goal interior: x%, y%, w%, h% within net area)
+// Goal SVG viewBox 420×210; net starts at x=18,y=8, width=384, height=187
+// We define 6 zones: TL, TC, TR, BL, BC, BR
+// ─────────────────────────────────────────────────────────────────────────────
+const ZONES = [
+  { id:'tl', label:'↖', row:'top',    col:'left',   ballL:'18%', ballB:'78%' },
+  { id:'tc', label:'⬆', row:'top',    col:'centre', ballL:'50%', ballB:'82%' },
+  { id:'tr', label:'↗', row:'top',    col:'right',  ballL:'82%', ballB:'78%' },
+  { id:'bl', label:'↙', row:'bottom', col:'left',   ballL:'18%', ballB:'42%' },
+  { id:'bc', label:'⬇', row:'bottom', col:'centre', ballL:'50%', ballB:'38%' },
+  { id:'br', label:'↘', row:'bottom', col:'right',  ballL:'82%', ballB:'42%' },
+];
 
-// ── Init ─────────────────────────────────────────────────────────────────────
+// Miss destinations (ball goes wide/over)
+const MISSES = [
+  { ballL:'-10%', ballB:'30%' },
+  { ballL:'108%', ballB:'25%' },
+  { ballL:'50%',  ballB:'-18%' },
+  { ballL:'-8%',  ballB:'-10%' },
+  { ballL:'105%', ballB:'-12%' },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────────────────────────────────────
+let current  = 0;
+let answered = false;  // true after answer submitted, waiting for shot or miss
+let shooting = false;  // true while ball animation playing
+let goals    = 0;
+let results  = [];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────────────────────────────────────
 function init() {
-  // Build progress dots
+  buildDots();
+  buildZones();
+  renderQuestion(0);
+}
+
+function buildDots() {
   const row = document.getElementById('ballsRow');
   row.innerHTML = '';
   QUESTIONS.forEach((_, i) => {
     const d = document.createElement('div');
     d.className = 'ball-dot' + (i === 0 ? ' current' : '');
     d.id = 'dot' + i;
-    d.textContent = '⚽';
     row.appendChild(d);
   });
-  renderQuestion(0);
 }
 
-// ── Render question ───────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// BUILD ZONE OVERLAY
+// The overlay is sized to match the rendered SVG exactly.
+// Zones are positioned as % of the goal-net interior.
+// ─────────────────────────────────────────────────────────────────────────────
+function buildZones() {
+  const overlay = document.getElementById('zonesOverlay');
+  overlay.innerHTML = '';
+
+  ZONES.forEach(z => {
+    const div = document.createElement('div');
+    div.className = 'goal-zone';
+    div.id = 'zone-' + z.id;
+    div.innerHTML = `<span class="zone-arrow">${z.label}</span>`;
+    div.onclick = () => playerShoot(z);
+
+    // Position: net interior as % of SVG viewBox (420×210)
+    // Net: x=18,y=8, w=384,h=187
+    // Top row: y=8 → 40% of net height; Bottom row: y=40% → 100%
+    const netX = 18, netY = 8, netW = 384, netH = 187;
+    const colMap = { left: 0, centre: 1, right: 2 };
+    const rowMap = { top: 0, bottom: 1 };
+    const col = colMap[z.col], row2 = rowMap[z.row];
+    const zoneW = netW / 3;
+    const zoneH = netH / 2;
+    const zx = netX + col * zoneW;
+    const zy = netY + row2 * zoneH;
+
+    // Convert to % of SVG viewBox
+    div.style.left   = (zx / 420 * 100) + '%';
+    div.style.top    = (zy / 210 * 100) + '%';
+    div.style.width  = (zoneW / 420 * 100) + '%';
+    div.style.height = (zoneH / 210 * 100) + '%';
+
+    overlay.appendChild(div);
+  });
+
+  // Size overlay to match SVG rendered size — use ResizeObserver
+  const svg = document.getElementById('goalSvg');
+  const wrap = document.getElementById('goalWrap');
+
+  function syncOverlay() {
+    const r = svg.getBoundingClientRect();
+    const wr = wrap.getBoundingClientRect();
+    overlay.style.width  = r.width  + 'px';
+    overlay.style.height = r.height + 'px';
+    overlay.style.top    = (r.top - wr.top) + 'px';
+    overlay.style.left   = (r.left - wr.left) + 'px';
+    overlay.style.transform = 'none';
+  }
+
+  syncOverlay();
+  window.addEventListener('resize', syncOverlay);
+  // Also sync after fonts load
+  document.fonts.ready.then(syncOverlay);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// RENDER QUESTION
+// ─────────────────────────────────────────────────────────────────────────────
 function renderQuestion(idx) {
   answered = false;
+  shooting = false;
   const q = QUESTIONS[idx];
 
   document.getElementById('qNum').textContent   = `Q${idx+1} / ${QUESTIONS.length}`;
@@ -586,7 +666,13 @@ function renderQuestion(idx) {
   document.getElementById('qText').textContent  = q.text;
   document.getElementById('qFeedback').className = 'q-feedback';
   document.getElementById('qFeedback').textContent = '';
-  document.getElementById('navRow').style.display = 'none';
+  document.getElementById('navRow').style.display  = 'none';
+
+  // Hide zones & prompt
+  document.getElementById('zonesOverlay').classList.remove('visible');
+  document.getElementById('shootPrompt').classList.remove('visible');
+
+  resetBall();
 
   const area = document.getElementById('qAnswerArea');
   area.innerHTML = '';
@@ -598,7 +684,7 @@ function renderQuestion(idx) {
       const btn = document.createElement('button');
       btn.className = 'opt-btn';
       btn.textContent = opt;
-      btn.onclick = () => submitMCQ(opt, q);
+      btn.onclick = () => submitAnswer(opt === q.answer, opt, q);
       grid.appendChild(btn);
     });
     area.appendChild(grid);
@@ -608,142 +694,171 @@ function renderQuestion(idx) {
     const inp = document.createElement('input');
     inp.className = 'typed-input'; inp.id = 'typedInput';
     inp.placeholder = 'Type your answer…';
-    inp.onkeydown = (e) => { if (e.key === 'Enter') submitTyped(q); };
+    inp.onkeydown = e => { if (e.key === 'Enter') checkTyped(q); };
     const btn = document.createElement('button');
     btn.className = 'shoot-btn'; btn.textContent = '⚽ SHOOT!';
-    btn.onclick = () => submitTyped(q);
+    btn.onclick = () => checkTyped(q);
     row.appendChild(inp); row.appendChild(btn);
     area.appendChild(row);
-    setTimeout(() => inp.focus(), 100);
+    setTimeout(() => inp.focus(), 80);
   }
-
-  // Reset ball
-  resetBall();
 }
 
-// ── MCQ submit ────────────────────────────────────────────────────────────────
-function submitMCQ(chosen, q) {
-  if (answered) return;
-  answered = true;
-  const correct = chosen === q.answer;
-
-  // Colour buttons
-  document.querySelectorAll('.opt-btn').forEach(btn => {
-    btn.disabled = true;
-    if (btn.textContent === q.answer) btn.classList.add('correct');
-    else if (btn.textContent === chosen && !correct) btn.classList.add('wrong');
-  });
-
-  recordResult(q, chosen, correct);
-  animateBall(correct, q.solution);
-}
-
-// ── Typed submit ──────────────────────────────────────────────────────────────
-function submitTyped(q) {
+// ─────────────────────────────────────────────────────────────────────────────
+// ANSWER HANDLING
+// ─────────────────────────────────────────────────────────────────────────────
+function checkTyped(q) {
   if (answered) return;
   const inp = document.getElementById('typedInput');
   const raw = inp.value.trim();
   if (!raw) return;
-
-  // Normalise: strip £$, lowercase, trailing zeros
   const norm = s => s.replace(/[£$\s,]/g,'').toLowerCase().replace(/\.?0+$/,'');
   const correct = q.accepts.some(a => norm(raw) === norm(a));
-
   inp.disabled = true;
   inp.classList.add(correct ? 'correct' : 'wrong');
   document.querySelector('.shoot-btn').disabled = true;
+  submitAnswer(correct, raw, q);
+}
 
+function submitAnswer(correct, studentAns, q) {
+  if (answered) return;
   answered = true;
-  recordResult(q, raw, correct);
-  animateBall(correct, q.solution);
+
+  // Colour MCQ buttons if applicable
+  document.querySelectorAll('.opt-btn').forEach(btn => {
+    btn.disabled = true;
+    if (btn.textContent === q.answer) btn.classList.add('correct');
+    else if (btn.textContent === studentAns && !correct) btn.classList.add('wrong');
+  });
+
+  if (correct) {
+    // Show zones — let student pick their spot
+    document.getElementById('zonesOverlay').classList.add('visible');
+    document.getElementById('shootPrompt').classList.add('visible');
+    // Store q & studentAns for after shot
+    window._pendingShot = { q, studentAns };
+  } else {
+    // Auto miss
+    autoMiss(q, studentAns);
+  }
 }
 
-// ── Record result ─────────────────────────────────────────────────────────────
-function recordResult(q, studentAns, correct) {
-  if (correct) goals++;
-  results.push({ topic: q.topic, text: q.text, studentAns, correctAns: q.answer, scored: correct, solution: q.solution });
-  document.getElementById('scoreDisplay').textContent = goals + (goals === 1 ? ' GOAL' : ' GOALS');
-  updateDot(current, correct);
+// ─────────────────────────────────────────────────────────────────────────────
+// PLAYER CHOOSES A ZONE
+// ─────────────────────────────────────────────────────────────────────────────
+function playerShoot(zone) {
+  if (shooting) return;
+  shooting = true;
+
+  // Hide zones & prompt immediately
+  document.getElementById('zonesOverlay').classList.remove('visible');
+  document.getElementById('shootPrompt').classList.remove('visible');
+
+  const { q, studentAns } = window._pendingShot;
+
+  // Animate ball to chosen zone
+  animateBall(zone.ballL, zone.ballB, true, () => {
+    showResult(true, q, studentAns);
+  });
 }
 
-// ── Update dot ────────────────────────────────────────────────────────────────
-function updateDot(idx, correct) {
-  const dot = document.getElementById('dot' + idx);
-  if (dot) { dot.classList.remove('current'); dot.classList.add(correct ? 'scored' : 'missed'); dot.textContent = correct ? '⚽' : '✕'; }
-  const next = document.getElementById('dot' + (idx + 1));
-  if (next) next.classList.add('current');
+// ─────────────────────────────────────────────────────────────────────────────
+// AUTO MISS (wrong answer)
+// ─────────────────────────────────────────────────────────────────────────────
+function autoMiss(q, studentAns) {
+  shooting = true;
+  const m = MISSES[Math.floor(Math.random() * MISSES.length)];
+  animateBall(m.ballL, m.ballB, false, () => {
+    showResult(false, q, studentAns);
+  });
 }
 
-// ── Animate ball ──────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// BALL ANIMATION
+// ─────────────────────────────────────────────────────────────────────────────
 function resetBall() {
   const ball = document.getElementById('ballSvg');
-  ball.classList.remove('shooting');
-  ball.style.left   = '50%';
-  ball.style.bottom = '-10px';
-  ball.style.transform = 'translateX(-50%) scale(1)';
-  ball.style.opacity = '1';
+  // Force no transition first
+  ball.style.transition = 'none';
+  ball.style.left      = '50%';
+  ball.style.bottom    = '-8px';
+  ball.style.transform = 'translateX(-50%) scale(1) rotate(0deg)';
+  ball.style.opacity   = '1';
+  // Clear result flash
   const flash = document.getElementById('resultFlash');
-  flash.classList.remove('show','goal','miss');
+  flash.className = 'result-flash';
+  flash.textContent = '';
 }
 
-function animateBall(scored, solution) {
-  const ball  = document.getElementById('ballSvg');
+function animateBall(destL, destB, scored, callback) {
+  const ball = document.getElementById('ballSvg');
+  // Trigger reflow so transition fires properly
+  ball.getBoundingClientRect();
+  ball.style.transition = 'left 0.5s cubic-bezier(.15,.8,.3,1), bottom 0.5s cubic-bezier(.15,.8,.3,1), transform 0.5s ease, opacity 0.5s ease';
+  ball.style.left      = destL;
+  ball.style.bottom    = destB;
+  ball.style.transform = `translateX(-50%) scale(${scored ? 0.52 : 0.65}) rotate(${scored ? 540 : 200}deg)`;
+  ball.style.opacity   = scored ? '0.85' : '0.35';
+  setTimeout(callback, 520);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SHOW RESULT
+// ─────────────────────────────────────────────────────────────────────────────
+function showResult(scored, q, studentAns) {
+  shooting = false;
+
   const flash = document.getElementById('resultFlash');
   const fb    = document.getElementById('qFeedback');
-  const goalWrap = document.querySelector('.goal-wrap');
-  const wrapW = goalWrap.offsetWidth;
 
-  // Choose destination inside goal or wide
-  let destLeft, destBottom;
   if (scored) {
-    const corners = [
-      { l: 15, b: 80 }, { l: 80, b: 80 },
-      { l: 15, b: 40 }, { l: 80, b: 40 },
-      { l: 45, b: 90 }
-    ];
-    const c = corners[Math.floor(Math.random() * corners.length)];
-    destLeft   = c.l + '%';
-    destBottom = c.b + '%';
+    goals++;
+    flash.textContent = '⚽ GOAL!';
+    flash.className   = 'result-flash show goal';
+    fb.className      = 'q-feedback correct';
+    fb.textContent    = '✅ Correct! ' + q.solution;
   } else {
-    const misses = [
-      { l: '5%',  b: '-20px' },
-      { l: '92%', b: '30%' },
-      { l: '50%', b: '-30px' }
-    ];
-    const m = misses[Math.floor(Math.random() * misses.length)];
-    destLeft = m.l; destBottom = m.b;
+    flash.textContent = '❌ WIDE!';
+    flash.className   = 'result-flash show miss';
+    fb.className      = 'q-feedback wrong';
+    fb.textContent    = '❌ Incorrect. ' + q.solution;
   }
 
-  ball.classList.add('shooting');
-  ball.style.left      = destLeft;
-  ball.style.bottom    = destBottom;
-  ball.style.transform = `translateX(-50%) scale(${scored ? 0.55 : 0.7}) rotate(${scored ? 360 : 180}deg)`;
-  ball.style.opacity   = scored ? '0.9' : '0.4';
+  results.push({
+    topic: q.topic, text: q.text,
+    studentAns, correctAns: q.answer,
+    scored, solution: q.solution
+  });
 
-  setTimeout(() => {
-    flash.textContent = scored ? '⚽ GOAL!' : '❌ SAVED!';
-    flash.className   = 'result-flash show ' + (scored ? 'goal' : 'miss');
-    fb.className      = 'q-feedback ' + (scored ? 'correct' : 'wrong');
-    fb.textContent    = scored
-      ? '✅ Correct! ' + solution
-      : '❌ Incorrect. ' + solution;
-    document.getElementById('navRow').style.display = 'flex';
-  }, 580);
+  document.getElementById('scoreDisplay').textContent = goals + (goals === 1 ? ' GOAL' : ' GOALS');
+
+  // Update dot
+  const dot = document.getElementById('dot' + current);
+  if (dot) {
+    dot.classList.remove('current');
+    dot.classList.add(scored ? 'scored' : 'missed');
+    dot.textContent = scored ? '⚽' : '✕';
+  }
+  const nextDot = document.getElementById('dot' + (current + 1));
+  if (nextDot) nextDot.classList.add('current');
+
+  document.getElementById('navRow').style.display = 'flex';
 }
 
-// ── Next question ─────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// NAVIGATION
+// ─────────────────────────────────────────────────────────────────────────────
 function nextQuestion() {
   current++;
-  if (current >= QUESTIONS.length) {
-    showFinal();
-  } else {
-    renderQuestion(current);
-  }
+  if (current >= QUESTIONS.length) showFinal();
+  else renderQuestion(current);
 }
 
-// ── Final screen ──────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// FINAL SCREEN
+// ─────────────────────────────────────────────────────────────────────────────
 function showFinal() {
-  document.getElementById('gameArea').style.display  = 'none';
+  document.getElementById('gameArea').style.display = 'none';
   document.getElementById('finalScreen').style.display = 'block';
   document.getElementById('finalScore').innerHTML = `${goals} <span>/ ${QUESTIONS.length}</span>`;
 
@@ -766,15 +881,16 @@ function showFinal() {
       <td class="icon-cell">${r.scored ? '⚽' : '❌'}</td>
       <td><strong>Q${i+1}</strong> — ${r.topic}<br><span style="color:var(--grey);font-size:0.76rem;">${r.text}</span></td>
       <td style="color:${r.scored ? 'var(--green)' : 'var(--red)'}">${r.studentAns}</td>
-      <td style="color:var(--ltgrey)">${r.correctAns}</td>
-    `;
+      <td style="color:var(--ltgrey)">${r.correctAns}</td>`;
     tbody.appendChild(tr);
   });
 
   document.getElementById('finalScreen').scrollIntoView({ behavior: 'smooth' });
 }
 
-// ── Generate submission ────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// SUBMISSION
+// ─────────────────────────────────────────────────────────────────────────────
 function generateSummary() {
   const name = document.getElementById('playerName').value.trim() || '(Name not entered)';
   const now  = new Date().toLocaleString('en-GB', { dateStyle:'short', timeStyle:'short' });
@@ -794,8 +910,7 @@ function generateSummary() {
   L.push('  QUESTION BREAKDOWN');
   L.push('─────────────────────────────────────────────────────────');
   results.forEach((r, i) => {
-    const icon = r.scored ? '⚽ GOAL' : '❌ MISS';
-    L.push(`  ${icon}  Q${i+1} [${r.topic}]`);
+    L.push(`  ${r.scored ? '⚽ GOAL' : '❌ MISS'}  Q${i+1} [${r.topic}]`);
     L.push(`  Question : ${r.text}`);
     L.push(`  Your ans : ${r.studentAns}`);
     L.push(`  Correct  : ${r.correctAns}`);
@@ -811,7 +926,6 @@ function generateSummary() {
   setTimeout(() => document.getElementById('summaryText').scrollIntoView({ behavior:'smooth', block:'nearest' }), 100);
 }
 
-// ── Copy ──────────────────────────────────────────────────────────────────────
 function copySummary() {
   const ta = document.getElementById('summaryText');
   ta.select(); ta.setSelectionRange(0, 99999);
@@ -822,7 +936,7 @@ function copySummary() {
   setTimeout(() => { c.style.display = 'none'; }, 3000);
 }
 
-// ── Start ─────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
 init();
 </script>
 </body>
