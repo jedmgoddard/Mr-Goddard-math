@@ -1,0 +1,762 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StreamWave — Teacher Mark Scheme</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+
+:root {
+  --bg:    #F0F4FF;
+  --white: #FFFFFF;
+  --navy:  #0D1B4B;
+  --teal:  #00A896;
+  --green: #059669;
+  --red:   #DC2626;
+  --amber: #D97706;
+  --ink:   #1A1A2E;
+  --mid:   #4A5568;
+  --dim:   #718096;
+  --rule:  #E2E8F0;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; -webkit-font-smoothing: antialiased; }
+
+/* ── PASSWORD SCREEN ── */
+#pwScreen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  background: var(--navy);
+  position: relative;
+  overflow: hidden;
+}
+
+#pwScreen::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(rgba(0,168,150,0.05) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(0,168,150,0.05) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+.pw-card {
+  position: relative;
+  z-index: 1;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 20px;
+  padding: 48px 40px;
+  max-width: 420px;
+  width: 100%;
+  text-align: center;
+}
+
+.lock-icon {
+  width: 64px;
+  height: 64px;
+  background: rgba(0,168,150,0.15);
+  border: 1px solid rgba(0,168,150,0.3);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  margin: 0 auto 24px;
+}
+
+.pw-card h1 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 6px;
+  letter-spacing: -0.01em;
+}
+
+.pw-card p {
+  font-size: 13px;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 32px;
+  line-height: 1.6;
+}
+
+.pw-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+  text-align: left;
+  margin-bottom: 8px;
+}
+
+.pw-input-wrap { position: relative; margin-bottom: 12px; }
+
+.pw-input {
+  width: 100%;
+  padding: 14px 48px 14px 16px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 10px;
+  color: white;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.pw-input:focus { border-color: var(--teal); }
+.pw-input.error { border-color: var(--red); animation: shake 0.3s ease; }
+.pw-input::placeholder { color: rgba(255,255,255,0.2); letter-spacing: 0.04em; }
+
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  20%,60% { transform: translateX(-6px); }
+  40%,80% { transform: translateX(6px); }
+}
+
+.eye-btn {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: rgba(255,255,255,0.3);
+  font-size: 16px;
+  padding: 4px;
+  transition: color 0.15s;
+}
+
+.eye-btn:hover { color: rgba(255,255,255,0.7); }
+
+.pw-error {
+  font-size: 12px;
+  color: #FCA5A5;
+  text-align: left;
+  margin-bottom: 12px;
+  min-height: 16px;
+}
+
+.pw-submit {
+  width: 100%;
+  padding: 14px;
+  background: var(--teal);
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  letter-spacing: 0.01em;
+}
+
+.pw-submit:hover { background: #008F7E; transform: translateY(-1px); }
+
+.pw-meta {
+  margin-top: 20px;
+  font-size: 11px;
+  color: rgba(255,255,255,0.2);
+}
+
+/* ── TEACHER APP ── */
+#teacherApp { display: none; }
+
+.app-wrap {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px 16px 80px;
+}
+
+/* Header */
+.app-header {
+  background: var(--navy);
+  border-radius: 14px;
+  padding: 24px 28px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.ah-left h1 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: white;
+  letter-spacing: -0.01em;
+}
+
+.ah-left p { font-size: 12px; color: rgba(255,255,255,0.4); margin-top: 3px; }
+
+.teacher-badge {
+  background: #DC2626;
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border-radius: 6px;
+}
+
+/* Team selector row */
+.team-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.tr-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--mid);
+  white-space: nowrap;
+}
+
+.team-pills {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.tpill {
+  padding: 6px 14px;
+  border: 1.5px solid var(--rule);
+  border-radius: 999px;
+  background: white;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--mid);
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.tpill:hover { border-color: var(--teal); color: var(--teal); }
+.tpill.active { background: var(--navy); border-color: var(--navy); color: white; }
+
+.view-toggle {
+  margin-left: auto;
+  display: flex;
+  gap: 6px;
+}
+
+.vt-btn {
+  padding: 6px 14px;
+  border: 1.5px solid var(--rule);
+  border-radius: 8px;
+  background: white;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--mid);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.vt-btn.active { background: var(--navy); border-color: var(--navy); color: white; }
+
+/* Mark scheme cards */
+.ms-card {
+  background: white;
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  overflow: hidden;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.ms-header {
+  padding: 13px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.ms-num {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+}
+
+.ms-header h3 { font-size: 14px; font-weight: 700; color: var(--ink); flex: 1; }
+
+.ms-body { padding: 0; }
+
+.ms-row {
+  display: grid;
+  grid-template-columns: 44px 1fr 180px;
+  gap: 0;
+  border-bottom: 1px solid var(--rule);
+  align-items: stretch;
+}
+
+.ms-row:last-child { border-bottom: none; }
+
+.ms-part {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 8px;
+  background: #F8FAFF;
+  border-right: 1px solid var(--rule);
+}
+
+.ms-part span {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  color: white;
+  padding: 3px 7px;
+  border-radius: 4px;
+}
+
+.ms-ans {
+  padding: 12px 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--ink);
+  line-height: 1.6;
+  border-right: 1px solid var(--rule);
+}
+
+.ms-note {
+  padding: 12px 14px;
+  font-size: 11px;
+  color: var(--dim);
+  line-height: 1.5;
+  font-style: italic;
+  background: #FFFBF0;
+}
+
+/* Lesson divider */
+.lesson-div {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 28px 0 16px;
+}
+
+.ld-line { flex: 1; height: 1px; background: var(--rule); }
+
+.ld-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--dim);
+  white-space: nowrap;
+}
+
+/* Colours */
+.c1 { background: #7C3AED; }
+.c2 { background: #BE185D; }
+.c3 { background: #DC2626; }
+.c4 { background: #059669; }
+.c5 { background: #D97706; }
+
+/* All teams table */
+.all-table-wrap {
+  background: white;
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  margin-top: 8px;
+}
+
+.all-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11.5px;
+}
+
+.all-table th {
+  background: var(--navy);
+  color: rgba(255,255,255,0.8);
+  padding: 10px 12px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.all-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--rule);
+  vertical-align: top;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--ink);
+  line-height: 1.55;
+}
+
+.all-table tr:last-child td { border-bottom: none; }
+.all-table tr:nth-child(even) td { background: #F8FAFF; }
+
+.tn-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: var(--navy);
+  color: white;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 12px;
+}
+
+/* Section heading */
+.section-h {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+@media (max-width:600px) {
+  .ms-row { grid-template-columns: 38px 1fr; }
+  .ms-note { display: none; }
+  .team-pills { gap: 4px; }
+  .tpill { padding: 5px 10px; }
+}
+
+@media print {
+  #pwScreen { display: none !important; }
+  #teacherApp { display: block !important; }
+  .team-row, .view-toggle { display: none !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════ PASSWORD SCREEN ═══════════ -->
+<div id="pwScreen">
+  <div class="pw-card">
+    <div class="lock-icon">🔐</div>
+    <h1>Teacher Access</h1>
+    <p>StreamWave · Crack the Algorithm<br>Full mark scheme — restricted access</p>
+
+    <div class="pw-label">Password</div>
+    <div class="pw-input-wrap">
+      <input
+        class="pw-input"
+        id="pwInput"
+        type="password"
+        placeholder="Enter password"
+        autocomplete="off"
+        onkeydown="if(event.key==='Enter') checkPw()">
+      <button class="eye-btn" id="eyeBtn" onclick="toggleEye()" title="Show/hide">👁</button>
+    </div>
+    <div class="pw-error" id="pwError"></div>
+    <button class="pw-submit" onclick="checkPw()">Unlock →</button>
+    <p class="pw-meta">Mr. Goddard's Maths · IGCSE Year 10</p>
+  </div>
+</div>
+
+<!-- ═══════════ TEACHER APP ═══════════ -->
+<div id="teacherApp">
+  <div class="app-wrap">
+
+    <div class="app-header">
+      <div class="ah-left">
+        <h1>Crack the Algorithm — Mark Scheme</h1>
+        <p>StreamWave Data Science Project · Year 10 IGCSE Higher · Mr. Goddard's Maths</p>
+      </div>
+      <div class="teacher-badge">🔐 Teacher Only</div>
+    </div>
+
+    <div class="team-row">
+      <span class="tr-label">Team:</span>
+      <div class="team-pills" id="teamPills"></div>
+      <div class="view-toggle">
+        <button class="vt-btn active" id="btnSingle" onclick="setView('single')">Single team</button>
+        <button class="vt-btn" id="btnAll" onclick="setView('all')">All teams</button>
+      </div>
+    </div>
+
+    <div id="msContent"></div>
+
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+// PASSWORD
+// ══════════════════════════════════════════════════════════
+var CORRECT = 'mrgmaths';
+var attempts = 0;
+
+function checkPw() {
+  var val = document.getElementById('pwInput').value;
+  var inp = document.getElementById('pwInput');
+  var err = document.getElementById('pwError');
+
+  if(val === CORRECT) {
+    document.getElementById('pwScreen').style.display = 'none';
+    document.getElementById('teacherApp').style.display = 'block';
+    init();
+  } else {
+    attempts++;
+    inp.classList.add('error');
+    inp.value = '';
+    setTimeout(function(){ inp.classList.remove('error'); }, 400);
+    if(attempts >= 3) {
+      err.textContent = 'Incorrect. If you\'ve forgotten the password, contact Mr. Goddard.';
+    } else {
+      err.textContent = 'Incorrect password. Please try again.';
+    }
+    inp.focus();
+  }
+}
+
+function toggleEye() {
+  var inp = document.getElementById('pwInput');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+
+// ══════════════════════════════════════════════════════════
+// DATA — identical to student file
+// ══════════════════════════════════════════════════════════
+var T1 = [
+  {a:3,b:7,p:4,c:2,d:5,  N:19, x:3,  fg_text:'(6x+23)/(2x-5)',  finv:'(x-7)/3',  domain:'5/2'},
+  {a:4,b:5,p:3,c:1,d:3,  N:17, x:4,  fg_text:'(4x+17)/(x-3)',   finv:'(x-5)/4',  domain:'3'},
+  {a:2,b:6,p:5,c:1,d:2,  N:16, x:3,  fg_text:'(2x+22)/(x-2)',   finv:'(x-6)/2',  domain:'2'},
+  {a:5,b:3,p:2,c:2,d:7,  N:13, x:4,  fg_text:'(10x+29)/(2x-7)', finv:'(x-3)/5',  domain:'7/2'},
+  {a:3,b:8,p:6,c:3,d:5,  N:26, x:2,  fg_text:'(9x+58)/(3x-5)',  finv:'(x-8)/3',  domain:'5/3'},
+  {a:6,b:4,p:3,c:1,d:4,  N:22, x:5,  fg_text:'(6x+28)/(x-4)',   finv:'(x-4)/6',  domain:'4'},
+  {a:2,b:9,p:4,c:2,d:5,  N:17, x:3,  fg_text:'(4x+43)/(2x-5)',  finv:'(x-9)/2',  domain:'5/2'},
+  {a:4,b:3,p:5,c:1,d:3,  N:23, x:4,  fg_text:'(4x+23)/(x-3)',   finv:'(x-3)/4',  domain:'3'},
+  {a:5,b:6,p:2,c:2,d:9,  N:16, x:5,  fg_text:'(10x+57)/(2x-9)', finv:'(x-6)/5',  domain:'9/2'},
+  {a:3,b:5,p:7,c:1,d:3,  N:26, x:4,  fg_text:'(3x+26)/(x-3)',   finv:'(x-5)/3',  domain:'3'},
+];
+
+var T2 = [
+  {a:2,h:4,k:14, A_coef:2,B_coef:16,C_const:-18, roots:'4 +/- sqrt(7), approx 1.35 and 6.65'},
+  {a:3,h:3,k:15, A_coef:3,B_coef:18,C_const:-12, roots:'3 +/- sqrt(5), approx 0.76 and 5.24'},
+  {a:2,h:5,k:18, A_coef:2,B_coef:20,C_const:-32, roots:'x = 2 and x = 8 (exact)'},
+  {a:3,h:4,k:12, A_coef:3,B_coef:24,C_const:-36, roots:'x = 2 and x = 6 (exact)'},
+  {a:2,h:3,k:10, A_coef:2,B_coef:12,C_const:-8,  roots:'3 +/- sqrt(5), approx 0.76 and 5.24'},
+  {a:4,h:3,k:16, A_coef:4,B_coef:24,C_const:-20, roots:'x = 1 and x = 5 (exact)'},
+  {a:2,h:6,k:20, A_coef:2,B_coef:24,C_const:-52, roots:'6 +/- sqrt(10), approx 2.84 and 9.16'},
+  {a:3,h:2,k:9,  A_coef:3,B_coef:12,C_const:-3,  roots:'2 +/- sqrt(3), approx 0.27 and 3.73'},
+  {a:2,h:4,k:16, A_coef:2,B_coef:16,C_const:-16, roots:'4 +/- 2sqrt(2), approx 1.17 and 6.83'},
+  {a:5,h:3,k:20, A_coef:5,B_coef:30,C_const:-25, roots:'x = 1 and x = 5 (exact)'},
+];
+
+var T3 = [
+  {p:12,q:-36,r:40,  A:2,B:6, U_min:8,  U_max:40},
+  {p:9, q:-15,r:20,  A:1,B:5, U_min:13, U_max:45},
+  {p:12,q:-36,r:55,  A:2,B:6, U_min:23, U_max:55},
+  {p:9, q:-15,r:25,  A:1,B:5, U_min:18, U_max:50},
+  {p:15,q:-63,r:109, A:3,B:7, U_min:28, U_max:60},
+  {p:9, q:-24,r:54,  A:2,B:4, U_min:34, U_max:38},
+  {p:6, q:-9, r:42,  A:1,B:3, U_min:38, U_max:42},
+  {p:12,q:-36,r:65,  A:2,B:6, U_min:33, U_max:65},
+  {p:9, q:-15,r:12,  A:1,B:5, U_min:5,  U_max:37},
+  {p:9, q:-24,r:44,  A:2,B:4, U_min:24, U_max:28},
+];
+
+var T4 = [
+  {K:40,M:500,  P:20,F:10,rev:160},
+  {K:39,M:369,  P:15,F:12,rev:120},
+  {K:34,M:388,  P:18,F:8, rev:144},
+  {K:35,M:650,  P:25,F:5, rev:200},
+  {K:44,M:452,  P:16,F:14,rev:128},
+  {K:34,M:520,  P:22,F:6, rev:176},
+  {K:46,M:452,  P:14,F:16,rev:112},
+  {K:32,M:592,  P:24,F:4, rev:192},
+  {K:44,M:544,  P:20,F:12,rev:160},
+  {K:32,M:788,  P:28,F:2, rev:224},
+];
+
+var T5 = [
+  {k:3,r:2,s:3, num_text:'3x + 6x',   den_text:'x - x - 6',   simp:'3x/(x-3)',  undef1:3,  undef2:-2, x_c1:'-3/2 = -1.5'},
+  {k:4,r:3,s:2, num_text:'4x + 12x',  den_text:'x + x - 6',   simp:'4x/(x-2)',  undef1:2,  undef2:-3, x_c1:'-2/3 approx -0.67'},
+  {k:2,r:4,s:3, num_text:'2x + 8x',   den_text:'x + x - 12',  simp:'2x/(x-3)',  undef1:3,  undef2:-4, x_c1:'-3'},
+  {k:3,r:1,s:4, num_text:'3x + 3x',   den_text:'x - 3x - 4',  simp:'3x/(x-4)',  undef1:4,  undef2:-1, x_c1:'-2'},
+  {k:5,r:2,s:3, num_text:'5x + 10x',  den_text:'x - x - 6',   simp:'5x/(x-3)',  undef1:3,  undef2:-2, x_c1:'-3/4 = -0.75'},
+  {k:2,r:3,s:5, num_text:'2x + 6x',   den_text:'x - 2x - 15', simp:'2x/(x-5)',  undef1:5,  undef2:-3, x_c1:'-5'},
+  {k:4,r:1,s:3, num_text:'4x + 4x',   den_text:'x - 2x - 3',  simp:'4x/(x-3)',  undef1:3,  undef2:-1, x_c1:'-1'},
+  {k:3,r:4,s:2, num_text:'3x + 12x',  den_text:'x + 2x - 8',  simp:'3x/(x-2)',  undef1:2,  undef2:-4, x_c1:'-1'},
+  {k:2,r:5,s:4, num_text:'2x + 10x',  den_text:'x + x - 20',  simp:'2x/(x-4)',  undef1:4,  undef2:-5, x_c1:'-4'},
+  {k:6,r:2,s:4, num_text:'6x + 12x',  den_text:'x - 2x - 8',  simp:'6x/(x-4)',  undef1:4,  undef2:-2, x_c1:'-4/5 = -0.8'},
+];
+
+var TASK_NAMES = [
+  'The Recommendation Score',
+  'Maximising Ad Revenue',
+  'Peak Traffic Analysis',
+  'Subscription Growth',
+  'Server Cost Modelling',
+];
+
+var COLORS = ['c1','c2','c3','c4','c5'];
+var ACCENTS = ['#7C3AED','#BE185D','#DC2626','#059669','#D97706'];
+
+var currentTeam = 0;
+var currentView = 'single';
+
+function init() {
+  var pills = document.getElementById('teamPills');
+  for(var i=0; i<10; i++) {
+    var btn = document.createElement('button');
+    btn.className = 'tpill' + (i===0?' active':'');
+    btn.textContent = i+1;
+    btn.dataset.idx = i;
+    btn.onclick = (function(idx) {
+      return function() {
+        document.querySelectorAll('.tpill').forEach(function(p){ p.classList.remove('active'); });
+        this.classList.add('active');
+        currentTeam = idx;
+        renderContent();
+      };
+    })(i);
+    pills.appendChild(btn);
+  }
+  renderContent();
+}
+
+function setView(v) {
+  currentView = v;
+  document.getElementById('btnSingle').classList.toggle('active', v==='single');
+  document.getElementById('btnAll').classList.toggle('active', v==='all');
+  renderContent();
+}
+
+function renderContent() {
+  if(currentView === 'all') {
+    renderAllTeams();
+  } else {
+    renderSingleTeam(currentTeam);
+  }
+}
+
+function ld(label, title) {
+  return '<div class="lesson-div"><div class="ld-line"></div><div class="ld-label">'+label+' — '+title+'</div><div class="ld-line"></div></div>';
+}
+
+function msCard(taskNum, rows) {
+  var rowsHtml = rows.map(function(r) {
+    return '<div class="ms-row">' +
+      '<div class="ms-part"><span style="background:'+ACCENTS[taskNum-1]+'">'+r.part+'</span></div>' +
+      '<div class="ms-ans">'+r.ans+'</div>' +
+      '<div class="ms-note">'+( r.note||'')+'</div>' +
+    '</div>';
+  }).join('');
+
+  return '<div class="ms-card">' +
+    '<div class="ms-header">' +
+      '<div class="ms-num '+COLORS[taskNum-1]+'">0'+taskNum+'</div>' +
+      '<h3>'+TASK_NAMES[taskNum-1]+'</h3>' +
+    '</div>' +
+    '<div class="ms-body">'+rowsHtml+'</div>' +
+  '</div>';
+}
+
+function renderSingleTeam(idx) {
+  var t1=T1[idx], t2=T2[idx], t3=T3[idx], t4=T4[idx], t5=T5[idx];
+  var d2_at_A = -6*t3.A + 2*t3.p;
+  var d2_at_B = -6*t3.B + 2*t3.p;
+  var dU_coef = 2*t3.p;
+  var lossX = (t2.h - Math.sqrt(t2.k/t2.a)).toFixed(2);
+  var discVal = 16*t4.K*t4.K - 20*(t4.K*t4.K - t4.M);
+  var sqrtDisc = Math.sqrt(discVal);
+  var F2 = ((4*t4.K + sqrtDisc)/10).toFixed(1);
+
+  var html = ld('LESSON 1', 'Building the Models');
+
+  html += msCard(1, [
+    {part:'(a)', ans:'x = '+t1.domain+' (denominator = 0 when '+t1.c+'x - '+t1.d+' = 0)', note:'1 mark'},
+    {part:'(b)', ans:'fg(x) = '+t1.a+' x ['+t1.p+'/('+t1.c+'x-'+t1.d+')] + '+t1.b+' = '+t1.fg_text, note:'Show combining fractions'},
+    {part:'(c)', ans:'Set fg(x) = '+t1.N+', solve algebraically: x = '+t1.x, note:'M1 equation set up, A1 answer'},
+    {part:'(d)', ans:'f_inv(x) = '+t1.finv+'    (swap x & y, rearrange for y)', note:'Context: reverses popularity boost'},
+  ]);
+
+  html += msCard(2, [
+    {part:'(a)', ans:'R = -'+t2.a+'(x - '+t2.h+')^2 + '+t2.k, note:'Must show bracket expansion step'},
+    {part:'(b)', ans:'x = '+t2.h+'M listeners,  max revenue = £'+t2.k+'k', note:'Both values required'},
+    {part:'(c)', ans:'R = 0: x = '+t2.h+' +/- sqrt('+t2.k+'/'+t2.a+').  Loss when x < '+lossX+'M (approx)', note:t2.roots},
+    {part:'(d)', ans:'Downward parabola, vertex ('+t2.h+', '+t2.k+'), roots: '+t2.roots, note:'B1 shape, B1 vertex, B1 roots'},
+  ]);
+
+  html += msCard(3, [
+    {part:'(a)', ans:'dU/dt = -3t^2 + '+dU_coef+'t + ('+t3.q+')', note:'1 mark per term'},
+    {part:'(b)', ans:'-3(t - '+t3.A+')(t - '+t3.B+') = 0   =>   t = '+t3.A+' or t = '+t3.B, note:'Both values, context (am)'},
+    {part:'(c)', ans:'d2U/dt2 = -6t + '+dU_coef+'.   t='+t3.A+': d2 = '+d2_at_A+' > 0 (MIN).   t='+t3.B+': d2 = '+d2_at_B+' < 0 (MAX)', note:'Must use second derivative'},
+    {part:'(d)', ans:'Peak = '+t3.U_max+'M users at t = '+t3.B+'h after midnight ('+t3.B+'am).  Schedule server capacity for this time.', note:'Context mark required'},
+  ]);
+
+  html += ld('LESSON 2', 'Advanced Analysis & Pitch');
+
+  html += msCard(4, [
+    {part:'(a)', ans:'P = '+t4.K+'-2F  =>  ('+t4.K+'-2F)^2 + F^2 = '+t4.M+'  =>  5F^2 - '+4*t4.K+'F + '+(t4.K*t4.K-t4.M)+' = 0\nF = '+t4.F+' or F = '+F2, note:'M1 sub, M1 expand, M1 factorise, A2 solutions'},
+    {part:'(b)', ans:'F = '+t4.F+', P = '+t4.P+'.  Reject F = '+F2+' as P becomes negative.', note:'Context sentence required'},
+    {part:'(c)', ans:'Revenue = 8 x '+t4.P+' = £'+t4.rev+' per month', note:''},
+  ]);
+
+  html += msCard(5, [
+    {part:'(a)', ans:'Num: '+t5.k+'x(x + '+t5.r+')   Den: (x - '+t5.s+')(x + '+t5.r+')\nSimplified: C = '+t5.simp, note:'Must show full factorisation'},
+    {part:'(b)', ans:'C undefined at x = '+t5.undef1+' and x = '+t5.undef2+'.  Context: platform cannot operate at exactly '+t5.undef1+'M users.', note:'Both values + context'},
+    {part:'(c)', ans:t5.simp+' = 1  =>  '+t5.k+'x = x - '+t5.s+'  =>  x = '+t5.x_c1+'\nNegative — no physically valid solution.', note:'Award M marks for correct algebra even if context missed'},
+  ]);
+
+  document.getElementById('msContent').innerHTML = html;
+}
+
+function renderAllTeams() {
+  var rows = T1.map(function(t, i) {
+    var t2=T2[i], t3=T3[i], t4=T4[i], t5=T5[i];
+    return '<tr>' +
+      '<td><span class="tn-badge">'+(i+1)+'</span></td>' +
+      '<td>f='+t.a+'x+'+t.b+'<br>g='+t.p+'/('+t.c+'x-'+t.d+')<br>fg='+t.N+' => x='+t.x+'<br>f_inv='+t.finv+'</td>' +
+      '<td>R=-'+t2.A_coef+'x^2+'+t2.B_coef+'x+('+t2.C_const+')<br>Vertex('+t2.h+','+t2.k+')<br>Loss below x~'+( t2.h - Math.sqrt(t2.k/t2.a)).toFixed(2)+'M</td>' +
+      '<td>U=-t^3+'+t3.p+'t^2+('+t3.q+'t)+'+t3.r+'<br>min t='+t3.A+'(U='+t3.U_min+')<br>max t='+t3.B+'(U='+t3.U_max+')</td>' +
+      '<td>P+2F='+t4.K+'<br>P^2+F^2='+t4.M+'<br>P='+t4.P+', F='+t4.F+'<br>Rev=£'+t4.rev+'</td>' +
+      '<td>'+t5.simp+'<br>undef: x='+t5.undef1+','+t5.undef2+'<br>C=1: x='+t5.x_c1+'</td>' +
+    '</tr>';
+  }).join('');
+
+  var html = '<div class="section-h">All 10 Teams — Quick Reference</div>' +
+    '<div class="all-table-wrap">' +
+    '<table class="all-table"><thead><tr>' +
+      '<th>Team</th>' +
+      '<th>Task 1: Functions</th>' +
+      '<th>Task 2: Revenue</th>' +
+      '<th>Task 3: Traffic</th>' +
+      '<th>Task 4: Subscriptions</th>' +
+      '<th>Task 5: Cost</th>' +
+    '</tr></thead><tbody>'+rows+'</tbody></table></div>';
+
+  document.getElementById('msContent').innerHTML = html;
+}
+</script>
+</body>
+</html>
