@@ -1,0 +1,1092 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StreamWave — Crack the Algorithm</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+
+:root {
+  --bg:     #F0F4FF;
+  --white:  #FFFFFF;
+  --navy:   #0D1B4B;
+  --teal:   #00A896;
+  --pink:   #D63AF9;
+  --amber:  #F59E0B;
+  --green:  #059669;
+  --red:    #DC2626;
+  --purp:   #7C3AED;
+  --ink:    #1A1A2E;
+  --mid:    #4A5568;
+  --dim:    #718096;
+  --rule:   #E2E8F0;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── LANDING ── */
+#landing {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  background: var(--navy);
+  position: relative;
+  overflow: hidden;
+}
+
+#landing::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(rgba(0,168,150,0.06) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(0,168,150,0.06) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+.landing-inner { position: relative; z-index: 1; text-align: center; max-width: 520px; }
+
+.sw-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(0,168,150,0.12);
+  border: 1px solid rgba(0,168,150,0.3);
+  border-radius: 999px;
+  padding: 8px 20px;
+  margin-bottom: 32px;
+}
+
+.sw-logo span { font-size: 13px; font-weight: 600; color: var(--teal); letter-spacing: 0.08em; }
+
+.land-title {
+  font-size: clamp(2rem, 6vw, 3.2rem);
+  font-weight: 700;
+  color: #FFFFFF;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin-bottom: 12px;
+}
+
+.land-title em { color: var(--teal); font-style: normal; }
+
+.land-sub {
+  font-size: 1rem;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 48px;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+.team-selector {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 16px;
+  padding: 32px;
+  text-align: left;
+}
+
+.ts-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 10px;
+}
+
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.team-btn {
+  aspect-ratio: 1;
+  border: 1.5px solid rgba(255,255,255,0.15);
+  border-radius: 10px;
+  background: rgba(255,255,255,0.04);
+  color: rgba(255,255,255,0.6);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.team-btn:hover { border-color: var(--teal); color: var(--teal); background: rgba(0,168,150,0.08); }
+.team-btn.selected { border-color: var(--teal); color: var(--navy); background: var(--teal); }
+
+.teacher-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  padding: 10px 0;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  margin-top: 4px;
+}
+
+.teacher-toggle input { display: none; }
+
+.toggle-track {
+  width: 36px; height: 20px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 999px;
+  position: relative;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.toggle-thumb {
+  position: absolute;
+  top: 3px; left: 3px;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.5);
+  transition: all 0.2s;
+}
+
+.teacher-toggle input:checked + .toggle-track { background: var(--teal); }
+.teacher-toggle input:checked + .toggle-track .toggle-thumb { left: 19px; background: white; }
+
+.teacher-toggle span { font-size: 13px; color: rgba(255,255,255,0.5); }
+
+.go-btn {
+  width: 100%;
+  padding: 14px;
+  background: var(--teal);
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  margin-top: 16px;
+  letter-spacing: 0.01em;
+}
+
+.go-btn:hover { background: #008F7E; transform: translateY(-1px); }
+.go-btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+
+/* ── WORKSHEET ── */
+#worksheet { display: none; }
+
+.sheet-wrap {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 24px 16px 80px;
+}
+
+/* ── SHEET HEADER ── */
+.sheet-header {
+  background: var(--navy);
+  border-radius: 14px;
+  padding: 28px 32px;
+  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.sheet-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(0,168,150,0.15) 0%, transparent 60%);
+}
+
+.sh-inner { position: relative; z-index: 1; display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+
+.sh-left h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: white;
+  letter-spacing: -0.02em;
+  margin-bottom: 4px;
+}
+
+.sh-left p { font-size: 13px; color: rgba(255,255,255,0.5); }
+
+.team-badge {
+  background: var(--teal);
+  color: white;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 8px;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.nav-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.back-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--mid);
+  background: none;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  padding: 8px 14px;
+  cursor: pointer;
+  background: white;
+  transition: all 0.15s;
+}
+
+.back-btn:hover { border-color: var(--teal); color: var(--teal); }
+
+.print-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  font-weight: 600;
+  color: white;
+  background: var(--navy);
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.print-btn:hover { background: #1B2A5A; }
+
+/* ── LESSON DIVIDER ── */
+.lesson-div {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 32px 0 20px;
+}
+
+.lesson-div .ld-line { flex: 1; height: 1px; background: var(--rule); }
+
+.lesson-div .ld-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--dim);
+  white-space: nowrap;
+}
+
+/* ── TASK CARD ── */
+.task-card {
+  background: white;
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.task-header {
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.task-num {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+}
+
+.task-header-text { flex: 1; }
+.task-header-text h3 { font-size: 14px; font-weight: 700; color: var(--ink); }
+.task-header-text p { font-size: 12px; color: var(--dim); margin-top: 1px; }
+
+.task-marks {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--dim);
+  background: var(--bg);
+  padding: 4px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.task-body {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  border-top: 1px solid var(--rule);
+}
+
+.maths-used {
+  background: #F8FAFF;
+  border-right: 1px solid var(--rule);
+  padding: 16px;
+}
+
+.mu-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin-bottom: 10px;
+}
+
+.mu-item {
+  font-size: 12px;
+  color: var(--mid);
+  padding: 3px 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mu-item::before {
+  content: '';
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent-color, var(--teal));
+  flex-shrink: 0;
+}
+
+.task-content {
+  padding: 20px 24px;
+}
+
+.task-intro {
+  font-size: 14px;
+  color: var(--mid);
+  margin-bottom: 16px;
+  line-height: 1.6;
+}
+
+.formula-box {
+  background: #F0F7FF;
+  border: 1px solid #C7DCFF;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin: 12px 0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1A3A6B;
+  text-align: center;
+  line-height: 1.8;
+}
+
+.formula-box.split {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  text-align: left;
+}
+
+.formula-box .f-label {
+  font-size: 10px;
+  font-weight: 400;
+  color: #4A6A9A;
+  font-family: 'Inter', sans-serif;
+  display: block;
+  margin-top: 2px;
+}
+
+.question-list { margin-top: 16px; }
+
+.q-item {
+  display: flex;
+  gap: 10px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--rule);
+  font-size: 13.5px;
+  color: var(--ink);
+  line-height: 1.5;
+  align-items: flex-start;
+}
+
+.q-item:last-child { border-bottom: none; }
+
+.q-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  color: white;
+  background: var(--accent-color, var(--teal));
+  padding: 2px 8px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* Answer area */
+.answer-area {
+  background: #F6FBF9;
+  border-top: 1px solid #C6E6DC;
+  padding: 14px 20px;
+}
+
+.aa-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--green);
+  margin-bottom: 10px;
+}
+
+.answer-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.ans-line {
+  border-bottom: 1px solid #C6E6DC;
+  height: 34px;
+}
+
+/* ── TEACHER VIEW ── */
+.teacher-banner {
+  background: #FFF1F2;
+  border: 1.5px solid #FCA5A5;
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #991B1B;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.answers-grid {
+  display: grid;
+  gap: 16px;
+}
+
+.ans-card {
+  background: white;
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+}
+
+.ans-card-header {
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.ans-card-header h3 { font-size: 14px; font-weight: 700; color: var(--ink); flex: 1; }
+
+.ans-body { padding: 16px 18px; }
+
+.ans-row {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--rule);
+  align-items: start;
+}
+
+.ans-row:last-child { border-bottom: none; }
+
+.ans-part {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  color: white;
+  background: var(--green);
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-align: center;
+  margin-top: 2px;
+}
+
+.ans-text {
+  font-size: 13px;
+  color: var(--ink);
+  line-height: 1.55;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.ans-note {
+  font-size: 11px;
+  color: var(--dim);
+  margin-top: 3px;
+  font-family: 'Inter', sans-serif;
+  font-style: italic;
+}
+
+/* ── TEACHER: ALL TEAMS TABLE ── */
+.all-teams-section { margin-top: 32px; }
+
+.ats-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.teams-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--rule);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+}
+
+.teams-table th {
+  background: var(--navy);
+  color: rgba(255,255,255,0.85);
+  padding: 10px 12px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
+
+.teams-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--rule);
+  vertical-align: top;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11.5px;
+  color: var(--ink);
+  line-height: 1.5;
+}
+
+.teams-table tr:last-child td { border-bottom: none; }
+.teams-table tr:nth-child(even) td { background: #F8FAFF; }
+
+.team-num-cell {
+  font-weight: 700;
+  color: white;
+  text-align: center;
+  border-radius: 6px;
+  padding: 3px 8px;
+  display: inline-block;
+}
+
+/* ── COLOURS per task ── */
+.c1 { background: #7C3AED; }
+.c2 { background: #BE185D; }
+.c3 { background: #DC2626; }
+.c4 { background: #059669; }
+.c5 { background: #D97706; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 600px) {
+  .task-body { grid-template-columns: 1fr; }
+  .maths-used { border-right: none; border-bottom: 1px solid var(--rule); }
+  .team-grid { grid-template-columns: repeat(5, 1fr); }
+  .sh-inner { flex-direction: column; }
+  .formula-box.split { flex-direction: column; gap: 8px; }
+}
+
+@media print {
+  #landing { display: none !important; }
+  #worksheet { display: block !important; }
+  .nav-bar, .back-btn, .print-btn { display: none !important; }
+  .task-card { break-inside: avoid; }
+  body { background: white; }
+  .answer-area { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════ LANDING ═══════════ -->
+<div id="landing">
+  <div class="landing-inner">
+    <div class="sw-logo">
+      <span>🎵 StreamWave · Data Science Division</span>
+    </div>
+    <h1 class="land-title">Crack the<br><em>Algorithm</em></h1>
+    <p class="land-sub">Year 10 IGCSE Mathematics · Two 80-minute lessons<br>Select your team number to get your unique question set.</p>
+
+    <div class="team-selector">
+      <div class="ts-label">Select your team</div>
+      <div class="team-grid" id="teamGrid">
+        <!-- generated by JS -->
+      </div>
+
+      <button class="go-btn" id="goBtn" disabled onclick="launch()">Open question set →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ WORKSHEET ═══════════ -->
+<div id="worksheet">
+  <div class="sheet-wrap">
+
+    <div class="nav-bar">
+      <button class="back-btn" onclick="goBack()">← Change team</button>
+      <button class="print-btn" onclick="window.print()">🖨 Print / Save PDF</button>
+    </div>
+
+    <div class="sheet-header">
+      <div class="sh-inner">
+        <div class="sh-left">
+          <h1 id="shTitle">Crack the Algorithm</h1>
+          <p>StreamWave Data Science Project · Year 10 IGCSE Higher · Mr. Goddard's Maths</p>
+          <p style="margin-top:6px;font-size:12px;color:rgba(255,255,255,0.35)">Show all working. Translate every answer back into a business context.</p>
+        </div>
+        <div class="team-badge" id="teamBadge">TEAM 1</div>
+      </div>
+    </div>
+
+    <div id="sheetContent"></div>
+
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+// DATA — 10 team variants, all pre-verified
+// ══════════════════════════════════════════════════════════════
+
+// TASK 1: f(x) = ax+b, g(x) = p/(cx-d)
+// domain_x = d/c (as string), fg_target = N, x_sol, finv = (x-b)/a
+const T1 = [
+  {a:3,b:7,p:4,c:2,d:5,  N:19, x:3,  fg_text:'(6x+23)/(2x-5)',  finv:'(x-7)/3',  domain:'5/2'},
+  {a:4,b:5,p:3,c:1,d:3,  N:17, x:4,  fg_text:'(4x+17)/(x-3)',   finv:'(x-5)/4',  domain:'3'},
+  {a:2,b:6,p:5,c:1,d:2,  N:16, x:3,  fg_text:'(2x+22)/(x-2)',   finv:'(x-6)/2',  domain:'2'},
+  {a:5,b:3,p:2,c:2,d:7,  N:13, x:4,  fg_text:'(10x+29)/(2x-7)', finv:'(x-3)/5',  domain:'7/2'},
+  {a:3,b:8,p:6,c:3,d:5,  N:26, x:2,  fg_text:'(9x+58)/(3x-5)',  finv:'(x-8)/3',  domain:'5/3'},
+  {a:6,b:4,p:3,c:1,d:4,  N:22, x:5,  fg_text:'(6x+28)/(x-4)',   finv:'(x-4)/6',  domain:'4'},
+  {a:2,b:9,p:4,c:2,d:5,  N:17, x:3,  fg_text:'(4x+43)/(2x-5)',  finv:'(x-9)/2',  domain:'5/2'},
+  {a:4,b:3,p:5,c:1,d:3,  N:23, x:4,  fg_text:'(4x+23)/(x-3)',   finv:'(x-3)/4',  domain:'3'},
+  {a:5,b:6,p:2,c:2,d:9,  N:16, x:5,  fg_text:'(10x+57)/(2x-9)', finv:'(x-6)/5',  domain:'9/2'},
+  {a:3,b:5,p:7,c:1,d:3,  N:26, x:4,  fg_text:'(3x+26)/(x-3)',   finv:'(x-5)/3',  domain:'3'},
+];
+
+// TASK 2: R(x) = -a(x-h)^2 + k = -ax^2 + 2ah*x + (k-ah^2)
+const T2 = [
+  {a:2,h:4,k:14, A_coef:2,B_coef:16,C_const:-18, roots:'4 ± √7 ≈ 1.35 and 6.65'},
+  {a:3,h:3,k:15, A_coef:3,B_coef:18,C_const:-12, roots:'3 ± √5 ≈ 0.76 and 5.24'},
+  {a:2,h:5,k:18, A_coef:2,B_coef:20,C_const:-32, roots:'2 and 8 (exact)'},
+  {a:3,h:4,k:12, A_coef:3,B_coef:24,C_const:-36, roots:'2 and 6 (exact)'},
+  {a:2,h:3,k:10, A_coef:2,B_coef:12,C_const:-8,  roots:'3 ± √5 ≈ 0.76 and 5.24'},
+  {a:4,h:3,k:16, A_coef:4,B_coef:24,C_const:-20, roots:'1 and 5 (exact)'},
+  {a:2,h:6,k:20, A_coef:2,B_coef:24,C_const:-52, roots:'6 ± √10 ≈ 2.84 and 9.16'},
+  {a:3,h:2,k:9,  A_coef:3,B_coef:12,C_const:-3,  roots:'2 ± √3 ≈ 0.27 and 3.73'},
+  {a:2,h:4,k:16, A_coef:2,B_coef:16,C_const:-16, roots:'4 ± 2√2 ≈ 1.17 and 6.83'},
+  {a:5,h:3,k:20, A_coef:5,B_coef:30,C_const:-25, roots:'1 and 5 (exact)'},
+];
+
+// TASK 3: U = -t^3 + p*t^2 + q*t + r
+// min at t=A, max at t=B
+const T3 = [
+  {p:12,q:-36,r:40,  A:2,B:6, U_min:8,  U_max:40, d2A:'+12 > 0',  d2B:'-12 < 0'},
+  {p:9, q:-15,r:20,  A:1,B:5, U_min:13, U_max:45, d2A:'+12 > 0',  d2B:'-12 < 0'},
+  {p:12,q:-36,r:55,  A:2,B:6, U_min:23, U_max:55, d2A:'+12 > 0',  d2B:'-12 < 0'},
+  {p:9, q:-15,r:25,  A:1,B:5, U_min:18, U_max:50, d2A:'+12 > 0',  d2B:'-12 < 0'},
+  {p:15,q:-63,r:109, A:3,B:7, U_min:28, U_max:60, d2A:'+12 > 0',  d2B:'-12 < 0'},
+  {p:9, q:-24,r:54,  A:2,B:4, U_min:34, U_max:38, d2A:'+6 > 0',   d2B:'-6 < 0'},
+  {p:6, q:-9, r:42,  A:1,B:3, U_min:38, U_max:42, d2A:'+6 > 0',   d2B:'-6 < 0'},
+  {p:12,q:-36,r:65,  A:2,B:6, U_min:33, U_max:65, d2A:'+12 > 0',  d2B:'-12 < 0'},
+  {p:9, q:-15,r:12,  A:1,B:5, U_min:5,  U_max:37, d2A:'+12 > 0',  d2B:'-12 < 0'},
+  {p:9, q:-24,r:44,  A:2,B:4, U_min:24, U_max:28, d2A:'+6 > 0',   d2B:'-6 < 0'},
+];
+
+// TASK 4: P + 2F = K, P^2 + F^2 = M  -> P and F
+const T4 = [
+  {K:40, M:500,  P:20, F:10, rev:160},
+  {K:39, M:369,  P:15, F:12, rev:120},
+  {K:34, M:388,  P:18, F:8,  rev:144},
+  {K:35, M:650,  P:25, F:5,  rev:200},
+  {K:44, M:452,  P:16, F:14, rev:128},
+  {K:34, M:520,  P:22, F:6,  rev:176},
+  {K:46, M:452,  P:14, F:16, rev:112},
+  {K:32, M:592,  P:24, F:4,  rev:192},
+  {K:44, M:544,  P:20, F:12, rev:160},
+  {K:32, M:788,  P:28, F:2,  rev:224},
+];
+
+// TASK 5: C = (kx^2 + krx) / (x^2 + ex + f) simplified to kx/(x-s)
+// C=1 gives x = -s/(k-1) which is negative (no valid solution)
+const T5 = [
+  {k:3,r:2,s:3, num_text:'3x² + 6x',   den_text:'x² − x − 6',   simp:'3x/(x−3)',  undef1:3,  undef2:-2, x_c1:'-3/2 = −1.5'},
+  {k:4,r:3,s:2, num_text:'4x² + 12x',  den_text:'x² + x − 6',   simp:'4x/(x−2)',  undef1:2,  undef2:-3, x_c1:'-2/3 ≈ −0.67'},
+  {k:2,r:4,s:3, num_text:'2x² + 8x',   den_text:'x² + x − 12',  simp:'2x/(x−3)',  undef1:3,  undef2:-4, x_c1:'−3'},
+  {k:3,r:1,s:4, num_text:'3x² + 3x',   den_text:'x² − 3x − 4',  simp:'3x/(x−4)',  undef1:4,  undef2:-1, x_c1:'−2'},
+  {k:5,r:2,s:3, num_text:'5x² + 10x',  den_text:'x² − x − 6',   simp:'5x/(x−3)',  undef1:3,  undef2:-2, x_c1:'-3/4 = −0.75'},
+  {k:2,r:3,s:5, num_text:'2x² + 6x',   den_text:'x² − 2x − 15', simp:'2x/(x−5)',  undef1:5,  undef2:-3, x_c1:'−5'},
+  {k:4,r:1,s:3, num_text:'4x² + 4x',   den_text:'x² − 2x − 3',  simp:'4x/(x−3)',  undef1:3,  undef2:-1, x_c1:'−1'},
+  {k:3,r:4,s:2, num_text:'3x² + 12x',  den_text:'x² + 2x − 8',  simp:'3x/(x−2)',  undef1:2,  undef2:-4, x_c1:'−1'},
+  {k:2,r:5,s:4, num_text:'2x² + 10x',  den_text:'x² + x − 20',  simp:'2x/(x−4)',  undef1:4,  undef2:-5, x_c1:'−4'},
+  {k:6,r:2,s:4, num_text:'6x² + 12x',  den_text:'x² − 2x − 8',  simp:'6x/(x−4)',  undef1:4,  undef2:-2, x_c1:'-4/5 = −0.8'},
+];
+
+const TASK_COLORS = ['c1','c2','c3','c4','c5'];
+const TASK_ACCENT = ['#7C3AED','#BE185D','#DC2626','#059669','#D97706'];
+const TASK_NAMES = [
+  'The Recommendation Score',
+  'Maximising Ad Revenue',
+  'Peak Traffic Analysis',
+  'Subscription Growth',
+  'Server Cost Modelling'
+];
+const TASK_MATHS = [
+  ['Composite functions', 'Inverse functions', 'Domain restriction'],
+  ['Completing the square (a > 1)', 'Quadratic optimisation', 'Finding roots'],
+  ['Differentiation', 'Stationary points', 'Second derivative test'],
+  ['Simultaneous equations', 'Line meets curve', 'Reject invalid solutions'],
+  ['Algebraic fractions', 'Factorisation', 'Rational equations'],
+];
+
+let selectedTeam = null;
+
+// ── Build landing
+(function buildLanding() {
+  const grid = document.getElementById('teamGrid');
+  for(let i = 1; i <= 10; i++) {
+    const btn = document.createElement('button');
+    btn.className = 'team-btn';
+    btn.textContent = i;
+    btn.onclick = function() {
+      document.querySelectorAll('.team-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      selectedTeam = i;
+      document.getElementById('goBtn').disabled = false;
+    };
+    grid.appendChild(btn);
+  }
+})();
+
+function launch() {
+  if(!selectedTeam) return;
+  buildSheet(selectedTeam - 1);
+  document.getElementById('landing').style.display = 'none';
+  document.getElementById('worksheet').style.display = 'block';
+  window.scrollTo(0,0);
+}
+
+function goBack() {
+  document.getElementById('worksheet').style.display = 'none';
+  document.getElementById('landing').style.display = 'flex';
+}
+
+function buildSheet(idx) {
+  const teamNum = idx + 1;
+  document.getElementById('shTitle').textContent = 'Crack the Algorithm — Team ' + teamNum;
+  document.getElementById('teamBadge').textContent = 'TEAM ' + teamNum;
+  buildStudentSheet(idx);
+}
+
+function buildStudentSheet(idx) {
+  const t1 = T1[idx], t2 = T2[idx], t3 = T3[idx], t4 = T4[idx], t5 = T5[idx];
+  let html = '';
+
+  // LESSON 1
+  html += lessonDiv('LESSON 1', 'Building the Models');
+
+  // TASK 1
+  html += taskCard(1, idx, TASK_COLORS[0], TASK_ACCENT[0], `
+    <p class="task-intro">StreamWave scores each song for a user using two functions:</p>
+    <div class="formula-box split">
+      <div><strong>f(x) = ${t1.a}x + ${t1.b}</strong><span class="f-label">Popularity boost</span></div>
+      <div><strong>g(x) = ${t1.p} / (${t1.c}x − ${t1.d})</strong><span class="f-label">Personalisation filter</span></div>
+    </div>
+    <div class="question-list">
+      ${qi(1,'(a)','State the value of x that cannot be in the domain of g.')}
+      ${qi(1,'(b)','Find fg(x). Simplify your answer fully.')}
+      ${qi(1,'(c)','A song\'s composite score fg(x) = '+t1.N+'. Find x.')}
+      ${qi(1,'(d)','Find f⁻¹(x). Explain what this means in context for StreamWave.')}
+    </div>
+  `);
+
+  // TASK 2
+  html += taskCard(2, idx, TASK_COLORS[1], TASK_ACCENT[1], `
+    <p class="task-intro">StreamWave's ad revenue R (£thousands) from x million listeners per hour:</p>
+    <div class="formula-box">
+      <strong>R(x) = −${t2.A_coef}x² + ${t2.B_coef}x + (${t2.C_const})</strong>
+    </div>
+    <div class="question-list">
+      ${qi(2,'(a)','Complete the square. Write R(x) in the form a(x + p)² + q.')}
+      ${qi(2,'(b)','State the listener count that maximises revenue, and the maximum revenue.')}
+      ${qi(2,'(c)','Below what listener count does StreamWave lose money? Show full algebraic working.')}
+      ${qi(2,'(d)','Sketch the curve. Label the vertex and roots.')}
+    </div>
+  `);
+
+  // TASK 3
+  html += taskCard(3, idx, TASK_COLORS[2], TASK_ACCENT[2], `
+    <p class="task-intro">Active users U (millions) at time t hours after midnight (0 ≤ t ≤ 10):</p>
+    <div class="formula-box">
+      <strong>U(t) = −t³ + ${t3.p}t² + (${t3.q})t + ${t3.r}</strong>
+    </div>
+    <div class="question-list">
+      ${qi(3,'(a)','Find dU/dt.')}
+      ${qi(3,'(b)','Find the values of t when user numbers are stationary.')}
+      ${qi(3,'(c)','Use the second derivative to classify each stationary point.')}
+      ${qi(3,'(d)','State the peak number of users and the time it occurs. Interpret for the business.')}
+    </div>
+  `);
+
+  // LESSON 2
+  html += lessonDiv('LESSON 2', 'Advanced Analysis & Pitch');
+
+  // TASK 4
+  html += taskCard(4, idx, TASK_COLORS[3], TASK_ACCENT[3], `
+    <p class="task-intro">Premium users P and Free users F satisfy two equations simultaneously:</p>
+    <div class="formula-box split">
+      <div><strong>P + 2F = ${t4.K}</strong><span class="f-label">Capacity constraint</span></div>
+      <div><strong>P² + F² = ${t4.M}</strong><span class="f-label">Server load equation</span></div>
+    </div>
+    <div class="question-list">
+      ${qi(4,'(a)','Using substitution, find the values of P and F. Show full algebraic working.')}
+      ${qi(4,'(b)','Which solution is the realistic one? Justify your answer in context.')}
+      ${qi(4,'(c)','Monthly revenue = £8 per Premium user. Calculate StreamWave\'s monthly revenue.')}
+    </div>
+  `);
+
+  // TASK 5
+  html += taskCard(5, idx, TASK_COLORS[4], TASK_ACCENT[4], `
+    <p class="task-intro">Cost per user C (£) of running StreamWave's servers (x = users in millions):</p>
+    <div class="formula-box">
+      <strong>C = (${t5.num_text}) / (${t5.den_text})</strong>
+    </div>
+    <div class="question-list">
+      ${qi(5,'(a)','Fully factorise and simplify this expression.')}
+      ${qi(5,'(b)','State any values of x for which C is undefined. Explain in context.')}
+      ${qi(5,'(c)','Find the number of users for which the cost per user equals £1. Show clear working and interpret your answer.')}
+    </div>
+  `);
+
+  // PITCH
+  html += `
+    <div class="task-card" style="border-top:3px solid #0D1B4B">
+      <div class="task-header" style="background:#0D1B4B">
+        <div class="task-num" style="background:rgba(255,255,255,0.15);font-size:1.2rem">🎤</div>
+        <div class="task-header-text">
+          <h3 style="color:white">The Pitch — End of Lesson 2</h3>
+          <p style="color:rgba(255,255,255,0.5)">3 minutes · No slides needed · Just your maths and your voice</p>
+        </div>
+      </div>
+      <div class="task-content" style="background:#F8FAFF">
+        <div class="question-list">
+          ${qi(0,'1.','What is the peak revenue and how many listeners does it require? (Task 2)')}
+          ${qi(0,'2.','When does StreamWave hit peak traffic, and what should management do? (Task 3)')}
+          ${qi(0,'3.','How many Premium vs Free users should the platform target? (Task 4)')}
+          ${qi(0,'4.','One surprising or interesting finding from your team\'s analysis.')}
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('sheetContent').innerHTML = html;
+}
+
+function buildTeacherSheet(idx) {
+  const t1 = T1[idx], t2 = T2[idx], t3 = T3[idx], t4 = T4[idx], t5 = T5[idx];
+  const teamNum = idx + 1;
+
+  // Task 1 answers
+  const d2_formula = '-6t + ' + (2*t3.p);
+  const d2_A = -6*t3.A + 2*t3.p;
+  const d2_B = -6*t3.B + 2*t3.p;
+
+  // Task 4 working
+  const t4_disc = Math.sqrt(t4.M - t4.K*t4.K/5 + 4*t4.K*t4.K/25);
+
+  let html = '';
+
+  // Lesson 1
+  html += lessonDiv('LESSON 1', 'Building the Models');
+
+  html += answerCard(1, TASK_COLORS[0], TASK_ACCENT[0], [
+    {part:'(a)', ans: 'x = ' + (t1.c === 1 ? t1.d : t1.d+'/'+t1.c) + '  (denominator = 0 when ' + t1.c+'x − '+t1.d+' = 0)', note:'1 mark'},
+    {part:'(b)', ans: 'fg(x) = '+t1.a+'·['+t1.p+'/('+t1.c+'x−'+t1.d+')] + '+t1.b+' = '+t1.fg_text, note:'Show combining over common denom'},
+    {part:'(c)', ans: 'Set fg(x) = '+t1.N+', solve to get x = '+t1.x, note:'M1 equation, A1 x='+t1.x},
+    {part:'(d)', ans: 'f⁻¹(x) = '+t1.finv+'  (swap x and y, rearrange)', note:'Context: reverses popularity boost'},
+  ]);
+
+  html += answerCard(2, TASK_COLORS[1], TASK_ACCENT[1], [
+    {part:'(a)', ans: 'R = −'+t2.a+'(x − '+t2.h+')² + '+t2.k, note:'Show factoring, completing, expanding constant'},
+    {part:'(b)', ans: 'Peak at x = '+t2.h+' million listeners. Max revenue = £'+t2.k+'k', note:'Both values required'},
+    {part:'(c)', ans: 'R=0: x = '+t2.h+' ± √('+t2.k+'/'+t2.a+').  Loss when x < '+t2.h+' − √('+t2.k+'/'+t2.a+') ≈ '+((t2.h - Math.sqrt(t2.k/t2.a)).toFixed(2))+' million', note:'Roots: '+t2.roots},
+    {part:'(d)', ans: 'Downward parabola, vertex ('+t2.h+', '+t2.k+'), x-intercepts: '+t2.roots, note:'Sketch award B1 shape, B1 vertex, B1 roots'},
+  ]);
+
+  html += answerCard(3, TASK_COLORS[2], TASK_ACCENT[2], [
+    {part:'(a)', ans: 'dU/dt = −3t² + '+(2*t3.p)+'t + ('+t3.q+')', note:'1 mark per term'},
+    {part:'(b)', ans: '−3t² + '+(2*t3.p)+'t + ('+t3.q+') = 0 → −3(t−'+t3.A+')(t−'+t3.B+') = 0  →  t = '+t3.A+' or t = '+t3.B, note:'t='+t3.A+'h and t='+t3.B+'h after midnight'},
+    {part:'(c)', ans: 'd²U/dt² = '+d2_formula+'.  t='+t3.A+': d²U='+d2_A+' ('+t3.d2A+' → MIN).  t='+t3.B+': d²U='+d2_B+' ('+t3.d2B+' → MAX)', note:'Must use second derivative'},
+    {part:'(d)', ans: 'Peak = '+t3.U_max+'M users at t = '+t3.B+'h after midnight ('+t3.B+'am). Servers at full capacity by then.', note:'Context required for full marks'},
+  ]);
+
+  // Lesson 2
+  html += lessonDiv('LESSON 2', 'Advanced Analysis & Pitch');
+
+  // Task 4 quadratic working
+  const discVal = 16*t4.K*t4.K - 20*(t4.K*t4.K - t4.M);
+  const sqrtDisc = Math.sqrt(discVal);
+
+  html += answerCard(4, TASK_COLORS[3], TASK_ACCENT[3], [
+    {part:'(a)', ans: 'P = '+t4.K+'−2F → ('+t4.K+'−2F)²+F²='+t4.M+' → 5F²−'+4*t4.K+'F+'+(t4.K*t4.K-t4.M)+'=0 → F='+t4.F+' or F='+((4*t4.K+sqrtDisc)/10).toFixed(1), note:'M1 sub, M1 expand, M1 factorise, A1 both solutions'},
+    {part:'(b)', ans: 'F='+t4.F+', P='+t4.P+'. Reject other solution as P would be negative.', note:'Full sentence + context required'},
+    {part:'(c)', ans: 'Revenue = £8 × '+t4.P+' = £'+t4.rev+' per month', note:''},
+  ]);
+
+  html += answerCard(5, TASK_COLORS[4], TASK_ACCENT[4], [
+    {part:'(a)', ans: 'Num: '+t5.k+'x(x+'+t5.r+')  Den: (x−'+t5.s+')(x+'+t5.r+')  →  C = '+t5.simp, note:'Must show full factorisation'},
+    {part:'(b)', ans: 'Undefined at x = '+t5.undef1+' and x = '+t5.undef2+'. Context: platform cannot sustain '+t5.undef1+'M users under this model.', note:'Both values + context'},
+    {part:'(c)', ans: t5.simp+' = 1 → '+t5.k+'x = x−'+t5.s+' → x = '+t5.x_c1+' (negative — no valid solution).', note:'Award method marks even if context missed'},
+  ]);
+
+  // All teams summary table
+  html += allTeamsTable();
+
+  document.getElementById('sheetContent').innerHTML = html;
+}
+
+function lessonDiv(label, title) {
+  return `
+    <div class="lesson-div">
+      <div class="ld-line"></div>
+      <div class="ld-label">${label} — ${title}</div>
+      <div class="ld-line"></div>
+    </div>`;
+}
+
+function taskCard(taskNum, teamIdx, colorClass, accent, bodyHtml) {
+  const ansLines = taskNum <= 3 ? 8 : 10;
+  let lines = '';
+  for(let i=0;i<ansLines;i++) lines += '<div class="ans-line"></div>';
+
+  return `
+    <div class="task-card" style="--accent-color:${accent}">
+      <div class="task-header">
+        <div class="task-num ${colorClass}">0${taskNum}</div>
+        <div class="task-header-text">
+          <h3>${TASK_NAMES[taskNum-1]}</h3>
+          <p>${TASK_MATHS[taskNum-1].join(' · ')}</p>
+        </div>
+        <div class="task-marks">Task ${taskNum}</div>
+      </div>
+      <div class="task-body">
+        <div class="maths-used" style="--accent-color:${accent}">
+          <div class="mu-label">Maths used</div>
+          ${TASK_MATHS[taskNum-1].map(m => '<div class="mu-item">'+m+'</div>').join('')}
+        </div>
+        <div class="task-content">${bodyHtml}</div>
+      </div>
+      <div class="answer-area">
+        <div class="aa-label">Working & Answer</div>
+        <div class="answer-lines">${lines}</div>
+      </div>
+    </div>`;
+}
+
+function qi(taskNum, label, text) {
+  const accent = taskNum > 0 ? TASK_ACCENT[taskNum-1] : '#0D1B4B';
+  return `
+    <div class="q-item">
+      <span class="q-label" style="background:${accent}">${label}</span>
+      <span>${text}</span>
+    </div>`;
+}
+
+function answerCard(taskNum, colorClass, accent, rows) {
+  const rowsHtml = rows.map(r => `
+    <div class="ans-row">
+      <div><span class="ans-part" style="background:${accent}">${r.part}</span></div>
+      <div>
+        <div class="ans-text">${r.ans}</div>
+        ${r.note ? '<div class="ans-note">'+r.note+'</div>' : ''}
+      </div>
+    </div>`).join('');
+
+  return `
+    <div class="ans-card" style="--accent-color:${accent}">
+      <div class="ans-card-header">
+        <div class="task-num ${colorClass}" style="width:32px;height:32px;font-size:0.8rem">0${taskNum}</div>
+        <h3>${TASK_NAMES[taskNum-1]}</h3>
+      </div>
+      <div class="ans-body">${rowsHtml}</div>
+    </div>`;
+}
+
+function allTeamsTable() {
+  const rows = T1.map((t, i) => {
+    const t2 = T2[i], t3 = T3[i], t4 = T4[i], t5 = T5[i];
+    return `
+      <tr>
+        <td><span class="team-num-cell" style="background:var(--navy);color:white">${i+1}</span></td>
+        <td>f=${t.a}x+${t.b}<br>g=${t.p}/(${t.c}x−${t.d})<br>fg(x)=${t.N}→x=${t.x}</td>
+        <td>R=−${t2.A_coef}x²+${t2.B_coef}x+(${t2.C_const})<br>vertex(${t2.h},${t2.k})</td>
+        <td>U=−t³+${t3.p}t²+(${t3.q})t+${t3.r}<br>peak:${t3.U_max}M at t=${t3.B}</td>
+        <td>P+2F=${t4.K}<br>P=${t4.P},F=${t4.F}<br>rev=£${t4.rev}</td>
+        <td>C=${t5.simp}<br>C=1:x=${t5.x_c1}</td>
+      </tr>`;
+  }).join('');
+
+  return `
+    <div class="all-teams-section">
+      <div class="ats-title">📋 All Teams — Quick Reference</div>
+      <table class="teams-table">
+        <thead>
+          <tr>
+            <th>Team</th>
+            <th>Task 1: Functions</th>
+            <th>Task 2: Revenue</th>
+            <th>Task 3: Traffic</th>
+            <th>Task 4: Subscriptions</th>
+            <th>Task 5: Cost</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
+}
+</script>
+</body>
+</html>
