@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -499,6 +498,7 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--ink
       <div class="view-toggle">
         <button class="vt-btn active" id="btnSingle" onclick="setView('single')">Single team</button>
         <button class="vt-btn" id="btnAll" onclick="setView('all')">All teams</button>
+        <button class="vt-btn" id="btnExt" onclick="setView('ext')">🔒 Extension</button>
       </div>
     </div>
 
@@ -648,12 +648,18 @@ function setView(v) {
   currentView = v;
   document.getElementById('btnSingle').classList.toggle('active', v==='single');
   document.getElementById('btnAll').classList.toggle('active', v==='all');
+  document.getElementById('btnExt').classList.toggle('active', v==='ext');
+  // Show/hide team pills — not needed for extension
+  document.getElementById('teamPills').style.display = v==='ext' ? 'none' : '';
+  document.querySelector('.tr-label').style.display = v==='ext' ? 'none' : '';
   renderContent();
 }
 
 function renderContent() {
   if(currentView === 'all') {
     renderAllTeams();
+  } else if(currentView === 'ext') {
+    renderExtension();
   } else {
     renderSingleTeam(currentTeam);
   }
@@ -754,6 +760,82 @@ function renderAllTeams() {
       '<th>Task 4: Subscriptions</th>' +
       '<th>Task 5: Cost</th>' +
     '</tr></thead><tbody>'+rows+'</tbody></table></div>';
+
+  document.getElementById('msContent').innerHTML = html;
+}
+
+// ══════════════════════════════════════════════════════════
+// EXTENSION MARK SCHEME — Level 9 Crisis Protocol
+// ══════════════════════════════════════════════════════════
+
+var EXT_STYLE = '<style>' +
+  '.ext-section{margin-top:32px}' +
+  '.ext-banner{background:#F5F0FF;border:1.5px solid #D8C5FF;border-radius:12px;padding:14px 18px;margin-bottom:24px;display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;color:#3B1A7A}' +
+  '.ext-card{background:white;border:1px solid #E2E8F0;border-radius:12px;overflow:hidden;margin-bottom:16px;box-shadow:0 2px 6px rgba(0,0,0,0.04)}' +
+  '.ext-header{padding:12px 18px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #E2E8F0}' +
+  '.ext-num{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:JetBrains Mono,monospace;font-size:0.82rem;font-weight:700;color:white;flex-shrink:0}' +
+  '.ext-header h3{font-size:14px;font-weight:700;color:#1A1A2E;flex:1}' +
+  '.ext-body{padding:16px 18px}' +
+  '.ext-row{display:grid;grid-template-columns:40px 1fr 180px;gap:10px;padding:8px 0;border-bottom:1px solid #E2E8F0;align-items:start}' +
+  '.ext-row:last-child{border-bottom:none}' +
+  '.ext-part{font-family:JetBrains Mono,monospace;font-size:11px;font-weight:600;color:white;padding:2px 6px;border-radius:4px;text-align:center;margin-top:2px}' +
+  '.ext-ans{font-size:12.5px;color:#1A1A2E;line-height:1.6;font-family:JetBrains Mono,monospace}' +
+  '.ext-note{font-size:11px;color:#718096;line-height:1.5;font-style:italic;font-family:Inter,sans-serif}' +
+'</style>';
+
+function renderExtension() {
+  var html = EXT_STYLE;
+
+  html += '<div class="ext-section">';
+  html += '<div class="ext-banner">🔒 Level 9 Extension — Crisis Protocol Mark Scheme</div>';
+
+  // X1 PROOF
+  html += '<div class="ext-card">';
+  html += '<div class="ext-header"><div class="ext-num" style="background:#7C3AED">X1</div><h3>The Growth Proof — Algebraic Proof</h3></div>';
+  html += '<div class="ext-body">';
+  var x1rows = [
+    {p:'(a)', a:'n³ − n = n(n² − 1) = n(n−1)(n+1) = (n−1)·n·(n+1)', n:'3 consecutive integers. Must show full factorisation. 2 marks.'},
+    {p:'(b)', a:'Among any 3 consecutive integers: one is divisible by 3, and at least one is divisible by 2 (since they alternate odd/even). Therefore the product is divisible by both 2 and 3, hence by 6. ∴ n³−n ≡ 0 (mod 6) for all positive integer n.', n:'Must state BOTH divisibility arguments. Award B1 for factor of 2, B1 for factor of 3, B1 for conclusion. 3 marks.'},
+    {p:'(c)', a:'Counter-example: n=2 → n³−n = 6. 6 ÷ 12 = 0.5. NOT divisible by 12. Claim is FALSE.', n:'One valid counter-example is sufficient for disproof. n=1 gives 0 (divisible by 12, so reject). n=2 is the simplest valid counter-example. 2 marks.'},
+    {p:'(d)', a:'Let the integers be n−1, n, n+1. Sum = 3n. 3n is always divisible by 3. ∎\nContext: any 3-month rolling average of user data is always a multiple of 3, so StreamWave can reliably divide into thirds for quarterly reporting.', n:'Must use n−1, n, n+1 or equivalent. Context mark for linking to rolling averages. 3 marks.'},
+  ];
+  x1rows.forEach(function(r){
+    html += '<div class="ext-row"><div><span class="ext-part" style="background:#7C3AED">'+r.p+'</span></div><div class="ext-ans">'+r.a+'</div><div class="ext-note">'+r.n+'</div></div>';
+  });
+  html += '</div></div>';
+
+  // X2 VECTORS
+  html += '<div class="ext-card">';
+  html += '<div class="ext-header"><div class="ext-num" style="background:#0891B2">X2</div><h3>The Network Geometry — Vectors</h3></div>';
+  html += '<div class="ext-body">';
+  var x2rows = [
+    {p:'(a)', a:'AB = OB − OA = (5a−2b) − (2a+b) = 3a − 3b', n:'1 mark. Must show subtraction step.'},
+    {p:'(b)', a:'AC = OC − OA = (8a−5b) − (2a+b) = 6a − 6b', n:'1 mark.'},
+    {p:'(c)', a:'AC = 6a − 6b = 2(3a − 3b) = 2·AB\nSince AC = 2AB, vectors are parallel and share point A.\n∴ A, B, C are collinear.\nContext: all 3 hubs lie on the same straight road/route — poor placement for network coverage.', n:'Must state parallel + shared point. Context mark required for full marks. 3 marks.'},
+    {p:'(d)', a:'M divides AC in ratio 2:1, so AM = (2/3)AC = (2/3)(6a−6b) = 4a − 4b\nOM = OA + AM = (2a+b) + (4a−4b) = 6a − 3b', n:'Must use correct fraction of AC. 2 marks.'},
+    {p:'(e)', a:'AD = OD − OA = (14a−11b) − (2a+b) = 12a − 12b = 4(3a−3b) = 4·AB\nYes — AD is a scalar multiple of AB and shares point A.\n∴ D is collinear with A, B and C.', n:'Must show AD = k·AB explicitly. 2 marks.'},
+  ];
+  x2rows.forEach(function(r){
+    html += '<div class="ext-row"><div><span class="ext-part" style="background:#0891B2">'+r.p+'</span></div><div class="ext-ans">'+r.a+'</div><div class="ext-note">'+r.n+'</div></div>';
+  });
+  html += '</div></div>';
+
+  // X3 BOUNDS
+  html += '<div class="ext-card">';
+  html += '<div class="ext-header"><div class="ext-num" style="background:#B45309">X3</div><h3>The Rounding Crisis — Upper &amp; Lower Bounds</h3></div>';
+  html += '<div class="ext-body">';
+  var x3rows = [
+    {p:'(a)', a:'Revenue: LB = £2 350 000,  UB = £2 450 000\nData:    LB = 3 750 GB,    UB = 3 850 GB', n:'All 4 bounds required. 2 marks.'},
+    {p:'(b)', a:'Upper bound of Revenue per GB = UB(Revenue) ÷ LB(Data)\n= 2 450 000 ÷ 3 750 = £653.33... per GB\nReason: maximise numerator, minimise denominator.', n:'Correct combination (UB÷LB) essential for method mark. 2 marks.'},
+    {p:'(c)', a:'Lower bound = LB(Revenue) ÷ UB(Data)\n= 2 350 000 ÷ 3 850 = £610.39... per GB', n:'Correct combination (LB÷UB). 2 marks.'},
+    {p:'(d)', a:'Lower bound = £610.39 < £620 < £653.33 = Upper bound\nThe contract price of £620 falls within the error interval.\n∴ It is UNCERTAIN whether StreamWave can honour the contract — the actual figure could be above or below £620.', n:'Must reference both bounds. Must use word "uncertain" or equivalent with justification. 3 marks.'},
+    {p:'(e)', a:'Rounded value = 2 400 000 ÷ 3 800 = £631.58 (to 5 s.f.)\nMax % error = (653.33 − 631.58) / 631.58 × 100 = 3.44% (3 s.f.)', n:'Must use upper bound for max error. Accept equivalent methods. 3 marks.'},
+  ];
+  x3rows.forEach(function(r){
+    html += '<div class="ext-row"><div><span class="ext-part" style="background:#B45309">'+r.p+'</span></div><div class="ext-ans">'+r.a+'</div><div class="ext-note">'+r.n+'</div></div>';
+  });
+  html += '</div></div>';
+  html += '</div>';
 
   document.getElementById('msContent').innerHTML = html;
 }
