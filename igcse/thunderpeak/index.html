@@ -1,0 +1,2150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ThunderPeak — Mr. Goddard's Maths</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@400;600;700;800;900&display=swap');
+
+:root {
+  --sky1: #1a1a2e;
+  --sky2: #16213e;
+  --sky3: #0f3460;
+  --accent: #e94560;
+  --gold: #f5a623;
+  --teal: #00d4aa;
+  --green: #2ecc71;
+  --red: #e74c3c;
+  --track: #8B6914;
+  --track-l: #C8A84B;
+  --white: #ffffff;
+  --offwhite: #f0f4ff;
+  --ink: #1a1a2e;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background: var(--sky1);
+  color: var(--white);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── SCREEN MANAGER ── */
+.screen { display: none; }
+.screen.active { display: flex; flex-direction: column; min-height: 100vh; }
+
+/* ── SHARED HEADER ── */
+.top-bar {
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(8px);
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid var(--accent);
+  flex-shrink: 0;
+}
+
+.logo {
+  font-family: 'Bangers', cursive;
+  font-size: 1.6rem;
+  letter-spacing: 2px;
+  color: var(--gold);
+  text-shadow: 2px 2px 0 var(--accent);
+}
+
+.logo span { color: var(--accent); }
+
+.top-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.phase-badge {
+  background: var(--accent);
+  color: white;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 999px;
+}
+
+.score-display {
+  font-family: 'Bangers', cursive;
+  font-size: 1.2rem;
+  color: var(--gold);
+  letter-spacing: 1px;
+}
+
+/* ── INTRO SCREEN ── */
+#intro {
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, var(--sky1) 0%, var(--sky2) 50%, var(--sky3) 100%);
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.stars {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.intro-content { position: relative; z-index: 1; max-width: 680px; }
+
+.intro-tag {
+  display: inline-block;
+  background: var(--accent);
+  color: white;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  padding: 5px 16px;
+  border-radius: 999px;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+}
+
+.intro-title {
+  font-family: 'Bangers', cursive;
+  font-size: clamp(3rem, 10vw, 6rem);
+  letter-spacing: 4px;
+  line-height: 0.95;
+  color: var(--gold);
+  text-shadow: 4px 4px 0 var(--accent), 8px 8px 0 rgba(233,69,96,0.3);
+  margin-bottom: 8px;
+}
+
+.intro-sub {
+  font-size: 1rem;
+  color: rgba(255,255,255,0.6);
+  margin-bottom: 32px;
+  line-height: 1.6;
+}
+
+.intro-sub strong { color: var(--teal); }
+
+.name-row {
+  display: flex;
+  gap: 10px;
+  max-width: 440px;
+  margin: 0 auto 24px;
+}
+
+.name-input {
+  flex: 1;
+  padding: 13px 16px;
+  background: rgba(255,255,255,0.08);
+  border: 2px solid rgba(255,255,255,0.2);
+  border-radius: 10px;
+  color: white;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.name-input:focus { border-color: var(--teal); }
+.name-input::placeholder { color: rgba(255,255,255,0.3); }
+
+.btn-main {
+  padding: 13px 28px;
+  background: var(--accent);
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.15s;
+  letter-spacing: 0.02em;
+}
+
+.btn-main:hover { transform: translateY(-2px); background: #c73652; }
+.btn-main:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+.intro-steps {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 28px;
+}
+
+.step-pill {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 12px;
+  padding: 14px 18px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.7);
+  max-width: 180px;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.step-pill .step-num {
+  font-family: 'Bangers', cursive;
+  font-size: 1.4rem;
+  color: var(--gold);
+  display: block;
+  margin-bottom: 4px;
+}
+
+/* ── LEARN SCREEN ── */
+#learn {
+  background: linear-gradient(180deg, var(--sky1) 0%, var(--sky2) 100%);
+}
+
+.learn-layout {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 16px;
+  gap: 16px;
+  max-width: 1000px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.graph-area {
+  position: relative;
+  background: rgba(0,0,0,0.3);
+  border: 2px solid rgba(255,255,255,0.1);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+#graphCanvas {
+  display: block;
+  width: 100%;
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.graph-instructions {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.7);
+  color: rgba(255,255,255,0.8);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 5px 14px;
+  border-radius: 999px;
+  white-space: nowrap;
+  pointer-events: none;
+  letter-spacing: 0.04em;
+}
+
+.question-panel {
+  background: rgba(0,0,0,0.3);
+  border: 2px solid rgba(255,255,255,0.1);
+  border-radius: 14px;
+  padding: 20px;
+}
+
+.qp-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.q-num-badge {
+  font-family: 'Bangers', cursive;
+  font-size: 1.3rem;
+  color: var(--gold);
+  background: rgba(245,166,35,0.15);
+  border: 2px solid var(--gold);
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.q-text {
+  font-size: 14px;
+  color: rgba(255,255,255,0.9);
+  line-height: 1.5;
+  flex: 1;
+}
+
+.q-context {
+  font-size: 12px;
+  color: rgba(255,255,255,0.45);
+  margin-top: 3px;
+}
+
+.answer-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.ans-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.6);
+  white-space: nowrap;
+}
+
+.ans-input {
+  width: 110px;
+  padding: 10px 14px;
+  background: rgba(255,255,255,0.07);
+  border: 2px solid rgba(255,255,255,0.2);
+  border-radius: 8px;
+  color: white;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  outline: none;
+  transition: border-color 0.2s;
+  text-align: center;
+}
+
+.ans-input:focus { border-color: var(--teal); }
+.ans-input.correct { border-color: var(--green); background: rgba(46,204,113,0.12); }
+.ans-input.close { border-color: var(--gold); background: rgba(245,166,35,0.12); }
+.ans-input.wrong { border-color: var(--red); background: rgba(231,76,60,0.12); }
+
+.btn-check {
+  padding: 10px 20px;
+  background: var(--teal);
+  border: none;
+  border-radius: 8px;
+  color: var(--sky1);
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.15s;
+  letter-spacing: 0.03em;
+}
+
+.btn-check:hover { background: #00b894; transform: translateY(-1px); }
+.btn-check:disabled { opacity: 0.3; cursor: not-allowed; transform: none; }
+
+.feedback-text {
+  font-size: 13px;
+  font-weight: 700;
+  margin-top: 10px;
+  min-height: 20px;
+  line-height: 1.4;
+}
+
+.feedback-text.correct { color: var(--green); }
+.feedback-text.close { color: var(--gold); }
+.feedback-text.wrong { color: var(--red); }
+
+.progress-bar-wrap {
+  background: rgba(255,255,255,0.08);
+  border-radius: 999px;
+  height: 6px;
+  margin: 12px 0 0;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--teal), var(--gold));
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+.q-nav {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+
+.q-dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  border: 2px solid rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.4);
+  cursor: pointer;
+  transition: all 0.2s;
+  background: rgba(255,255,255,0.04);
+}
+
+.q-dot.done-correct { border-color: var(--green); color: var(--green); background: rgba(46,204,113,0.1); }
+.q-dot.done-close { border-color: var(--gold); color: var(--gold); background: rgba(245,166,35,0.1); }
+.q-dot.done-wrong { border-color: var(--red); color: var(--red); background: rgba(231,76,60,0.1); }
+.q-dot.current { border-color: var(--gold); color: var(--gold); background: rgba(245,166,35,0.15); }
+
+.btn-next-q {
+  margin-top: 14px;
+  padding: 10px 24px;
+  background: var(--accent);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: none;
+}
+
+.btn-next-q.visible { display: inline-block; }
+.btn-next-q:hover { transform: translateY(-1px); }
+
+/* ── BUILD SCREEN ── */
+#build {
+  background: linear-gradient(180deg, var(--sky1) 0%, #0a0a1a 100%);
+}
+
+.build-layout {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 16px;
+  gap: 14px;
+  max-width: 1000px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.build-header-text {
+  text-align: center;
+}
+
+.build-header-text h2 {
+  font-family: 'Bangers', cursive;
+  font-size: 1.8rem;
+  letter-spacing: 2px;
+  color: var(--gold);
+  margin-bottom: 4px;
+}
+
+.build-header-text p {
+  font-size: 13px;
+  color: rgba(255,255,255,0.5);
+}
+
+.build-canvas-wrap {
+  position: relative;
+  background: rgba(0,0,0,0.3);
+  border: 2px solid rgba(255,255,255,0.1);
+  border-radius: 14px;
+  overflow: hidden;
+  flex: 1;
+}
+
+#buildCanvas {
+  display: block;
+  width: 100%;
+  cursor: grab;
+  touch-action: none;
+}
+
+#buildCanvas.grabbing { cursor: grabbing; }
+
+.build-controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.build-hint {
+  font-size: 12px;
+  color: rgba(255,255,255,0.4);
+  text-align: center;
+}
+
+.btn-build {
+  padding: 11px 22px;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.15s;
+  letter-spacing: 0.02em;
+}
+
+.btn-build.primary {
+  background: var(--gold);
+  color: var(--sky1);
+}
+
+.btn-build.primary:hover { background: #e09920; transform: translateY(-1px); }
+
+.btn-build.secondary {
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.7);
+  border: 1.5px solid rgba(255,255,255,0.15);
+}
+
+.btn-build.secondary:hover { background: rgba(255,255,255,0.13); }
+
+.btn-build.danger {
+  background: var(--accent);
+  color: white;
+  font-size: 1rem;
+  padding: 13px 32px;
+}
+
+.btn-build.danger:hover { background: #c73652; transform: translateY(-2px); }
+
+/* ── PLAY SCREEN ── */
+#play {
+  background: linear-gradient(180deg, #0a0f2e 0%, #050816 100%);
+}
+
+.play-layout {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 16px;
+  gap: 14px;
+  max-width: 1000px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.play-canvas-wrap {
+  position: relative;
+  background: rgba(0,0,0,0.3);
+  border: 2px solid rgba(255,255,255,0.1);
+  border-radius: 14px;
+  overflow: hidden;
+  flex: 1;
+}
+
+#playCanvas {
+  display: block;
+  width: 100%;
+}
+
+.play-hud {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.hud-box {
+  background: rgba(0,0,0,0.4);
+  border: 1.5px solid rgba(255,255,255,0.12);
+  border-radius: 10px;
+  padding: 10px 20px;
+  text-align: center;
+  min-width: 120px;
+}
+
+.hud-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 4px;
+}
+
+.hud-val {
+  font-family: 'Bangers', cursive;
+  font-size: 1.6rem;
+  letter-spacing: 1px;
+  color: var(--gold);
+}
+
+.hud-val.red { color: var(--red); }
+.hud-val.green { color: var(--green); }
+.hud-val.teal { color: var(--teal); }
+
+.play-btns {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* ── RESULT SCREEN ── */
+#result {
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, var(--sky1) 0%, var(--sky2) 100%);
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.result-content { max-width: 560px; }
+
+.result-emoji { font-size: 4rem; margin-bottom: 16px; display: block; }
+
+.result-title {
+  font-family: 'Bangers', cursive;
+  font-size: clamp(2rem, 8vw, 4rem);
+  letter-spacing: 3px;
+  color: var(--gold);
+  text-shadow: 3px 3px 0 var(--accent);
+  margin-bottom: 10px;
+}
+
+.result-sub {
+  font-size: 14px;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 28px;
+  line-height: 1.6;
+}
+
+.score-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.score-box {
+  background: rgba(255,255,255,0.06);
+  border: 1.5px solid rgba(255,255,255,0.12);
+  border-radius: 12px;
+  padding: 14px 10px;
+}
+
+.score-box .sb-val {
+  font-family: 'Bangers', cursive;
+  font-size: 2rem;
+  letter-spacing: 1px;
+  color: var(--gold);
+}
+
+.score-box .sb-label {
+  font-size: 11px;
+  color: rgba(255,255,255,0.4);
+  margin-top: 2px;
+}
+
+.submission-box {
+  background: rgba(0,0,0,0.3);
+  border: 1.5px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.submission-box pre {
+  font-family: 'Nunito', monospace;
+  font-size: 12px;
+  color: rgba(255,255,255,0.7);
+  white-space: pre-wrap;
+  line-height: 1.6;
+}
+
+.copy-btn {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px;
+  background: var(--teal);
+  border: none;
+  border-radius: 8px;
+  color: var(--sky1);
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.copy-btn:hover { background: #00b894; }
+
+.btn-restart {
+  padding: 12px 28px;
+  background: var(--accent);
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn-restart:hover { transform: translateY(-2px); }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--sky1);
+  border: 2px solid var(--gold);
+  border-radius: 10px;
+  padding: 12px 24px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--gold);
+  z-index: 9999;
+  transition: transform 0.3s ease;
+  white-space: nowrap;
+}
+
+.toast.show { transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- Stars background -->
+<canvas class="stars" id="starsCanvas"></canvas>
+
+<!-- ═══════ INTRO ═══════ -->
+<div id="intro" class="screen active">
+  <div class="intro-content">
+    <span class="intro-tag">🎢 Mr. Goddard's Maths — IGCSE Calculus</span>
+    <div class="intro-title">THUNDER<br>PEAK</div>
+    <p class="intro-sub">
+      You've just been hired as a <strong>junior engineer at ThunderPeak Rides</strong>.<br>
+      Analyse the roller coaster using <strong>tangent gradients</strong>, then build your own track and launch the cart!
+    </p>
+
+    <div class="name-row">
+      <input class="name-input" id="studentName" type="text" placeholder="Your name" autocomplete="name">
+      <button class="btn-main" id="startBtn" onclick="startLearn()" disabled>Board the ride →</button>
+    </div>
+
+    <div class="intro-steps">
+      <div class="step-pill">
+        <span class="step-num">1</span>
+        Analyse the track using tangent gradients
+      </div>
+      <div class="step-pill">
+        <span class="step-num">2</span>
+        Design your own roller coaster
+      </div>
+      <div class="step-pill">
+        <span class="step-num">3</span>
+        Launch the cart — make it fly as far as possible!
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ LEARN ═══════ -->
+<div id="learn" class="screen">
+  <div class="top-bar">
+    <div class="logo">Thunder<span>Peak</span></div>
+    <div class="top-right">
+      <span class="phase-badge">Phase 1: Analysis</span>
+      <span class="score-display" id="learnScore">0 pts</span>
+    </div>
+  </div>
+
+  <div class="learn-layout">
+    <div class="graph-area">
+      <div class="graph-instructions" id="graphInstr">Click two points on the graph to draw your tangent line</div>
+      <canvas id="graphCanvas"></canvas>
+    </div>
+
+    <div class="question-panel">
+      <div class="qp-header">
+        <div class="q-num-badge" id="qNumBadge">Q1</div>
+        <div>
+          <div class="q-text" id="qText">Loading question...</div>
+          <div class="q-context" id="qContext"></div>
+        </div>
+      </div>
+
+      <div class="answer-row">
+        <span class="ans-label">Gradient =</span>
+        <input class="ans-input" id="ansInput" type="number" step="0.01" placeholder="e.g. −0.40">
+        <button class="btn-check" id="checkBtn" onclick="checkAnswer()">Check →</button>
+      </div>
+
+      <div class="feedback-text" id="feedbackText"></div>
+
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
+      </div>
+
+      <div class="q-nav" id="qNav"></div>
+
+      <button class="btn-next-q" id="nextQBtn" onclick="nextQuestion()">Next question →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ BUILD ═══════ -->
+<div id="build" class="screen">
+  <div class="top-bar">
+    <div class="logo">Thunder<span>Peak</span></div>
+    <div class="top-right">
+      <span class="phase-badge">Phase 2: Build Your Track</span>
+    </div>
+  </div>
+
+  <div class="build-layout">
+    <div class="build-header-text">
+      <h2>🏗 Design Your Ride</h2>
+      <p>Drag the white control points to reshape the track. Build something wild — or aim for maximum airtime!</p>
+    </div>
+
+    <div class="build-canvas-wrap">
+      <canvas id="buildCanvas"></canvas>
+    </div>
+
+    <div class="build-hint">
+      💡 Tip: A steep ramp at the end launches the cart higher. A sudden drop mid-track can derail it!
+    </div>
+
+    <div class="build-controls">
+      <button class="btn-build secondary" onclick="resetTrack()">↺ Reset to default</button>
+      <button class="btn-build primary" onclick="goToPlay()">✓ Lock in my track</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ PLAY ═══════ -->
+<div id="play" class="screen">
+  <div class="top-bar">
+    <div class="logo">Thunder<span>Peak</span></div>
+    <div class="top-right">
+      <span class="phase-badge">Phase 3: Launch!</span>
+    </div>
+  </div>
+
+  <div class="play-layout">
+    <div class="play-canvas-wrap">
+      <canvas id="playCanvas"></canvas>
+    </div>
+
+    <div class="play-hud">
+      <div class="hud-box">
+        <div class="hud-label">Speed</div>
+        <div class="hud-val teal" id="hudSpeed">0</div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.3)">m/s</div>
+      </div>
+      <div class="hud-box">
+        <div class="hud-label">Height</div>
+        <div class="hud-val" id="hudHeight">0</div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.3)">m</div>
+      </div>
+      <div class="hud-box">
+        <div class="hud-label">Distance Flown</div>
+        <div class="hud-val green" id="hudDist">—</div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.3)">m</div>
+      </div>
+      <div class="hud-box">
+        <div class="hud-label">Status</div>
+        <div class="hud-val" id="hudStatus" style="font-size:1rem;margin-top:4px">Ready</div>
+      </div>
+    </div>
+
+    <div class="play-btns">
+      <button class="btn-build secondary" onclick="goToBuild()">← Edit track</button>
+      <button class="btn-build danger" id="launchBtn" onclick="launchCart()">🚀 LAUNCH!</button>
+      <button class="btn-build primary" id="finishBtn" onclick="goToResult()" style="display:none">See Results →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ RESULT ═══════ -->
+<div id="result" class="screen">
+  <div class="result-content">
+    <span class="result-emoji" id="resultEmoji">🎢</span>
+    <div class="result-title" id="resultTitle">RIDE COMPLETE!</div>
+    <div class="result-sub" id="resultSub">Here's how you did today.</div>
+
+    <div class="score-grid">
+      <div class="score-box">
+        <div class="sb-val" id="resMathScore">0</div>
+        <div class="sb-label">Maths Score</div>
+      </div>
+      <div class="score-box">
+        <div class="sb-val" id="resFlightDist">0m</div>
+        <div class="sb-label">Flight Distance</div>
+      </div>
+      <div class="score-box">
+        <div class="sb-val" id="resTotal">0</div>
+        <div class="sb-label">Total Points</div>
+      </div>
+    </div>
+
+    <div class="submission-box">
+      <pre id="submissionText"></pre>
+      <button class="copy-btn" onclick="copySubmission()">📋 Copy for Google Classroom</button>
+    </div>
+
+    <button class="btn-restart" onclick="restartAll()">🔄 Ride again</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+// STARS
+// ══════════════════════════════════════════════════════════════
+(function() {
+  var c = document.getElementById('starsCanvas');
+  var ctx = c.getContext('2d');
+  c.width = window.innerWidth;
+  c.height = window.innerHeight;
+  for(var i = 0; i < 180; i++) {
+    var x = Math.random() * c.width;
+    var y = Math.random() * c.height;
+    var r = Math.random() * 1.4;
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(255,255,255,' + (0.3 + Math.random() * 0.7) + ')';
+    ctx.fill();
+  }
+})();
+
+// ══════════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════════
+var studentName = '';
+var learnScore = 0;
+var questionResults = [];
+var flightDistance = 0;
+var cartLaunched = false;
+var animFrame = null;
+
+// Name input enable
+document.getElementById('studentName').addEventListener('input', function() {
+  document.getElementById('startBtn').disabled = this.value.trim().length < 2;
+});
+document.getElementById('studentName').addEventListener('keydown', function(e) {
+  if(e.key === 'Enter' && this.value.trim().length >= 2) startLearn();
+});
+
+// ══════════════════════════════════════════════════════════════
+// ROLLER COASTER TRACK DATA
+// Control points [x_metres, height_metres]
+// Canvas maps: x 0-800m -> pixel, y 0-140m -> pixel
+// ══════════════════════════════════════════════════════════════
+var TRACK_W = 800;  // metres
+var TRACK_H = 140;  // metres max height
+
+// Default control points (can be dragged in build phase)
+var defaultControlPts = [
+  [0,   105],
+  [80,  108],
+  [160, 100],
+  [240, 18],
+  [300, 14],
+  [370, 78],
+  [440, 82],
+  [510, 28],
+  [580, 24],
+  [640, 58],
+  [700, 54],
+  [760, 10],
+  [800, 6],
+];
+
+var controlPts;
+
+function cloneDefaultPts() {
+  controlPts = defaultControlPts.map(function(p) { return [p[0], p[1]]; });
+}
+cloneDefaultPts();
+
+// Catmull-Rom spline interpolation
+function catmullRom(p0, p1, p2, p3, t) {
+  var t2 = t * t, t3 = t2 * t;
+  return 0.5 * (
+    (2 * p1) +
+    (-p0 + p2) * t +
+    (2*p0 - 5*p1 + 4*p2 - p3) * t2 +
+    (-p0 + 3*p1 - 3*p2 + p3) * t3
+  );
+}
+
+// Get y (height) for any x along the spline
+function getTrackY(x, pts) {
+  pts = pts || controlPts;
+  // Find which segment x falls in
+  for(var i = 0; i < pts.length - 1; i++) {
+    if(x >= pts[i][0] && x <= pts[i+1][0]) {
+      var t = (x - pts[i][0]) / (pts[i+1][0] - pts[i][0]);
+      var p0 = pts[Math.max(0, i-1)];
+      var p1 = pts[i];
+      var p2 = pts[i+1];
+      var p3 = pts[Math.min(pts.length-1, i+2)];
+      return catmullRom(p0[1], p1[1], p2[1], p3[1], t);
+    }
+  }
+  return pts[pts.length-1][1];
+}
+
+// Get track as array of [x, y] pixels for drawing
+function getTrackPixels(canvas, pts) {
+  pts = pts || controlPts;
+  var W = canvas.width, H = canvas.height;
+  var pad = { l:60, r:20, t:20, b:50 };
+  var gw = W - pad.l - pad.r, gh = H - pad.t - pad.b;
+
+  var points = [];
+  for(var px = 0; px <= gw; px += 2) {
+    var mx = (px / gw) * TRACK_W;
+    var my = getTrackY(mx, pts);
+    var cy = pad.t + gh - (my / TRACK_H) * gh;
+    points.push([pad.l + px, cy]);
+  }
+  return points;
+}
+
+// Convert metre coords to canvas pixels
+function toCanvas(canvas, mx, my) {
+  var W = canvas.width, H = canvas.height;
+  var pad = { l:60, r:20, t:20, b:50 };
+  var gw = W - pad.l - pad.r, gh = H - pad.t - pad.b;
+  return [
+    pad.l + (mx / TRACK_W) * gw,
+    pad.t + gh - (my / TRACK_H) * gh
+  ];
+}
+
+function fromCanvas(canvas, cx, cy) {
+  var W = canvas.width, H = canvas.height;
+  var pad = { l:60, r:20, t:20, b:50 };
+  var gw = W - pad.l - pad.r, gh = H - pad.t - pad.b;
+  return [
+    ((cx - pad.l) / gw) * TRACK_W,
+    ((pad.t + gh - cy) / gh) * TRACK_H
+  ];
+}
+
+// ══════════════════════════════════════════════════════════════
+// SCREEN SWITCHING
+// ══════════════════════════════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
+  document.getElementById(id).classList.add('active');
+}
+
+// ══════════════════════════════════════════════════════════════
+// PHASE 1: LEARN — GRAPH + QUESTIONS
+// ══════════════════════════════════════════════════════════════
+
+// Questions: gradient at specific x-metre positions
+// True gradients computed from spline at those points
+var questions = [
+  {
+    x: 120,
+    trueGrad: -0.93,
+    question: 'The cart is at position x = 120m — the top of the first big descent.',
+    context: 'Draw a tangent to the curve at x = 120m. What is the gradient? (negative = descending)',
+    hint: 'The track drops sharply here. Your tangent should slope steeply downward. Gradient = rise ÷ run.',
+    markText: 'This shows the track is falling steeply — about 0.9m of height lost per metre travelled.'
+  },
+  {
+    x: 300,
+    trueGrad: 0.00,
+    question: 'At x = 300m — the cart has reached the bottom of the first valley.',
+    context: 'Draw a tangent at x = 300m. What is the gradient here?',
+    hint: 'Think carefully — at the very bottom of a curve, what does the tangent look like? It should be roughly horizontal.',
+    markText: 'The gradient at the minimum point is 0. The tangent is horizontal — the track momentarily levels out.'
+  },
+  {
+    x: 440,
+    trueGrad: -0.02,
+    question: 'At x = 440m — near the top of the second hill.',
+    context: 'Draw a tangent at x = 440m. What is the gradient?',
+    hint: 'Near the peak of a hill the track is almost flat. The gradient should be very close to zero.',
+    markText: 'Near the crest the gradient is approximately 0. The cart is almost level before it begins descending.'
+  },
+  {
+    x: 560,
+    trueGrad: -0.88,
+    question: 'At x = 560m — mid-descent on the second big drop.',
+    context: 'Draw a tangent at x = 560m. What is the gradient?',
+    hint: 'The track drops steeply here again. Gradient will be negative and fairly large in magnitude.',
+    markText: 'The track descends steeply here — nearly 0.9m of height per metre of horizontal travel.'
+  },
+];
+
+// Recompute true gradients from actual spline
+function recomputeGradients() {
+  questions.forEach(function(q) {
+    var dx = 4;
+    var y1 = getTrackY(q.x - dx, defaultControlPts);
+    var y2 = getTrackY(q.x + dx, defaultControlPts);
+    q.trueGrad = (y2 - y1) / (2 * dx);
+  });
+}
+recomputeGradients();
+
+var currentQ = 0;
+var qAnswered = [false, false, false, false];
+var qScores = [0, 0, 0, 0];
+
+// Tangent drawing state
+var tangentPt1 = null;
+var tangentPt2 = null;
+var tangentStep = 0; // 0=none, 1=first pt placed, 2=both placed
+
+function startLearn() {
+  studentName = document.getElementById('studentName').value.trim();
+  if(studentName.length < 2) return;
+  showScreen('learn');
+  setTimeout(function() {
+    initGraphCanvas();
+    loadQuestion(0);
+  }, 50);
+}
+
+function initGraphCanvas() {
+  var canvas = document.getElementById('graphCanvas');
+  var wrap = canvas.parentElement;
+  var W = wrap.clientWidth;
+  var H = Math.min(320, Math.round(W * 0.42));
+  canvas.width = W;
+  canvas.height = H;
+  drawGraph();
+
+  canvas.addEventListener('click', onGraphClick);
+}
+
+function onGraphClick(e) {
+  if(qAnswered[currentQ]) return;
+  var canvas = document.getElementById('graphCanvas');
+  var rect = canvas.getBoundingClientRect();
+  var scaleX = canvas.width / rect.width;
+  var scaleY = canvas.height / rect.height;
+  var cx = (e.clientX - rect.left) * scaleX;
+  var cy = (e.clientY - rect.top) * scaleY;
+
+  var metres = fromCanvas(canvas, cx, cy);
+
+  // Clamp to graph area
+  var pad = {l:60, r:20, t:20, b:50};
+  if(cx < pad.l || cx > canvas.width - pad.r || cy < pad.t || cy > canvas.height - pad.b) return;
+
+  if(tangentStep === 0) {
+    tangentPt1 = [cx, cy];
+    tangentStep = 1;
+    document.getElementById('graphInstr').textContent = 'Good! Now click a second point to complete your tangent line.';
+  } else if(tangentStep === 1) {
+    tangentPt2 = [cx, cy];
+    tangentStep = 2;
+    document.getElementById('graphInstr').textContent = 'Tangent drawn! Calculate the gradient and enter it below.';
+    document.getElementById('checkBtn').disabled = false;
+  } else {
+    // Reset
+    tangentPt1 = [cx, cy];
+    tangentPt2 = null;
+    tangentStep = 1;
+    document.getElementById('graphInstr').textContent = 'Now click a second point.';
+    document.getElementById('checkBtn').disabled = true;
+  }
+  drawGraph();
+}
+
+function drawGraph() {
+  var canvas = document.getElementById('graphCanvas');
+  var ctx = canvas.getContext('2d');
+  var W = canvas.width, H = canvas.height;
+  var pad = {l:60, r:20, t:20, b:50};
+  var gw = W - pad.l - pad.r, gh = H - pad.t - pad.b;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // Sky gradient background
+  var skyGrad = ctx.createLinearGradient(0, 0, 0, H);
+  skyGrad.addColorStop(0, '#0a1628');
+  skyGrad.addColorStop(1, '#1a2a4a');
+  ctx.fillStyle = skyGrad;
+  ctx.fillRect(0, 0, W, H);
+
+  // Grid
+  ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+  ctx.lineWidth = 1;
+  for(var gx = 0; gx <= 8; gx++) {
+    var px = pad.l + (gx/8) * gw;
+    ctx.beginPath(); ctx.moveTo(px, pad.t); ctx.lineTo(px, pad.t + gh); ctx.stroke();
+  }
+  for(var gy = 0; gy <= 7; gy++) {
+    var py = pad.t + (gy/7) * gh;
+    ctx.beginPath(); ctx.moveTo(pad.l, py); ctx.lineTo(pad.l + gw, py); ctx.stroke();
+  }
+
+  // Axes
+  ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(pad.l, pad.t); ctx.lineTo(pad.l, pad.t + gh); ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(pad.l, pad.t + gh); ctx.lineTo(pad.l + gw, pad.t + gh); ctx.stroke();
+
+  // Axis labels
+  ctx.fillStyle = 'rgba(255,255,255,0.45)';
+  ctx.font = '10px Nunito';
+  ctx.textAlign = 'right';
+  for(var i = 0; i <= 7; i++) {
+    var hVal = Math.round(TRACK_H - (i / 7) * TRACK_H);
+    var py2 = pad.t + (i / 7) * gh;
+    ctx.fillText(hVal + 'm', pad.l - 6, py2 + 4);
+  }
+  ctx.textAlign = 'center';
+  for(var j = 0; j <= 8; j++) {
+    var xVal = Math.round((j / 8) * TRACK_W);
+    var px2 = pad.l + (j / 8) * gw;
+    ctx.fillText(xVal, px2, pad.t + gh + 16);
+  }
+
+  // Axis titles
+  ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  ctx.font = 'bold 11px Nunito';
+  ctx.textAlign = 'center';
+  ctx.fillText('Horizontal distance (m)', pad.l + gw/2, H - 4);
+  ctx.save();
+  ctx.translate(14, pad.t + gh/2);
+  ctx.rotate(-Math.PI/2);
+  ctx.fillText('Height (m)', 0, 0);
+  ctx.restore();
+
+  // Ground fill under track
+  var trackPts = getTrackPixels(canvas);
+  ctx.beginPath();
+  ctx.moveTo(trackPts[0][0], trackPts[0][1]);
+  trackPts.forEach(function(p) { ctx.lineTo(p[0], p[1]); });
+  ctx.lineTo(trackPts[trackPts.length-1][0], pad.t + gh);
+  ctx.lineTo(pad.l, pad.t + gh);
+  ctx.closePath();
+  var groundGrad = ctx.createLinearGradient(0, pad.t, 0, pad.t + gh);
+  groundGrad.addColorStop(0, 'rgba(46,204,113,0.25)');
+  groundGrad.addColorStop(1, 'rgba(46,204,113,0.05)');
+  ctx.fillStyle = groundGrad;
+  ctx.fill();
+
+  // Track line
+  ctx.beginPath();
+  ctx.moveTo(trackPts[0][0], trackPts[0][1]);
+  trackPts.forEach(function(p) { ctx.lineTo(p[0], p[1]); });
+  ctx.strokeStyle = '#2ecc71';
+  ctx.lineWidth = 3;
+  ctx.lineJoin = 'round';
+  ctx.stroke();
+
+  // Track rails
+  ctx.strokeStyle = '#27ae60';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([4, 4]);
+  ctx.beginPath();
+  trackPts.forEach(function(p, idx) {
+    if(idx === 0) ctx.moveTo(p[0], p[1]-3);
+    else ctx.lineTo(p[0], p[1]-3);
+  });
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Question marker (vertical dashed line at question x)
+  if(currentQ < questions.length) {
+    var qx = questions[currentQ].x;
+    var cpx = toCanvas(canvas, qx, 0);
+    ctx.strokeStyle = 'rgba(245,166,35,0.7)';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([5, 4]);
+    ctx.beginPath();
+    ctx.moveTo(cpx[0], pad.t);
+    ctx.lineTo(cpx[0], pad.t + gh);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Marker dot on track
+    var qy = getTrackY(qx);
+    var cpy = toCanvas(canvas, qx, qy);
+    ctx.beginPath();
+    ctx.arc(cpy[0], cpy[1], 6, 0, Math.PI*2);
+    ctx.fillStyle = '#f5a623';
+    ctx.fill();
+    ctx.strokeStyle = 'white';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Label
+    ctx.fillStyle = '#f5a623';
+    ctx.font = 'bold 11px Nunito';
+    ctx.textAlign = 'center';
+    ctx.fillText('x = '+qx+'m', cpx[0], pad.t + 14);
+  }
+
+  // Draw answered tangents (greyed)
+  for(var qi2 = 0; qi2 < currentQ; qi2++) {
+    if(qAnswered[qi2] && questions[qi2]._tan1) {
+      drawTangentLine(ctx, questions[qi2]._tan1, questions[qi2]._tan2, 'rgba(100,150,255,0.2)', 1.5, false);
+    }
+  }
+
+  // Current tangent
+  if(tangentPt1) {
+    ctx.beginPath();
+    ctx.arc(tangentPt1[0], tangentPt1[1], 5, 0, Math.PI*2);
+    ctx.fillStyle = '#e94560';
+    ctx.fill();
+  }
+  if(tangentPt1 && tangentPt2) {
+    drawTangentLine(ctx, tangentPt1, tangentPt2, '#e94560', 2, true);
+  }
+}
+
+function drawTangentLine(ctx, p1, p2, color, width, showArrows) {
+  var canvas = document.getElementById('graphCanvas');
+  var W = canvas.width;
+  // Extend the line to edges
+  if(Math.abs(p2[0] - p1[0]) < 2) return;
+  var m = (p2[1] - p1[1]) / (p2[0] - p1[0]);
+  var b = p1[1] - m * p1[0];
+  var x0 = 40, x1 = W - 10;
+  var y0 = m * x0 + b, y1 = m * x1 + b;
+
+  ctx.beginPath();
+  ctx.moveTo(x0, y0);
+  ctx.lineTo(x1, y1);
+  ctx.strokeStyle = color;
+  ctx.lineWidth = width;
+  ctx.setLineDash([6, 4]);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  if(showArrows) {
+    // Draw rise/run helper
+    ctx.strokeStyle = 'rgba(245,166,35,0.6)';
+    ctx.lineWidth = 1;
+    var midX = (p1[0] + p2[0]) / 2;
+    var midY = (p1[1] + p2[1]) / 2;
+    var runX = midX + 60;
+    var runY = m * runX + b;
+    // Horizontal (run)
+    ctx.beginPath();
+    ctx.moveTo(midX, midY);
+    ctx.lineTo(runX, midY);
+    ctx.stroke();
+    // Vertical (rise)
+    ctx.beginPath();
+    ctx.moveTo(runX, midY);
+    ctx.lineTo(runX, runY);
+    ctx.stroke();
+    // Labels
+    ctx.fillStyle = 'rgba(245,166,35,0.8)';
+    ctx.font = '10px Nunito';
+    ctx.textAlign = 'center';
+    ctx.fillText('run', midX + 30, midY - 5);
+    ctx.textAlign = 'left';
+    ctx.fillText('rise', runX + 4, (midY + runY)/2);
+  }
+}
+
+function loadQuestion(idx) {
+  currentQ = idx;
+  tangentPt1 = null;
+  tangentPt2 = null;
+  tangentStep = 0;
+
+  var q = questions[idx];
+  document.getElementById('qNumBadge').textContent = 'Q' + (idx + 1);
+  document.getElementById('qText').textContent = q.question;
+  document.getElementById('qContext').textContent = q.context;
+
+  var inp = document.getElementById('ansInput');
+  inp.value = '';
+  inp.className = 'ans-input';
+  inp.disabled = qAnswered[idx];
+
+  document.getElementById('checkBtn').disabled = !qAnswered[idx] || true;
+  if(qAnswered[idx]) {
+    document.getElementById('checkBtn').disabled = true;
+    inp.disabled = true;
+  }
+
+  document.getElementById('feedbackText').textContent = '';
+  document.getElementById('feedbackText').className = 'feedback-text';
+  document.getElementById('graphInstr').textContent = 'Click two points on the graph to draw your tangent line';
+  document.getElementById('nextQBtn').classList.remove('visible');
+
+  // Rebuild nav dots
+  var nav = document.getElementById('qNav');
+  nav.innerHTML = '';
+  questions.forEach(function(_, i) {
+    var dot = document.createElement('div');
+    dot.className = 'q-dot';
+    dot.textContent = i+1;
+    if(qAnswered[i]) {
+      if(qScores[i] >= 3) dot.classList.add('done-correct');
+      else if(qScores[i] >= 1) dot.classList.add('done-close');
+      else dot.classList.add('done-wrong');
+    }
+    if(i === idx) dot.classList.add('current');
+    dot.onclick = (function(qi3) { return function() { loadQuestion(qi3); }; })(i);
+    nav.appendChild(dot);
+  });
+
+  // Progress
+  var done = qAnswered.filter(Boolean).length;
+  document.getElementById('progressFill').style.width = (done / questions.length * 100) + '%';
+
+  drawGraph();
+}
+
+function checkAnswer() {
+  if(qAnswered[currentQ]) return;
+  var inp = document.getElementById('ansInput');
+  var val = parseFloat(inp.value);
+  if(isNaN(val)) { showToast('Please enter a number'); return; }
+
+  var q = questions[currentQ];
+  var diff = Math.abs(val - q.trueGrad);
+  var fb = document.getElementById('feedbackText');
+  var pts = 0;
+
+  // Save tangent for display
+  q._tan1 = tangentPt1 ? [tangentPt1[0], tangentPt1[1]] : null;
+  q._tan2 = tangentPt2 ? [tangentPt2[0], tangentPt2[1]] : null;
+
+  if(diff <= 0.12) {
+    pts = 3;
+    fb.textContent = '✓ Correct! Gradient ≈ ' + q.trueGrad.toFixed(2) + '. ' + q.markText;
+    fb.className = 'feedback-text correct';
+    inp.className = 'ans-input correct';
+  } else if(diff <= 0.25) {
+    pts = 1;
+    fb.textContent = '△ Close! True gradient ≈ ' + q.trueGrad.toFixed(2) + '. ' + q.markText;
+    fb.className = 'feedback-text close';
+    inp.className = 'ans-input close';
+  } else {
+    pts = 0;
+    fb.textContent = '✗ Not quite. True gradient ≈ ' + q.trueGrad.toFixed(2) + '. Hint: ' + q.hint;
+    fb.className = 'feedback-text wrong';
+    inp.className = 'ans-input wrong';
+  }
+
+  qScores[currentQ] = pts;
+  qAnswered[currentQ] = true;
+  learnScore += pts;
+  questionResults.push({ q: currentQ+1, val: val, true: q.trueGrad.toFixed(2), pts: pts });
+
+  document.getElementById('learnScore').textContent = learnScore + ' pts';
+  document.getElementById('checkBtn').disabled = true;
+  inp.disabled = true;
+
+  var nextBtn = document.getElementById('nextQBtn');
+  if(currentQ < questions.length - 1) {
+    nextBtn.textContent = 'Next question →';
+  } else {
+    nextBtn.textContent = 'Build your track! →';
+    nextBtn.onclick = goToBuildPhase;
+  }
+  nextBtn.classList.add('visible');
+
+  var done = qAnswered.filter(Boolean).length;
+  document.getElementById('progressFill').style.width = (done / questions.length * 100) + '%';
+
+  drawGraph();
+}
+
+function nextQuestion() {
+  if(currentQ < questions.length - 1) {
+    loadQuestion(currentQ + 1);
+  } else {
+    goToBuildPhase();
+  }
+}
+
+function goToBuildPhase() {
+  showScreen('build');
+  setTimeout(initBuildCanvas, 50);
+}
+
+// ══════════════════════════════════════════════════════════════
+// PHASE 2: BUILD
+// ══════════════════════════════════════════════════════════════
+var dragIdx = -1;
+var isDragging = false;
+
+function initBuildCanvas() {
+  var canvas = document.getElementById('buildCanvas');
+  var wrap = canvas.parentElement;
+  var W = wrap.clientWidth;
+  var H = Math.min(340, Math.round(W * 0.45));
+  canvas.width = W;
+  canvas.height = H;
+  drawBuild();
+
+  canvas.addEventListener('mousedown', onBuildDown);
+  canvas.addEventListener('mousemove', onBuildMove);
+  canvas.addEventListener('mouseup', onBuildUp);
+  canvas.addEventListener('touchstart', onBuildTouchStart, {passive:false});
+  canvas.addEventListener('touchmove', onBuildTouchMove, {passive:false});
+  canvas.addEventListener('touchend', onBuildUp);
+}
+
+function getBuildPt(e) {
+  var canvas = document.getElementById('buildCanvas');
+  var rect = canvas.getBoundingClientRect();
+  var scaleX = canvas.width / rect.width;
+  var scaleY = canvas.height / rect.height;
+  var src = e.touches ? e.touches[0] : e;
+  return [(src.clientX - rect.left) * scaleX, (src.clientY - rect.top) * scaleY];
+}
+
+function onBuildDown(e) {
+  var pt = getBuildPt(e);
+  findDragTarget(pt);
+}
+
+function onBuildTouchStart(e) {
+  e.preventDefault();
+  var pt = getBuildPt(e);
+  findDragTarget(pt);
+}
+
+function findDragTarget(pt) {
+  var canvas = document.getElementById('buildCanvas');
+  var minDist = 25;
+  dragIdx = -1;
+  controlPts.forEach(function(cp, i) {
+    var cpx = toCanvas(canvas, cp[0], cp[1]);
+    var dx = pt[0] - cpx[0], dy = pt[1] - cpx[1];
+    var dist = Math.sqrt(dx*dx + dy*dy);
+    if(dist < minDist) { minDist = dist; dragIdx = i; }
+  });
+  if(dragIdx >= 0) {
+    isDragging = true;
+    document.getElementById('buildCanvas').classList.add('grabbing');
+  }
+}
+
+function onBuildMove(e) {
+  if(!isDragging || dragIdx < 0) return;
+  var pt = getBuildPt(e);
+  moveDragPt(pt);
+}
+
+function onBuildTouchMove(e) {
+  e.preventDefault();
+  if(!isDragging || dragIdx < 0) return;
+  var pt = getBuildPt(e);
+  moveDragPt(pt);
+}
+
+function moveDragPt(pt) {
+  var canvas = document.getElementById('buildCanvas');
+  var metres = fromCanvas(canvas, pt[0], pt[1]);
+  // Lock x position, only move y, clamp height
+  controlPts[dragIdx][1] = Math.max(4, Math.min(TRACK_H - 4, metres[1]));
+  drawBuild();
+}
+
+function onBuildUp() {
+  isDragging = false;
+  dragIdx = -1;
+  document.getElementById('buildCanvas').classList.remove('grabbing');
+}
+
+function drawBuild() {
+  var canvas = document.getElementById('buildCanvas');
+  var ctx = canvas.getContext('2d');
+  var W = canvas.width, H = canvas.height;
+  var pad = {l:50, r:20, t:20, b:45};
+  var gw = W - pad.l - pad.r, gh = H - pad.t - pad.b;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // Background
+  var skyGrad = ctx.createLinearGradient(0, 0, 0, H);
+  skyGrad.addColorStop(0, '#050d20');
+  skyGrad.addColorStop(1, '#0a1a30');
+  ctx.fillStyle = skyGrad;
+  ctx.fillRect(0, 0, W, H);
+
+  // Grid
+  ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+  ctx.lineWidth = 1;
+  for(var i = 0; i <= 8; i++) {
+    var px = pad.l + (i/8)*gw;
+    ctx.beginPath(); ctx.moveTo(px, pad.t); ctx.lineTo(px, pad.t+gh); ctx.stroke();
+  }
+  for(var j = 0; j <= 7; j++) {
+    var py = pad.t + (j/7)*gh;
+    ctx.beginPath(); ctx.moveTo(pad.l, py); ctx.lineTo(pad.l+gw, py); ctx.stroke();
+  }
+
+  // Axes
+  ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(pad.l, pad.t); ctx.lineTo(pad.l, pad.t+gh); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(pad.l, pad.t+gh); ctx.lineTo(pad.l+gw, pad.t+gh); ctx.stroke();
+
+  // Axis labels
+  ctx.fillStyle = 'rgba(255,255,255,0.35)';
+  ctx.font = '10px Nunito';
+  ctx.textAlign = 'right';
+  for(var k = 0; k <= 4; k++) {
+    var hv = Math.round(TRACK_H - (k/4)*TRACK_H);
+    ctx.fillText(hv+'m', pad.l-5, pad.t + (k/4)*gh + 4);
+  }
+  ctx.textAlign = 'center';
+  for(var m = 0; m <= 4; m++) {
+    var xv = Math.round((m/4)*TRACK_W);
+    ctx.fillText(xv, pad.l + (m/4)*gw, pad.t+gh+16);
+  }
+
+  // Ground
+  ctx.fillStyle = 'rgba(101,67,33,0.4)';
+  ctx.fillRect(pad.l, pad.t+gh, gw, 8);
+
+  // Track fill
+  var tpts = getTrackPixels(canvas);
+  ctx.beginPath();
+  ctx.moveTo(tpts[0][0], tpts[0][1]);
+  tpts.forEach(function(p) { ctx.lineTo(p[0], p[1]); });
+  ctx.lineTo(tpts[tpts.length-1][0], pad.t+gh);
+  ctx.lineTo(pad.l, pad.t+gh);
+  ctx.closePath();
+  var fg = ctx.createLinearGradient(0, pad.t, 0, pad.t+gh);
+  fg.addColorStop(0, 'rgba(200,168,75,0.2)');
+  fg.addColorStop(1, 'rgba(139,105,20,0.08)');
+  ctx.fillStyle = fg;
+  ctx.fill();
+
+  // Track (rail lower)
+  ctx.beginPath();
+  ctx.moveTo(tpts[0][0], tpts[0][1]+4);
+  tpts.forEach(function(p) { ctx.lineTo(p[0], p[1]+4); });
+  ctx.strokeStyle = '#8B6914';
+  ctx.lineWidth = 5;
+  ctx.lineJoin = 'round';
+  ctx.stroke();
+
+  // Track (rail upper)
+  ctx.beginPath();
+  ctx.moveTo(tpts[0][0], tpts[0][1]);
+  tpts.forEach(function(p) { ctx.lineTo(p[0], p[1]); });
+  ctx.strokeStyle = '#C8A84B';
+  ctx.lineWidth = 3;
+  ctx.stroke();
+
+  // Cross-ties
+  for(var ti = 0; ti < tpts.length; ti += 20) {
+    if(tpts[ti]) {
+      ctx.beginPath();
+      ctx.moveTo(tpts[ti][0]-2, tpts[ti][1]-3);
+      ctx.lineTo(tpts[ti][0]+2, tpts[ti][1]+3);
+      ctx.strokeStyle = '#8B6914';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+  }
+
+  // Control points
+  controlPts.forEach(function(cp, i) {
+    var cpx = toCanvas(canvas, cp[0], cp[1]);
+    // Lock first and last x
+    ctx.beginPath();
+    ctx.arc(cpx[0], cpx[1], i===dragIdx ? 9 : 7, 0, Math.PI*2);
+    ctx.fillStyle = i===0 || i===controlPts.length-1 ? 'rgba(100,200,255,0.7)' : 'rgba(255,255,255,0.8)';
+    ctx.fill();
+    ctx.strokeStyle = i===dragIdx ? '#f5a623' : 'rgba(255,255,255,0.4)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  });
+
+  // Labels
+  ctx.fillStyle = 'rgba(255,255,255,0.4)';
+  ctx.font = '11px Nunito';
+  ctx.textAlign = 'center';
+  ctx.fillText('Horizontal distance (m)', pad.l+gw/2, H-4);
+  ctx.save();
+  ctx.translate(12, pad.t+gh/2);
+  ctx.rotate(-Math.PI/2);
+  ctx.fillText('Height (m)', 0, 0);
+  ctx.restore();
+}
+
+function resetTrack() {
+  cloneDefaultPts();
+  drawBuild();
+}
+
+function goToPlay() {
+  showScreen('play');
+  setTimeout(initPlayCanvas, 50);
+}
+
+function goToBuild() {
+  if(animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
+  showScreen('build');
+  drawBuild();
+}
+
+// ══════════════════════════════════════════════════════════════
+// PHASE 3: PLAY — CART ANIMATION + PHYSICS
+// ══════════════════════════════════════════════════════════════
+var cart = null;
+var playState = 'ready'; // ready, running, flying, landed
+
+function initPlayCanvas() {
+  var canvas = document.getElementById('playCanvas');
+  var wrap = canvas.parentElement;
+  var W = wrap.clientWidth;
+  var H = Math.min(360, Math.round(W * 0.48));
+  canvas.width = W;
+  canvas.height = H;
+  playState = 'ready';
+  cart = null;
+  cartLaunched = false;
+  flightDistance = 0;
+  document.getElementById('hudSpeed').textContent = '0';
+  document.getElementById('hudHeight').textContent = '0';
+  document.getElementById('hudDist').textContent = '—';
+  document.getElementById('hudStatus').textContent = 'Ready';
+  document.getElementById('hudStatus').style.color = '';
+  document.getElementById('launchBtn').style.display = '';
+  document.getElementById('finishBtn').style.display = 'none';
+  drawPlayStatic();
+}
+
+function drawPlayStatic() {
+  var canvas = document.getElementById('playCanvas');
+  var ctx = canvas.getContext('2d');
+  drawPlayFrame(ctx, canvas, null);
+}
+
+function launchCart() {
+  if(playState !== 'ready') {
+    // Reset
+    if(animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
+    initPlayCanvas();
+    return;
+  }
+
+  // Init cart at start of track
+  var startY = getTrackY(0, controlPts);
+  cart = {
+    x: 0,          // metres along track
+    y: startY,     // height metres
+    vx: 0,         // velocity x m/s
+    vy: 0,         // velocity y m/s
+    speed: 0,      // m/s along track
+    onTrack: true,
+    landX: null,
+    landed: false,
+    bounces: 0,
+    slideX: null,
+    maxFlightX: 0,
+    launchX: null,
+    launchY: null,
+  };
+
+  // Initial speed from height (energy conservation)
+  var topH = Math.max.apply(null, controlPts.map(function(p){return p[1];}));
+  cart.speed = Math.sqrt(2 * 9.8 * (topH - startY + 50)); // give initial push too
+  cart.speed = Math.max(cart.speed, 15);
+
+  playState = 'running';
+  document.getElementById('launchBtn').textContent = '↺ Reset';
+  document.getElementById('hudStatus').textContent = 'On track!';
+
+  var lastTime = null;
+
+  function step(ts) {
+    if(!lastTime) lastTime = ts;
+    var dt = Math.min((ts - lastTime) / 1000, 0.04);
+    lastTime = ts;
+    updateCart(dt);
+    var ctx = document.getElementById('playCanvas').getContext('2d');
+    drawPlayFrame(ctx, document.getElementById('playCanvas'), cart);
+    if(playState !== 'done') {
+      animFrame = requestAnimationFrame(step);
+    } else {
+      document.getElementById('finishBtn').style.display = '';
+      document.getElementById('hudStatus').textContent = 'Landed!';
+      document.getElementById('hudStatus').style.color = '#2ecc71';
+      cartLaunched = true;
+    }
+  }
+  animFrame = requestAnimationFrame(step);
+}
+
+function updateCart(dt) {
+  var G = 9.8; // m/s^2
+  var FRICTION = 0.992;
+  var SPEED_SCALE = 5; // pixels to metres scale for fun speeds
+
+  if(cart.onTrack) {
+    // Move along track using energy conservation
+    var currentH = getTrackY(cart.x, controlPts);
+    var dx = 4; // metres per frame step (track speed)
+
+    // Get gradient at current position
+    var dy = getTrackY(cart.x + 1, controlPts) - getTrackY(cart.x - 1, controlPts);
+    var gradient = dy / 2;
+
+    // Speed based on height change (energy conservation simplified)
+    // v^2 = v0^2 + 2g*delta_h
+    var nextH = getTrackY(cart.x + dx, controlPts);
+    var dh = nextH - currentH;
+    var newSpeedSq = cart.speed * cart.speed - 2 * G * dh;
+    if(newSpeedSq < 0.5) newSpeedSq = 0.5;
+    cart.speed = Math.sqrt(newSpeedSq) * FRICTION;
+
+    cart.x += cart.speed * dt * SPEED_SCALE;
+    cart.y = getTrackY(cart.x, controlPts);
+
+    // Update HUD
+    document.getElementById('hudSpeed').textContent = Math.round(cart.speed);
+    document.getElementById('hudHeight').textContent = Math.round(cart.y);
+
+    // Check if reached end of track
+    if(cart.x >= TRACK_W) {
+      // Launched off end
+      var endGrad = (getTrackY(TRACK_W, controlPts) - getTrackY(TRACK_W - 10, controlPts)) / 10;
+      var angle = Math.atan(endGrad);
+      cart.vx = cart.speed * SPEED_SCALE * Math.cos(angle) * 0.3;
+      cart.vy = cart.speed * SPEED_SCALE * Math.sin(angle) * 0.3;
+      cart.onTrack = false;
+      cart.launchX = cart.x;
+      cart.launchY = cart.y;
+      playState = 'flying';
+      document.getElementById('hudStatus').textContent = 'AIRBORNE! 🚀';
+      document.getElementById('hudStatus').style.color = '#f5a623';
+    }
+
+    // Check for early derailment — if gradient too steep and speed too low
+    // or if track goes negative (underground - shouldn't happen with clamped pts)
+    if(cart.speed < 1 && currentH < 5) {
+      cart.onTrack = false;
+      cart.launchX = cart.x;
+      cart.launchY = cart.y;
+      cart.vx = 2; cart.vy = 1;
+      playState = 'flying';
+    }
+
+  } else if(playState === 'flying') {
+    // Projectile motion
+    cart.x += cart.vx * dt * 10;
+    cart.vy -= G * dt * 2;
+    cart.y += cart.vy * dt * 10;
+
+    document.getElementById('hudSpeed').textContent = Math.round(Math.sqrt(cart.vx*cart.vx + cart.vy*cart.vy) * 3);
+    document.getElementById('hudHeight').textContent = Math.max(0, Math.round(cart.y));
+
+    var trackY = getTrackY(Math.min(cart.x, TRACK_W), controlPts);
+    var groundY = 0;
+
+    // Hit the ground or track
+    if(cart.y <= groundY || (cart.x < TRACK_W && cart.y <= trackY && cart.vy < 0)) {
+      // Landed
+      cart.y = Math.max(groundY, 0);
+      cart.vy = -cart.vy * 0.25; // bounce
+      cart.vx = cart.vx * 0.6;
+      cart.bounces++;
+
+      if(cart.launchX !== null) {
+        var flightDist = Math.max(0, cart.x - cart.launchX);
+        if(flightDist > flightDistance) flightDistance = flightDist;
+        document.getElementById('hudDist').textContent = Math.round(flightDist) + 'm';
+        cart.maxFlightX = cart.x;
+      }
+
+      if(Math.abs(cart.vy) < 2 && Math.abs(cart.vx) < 1) {
+        playState = 'done';
+      }
+    }
+
+    // Off the right side
+    if(cart.x > TRACK_W + 200) {
+      playState = 'done';
+      flightDistance = Math.max(flightDistance, cart.x - (cart.launchX || TRACK_W));
+      document.getElementById('hudDist').textContent = Math.round(flightDistance) + 'm';
+    }
+  }
+}
+
+function drawPlayFrame(ctx, canvas, cart) {
+  var W = canvas.width, H = canvas.height;
+  var pad = {l:50, r:30, t:20, b:45};
+  var gw = W - pad.l - pad.r, gh = H - pad.t - pad.b;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // Night sky
+  var skyGrad = ctx.createLinearGradient(0, 0, 0, H);
+  skyGrad.addColorStop(0, '#020820');
+  skyGrad.addColorStop(1, '#081428');
+  ctx.fillStyle = skyGrad;
+  ctx.fillRect(0, 0, W, H);
+
+  // Stars (static for play)
+  ctx.fillStyle = 'rgba(255,255,255,0.6)';
+  var seed = 42;
+  for(var s = 0; s < 60; s++) {
+    seed = (seed * 1664525 + 1013904223) & 0xffffffff;
+    var sx = ((seed >>> 0) % (W - 20)) + 10;
+    seed = (seed * 1664525 + 1013904223) & 0xffffffff;
+    var sy = ((seed >>> 0) % (gh * 0.7)) + pad.t;
+    ctx.beginPath();
+    ctx.arc(sx, sy, 0.8, 0, Math.PI*2);
+    ctx.fill();
+  }
+
+  // Grid
+  ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+  ctx.lineWidth = 1;
+  for(var gxi = 0; gxi <= 8; gxi++) {
+    var gpx = pad.l + (gxi/8)*gw;
+    ctx.beginPath(); ctx.moveTo(gpx, pad.t); ctx.lineTo(gpx, pad.t+gh); ctx.stroke();
+  }
+
+  // Ground plane
+  var groundPY = pad.t + gh;
+  ctx.fillStyle = '#2c3e1a';
+  ctx.fillRect(pad.l, groundPY, gw + pad.r, 12);
+
+  // Dirt texture
+  ctx.fillStyle = '#3a5220';
+  for(var gi = 0; gi < 20; gi++) {
+    ctx.fillRect(pad.l + gi * (gw/20), groundPY + 2, gw/(20*2), 4);
+  }
+
+  // Track fill
+  var tpts = getTrackPixels(canvas, controlPts);
+  ctx.beginPath();
+  ctx.moveTo(tpts[0][0], tpts[0][1]);
+  tpts.forEach(function(p) { ctx.lineTo(p[0], p[1]); });
+  ctx.lineTo(tpts[tpts.length-1][0], groundPY);
+  ctx.lineTo(pad.l, groundPY);
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(200,160,50,0.12)';
+  ctx.fill();
+
+  // Track support pillars
+  for(var pi = 0; pi < tpts.length; pi += Math.floor(tpts.length/12)) {
+    if(tpts[pi]) {
+      var pillarTop = tpts[pi][1];
+      ctx.fillStyle = '#5a3a10';
+      ctx.fillRect(tpts[pi][0]-2, pillarTop, 4, groundPY - pillarTop);
+    }
+  }
+
+  // Track lower rail
+  ctx.beginPath();
+  ctx.moveTo(tpts[0][0], tpts[0][1]+5);
+  tpts.forEach(function(p) { ctx.lineTo(p[0], p[1]+5); });
+  ctx.strokeStyle = '#8B6914';
+  ctx.lineWidth = 6;
+  ctx.lineJoin = 'round';
+  ctx.stroke();
+
+  // Track upper rail (shiny)
+  var railGrad = ctx.createLinearGradient(0, 0, W, 0);
+  railGrad.addColorStop(0, '#C8A84B');
+  railGrad.addColorStop(0.5, '#F0D060');
+  railGrad.addColorStop(1, '#C8A84B');
+  ctx.beginPath();
+  ctx.moveTo(tpts[0][0], tpts[0][1]);
+  tpts.forEach(function(p) { ctx.lineTo(p[0], p[1]); });
+  ctx.strokeStyle = railGrad;
+  ctx.lineWidth = 3;
+  ctx.stroke();
+
+  // Axes
+  ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(pad.l, pad.t); ctx.lineTo(pad.l, pad.t+gh); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(pad.l, pad.t+gh); ctx.lineTo(pad.l+gw+pad.r, pad.t+gh); ctx.stroke();
+
+  // Axis labels
+  ctx.fillStyle = 'rgba(255,255,255,0.3)';
+  ctx.font = '10px Nunito';
+  ctx.textAlign = 'center';
+  for(var al = 0; al <= 4; al++) {
+    ctx.fillText(Math.round((al/4)*TRACK_W)+'m', pad.l+(al/4)*gw, pad.t+gh+16);
+  }
+
+  // Draw cart
+  if(cart) {
+    var cx, cy;
+    if(cart.onTrack) {
+      var cpx = toCanvas(canvas, Math.min(cart.x, TRACK_W), cart.y);
+      cx = cpx[0]; cy = cpx[1];
+    } else {
+      var cpx2 = toCanvas(canvas, Math.min(cart.x, TRACK_W + 150), Math.max(0, cart.y));
+      cx = cpx2[0]; cy = cpx2[1];
+    }
+
+    // Cart shadow on ground
+    ctx.beginPath();
+    ctx.ellipse(cx, groundPY + 4, 12, 3, 0, 0, Math.PI*2);
+    ctx.fillStyle = 'rgba(0,0,0,0.3)';
+    ctx.fill();
+
+    // Cart body
+    var cartW = 22, cartH = 14;
+    ctx.fillStyle = '#e94560';
+    ctx.beginPath();
+    ctx.roundRect(cx - cartW/2, cy - cartH - 4, cartW, cartH, 4);
+    ctx.fill();
+
+    // Cart shine
+    ctx.fillStyle = 'rgba(255,255,255,0.2)';
+    ctx.fillRect(cx - cartW/2 + 3, cy - cartH - 4 + 3, cartW - 6, 3);
+
+    // Wheels
+    var wheelY = cy - 4;
+    [-7, 7].forEach(function(wx) {
+      ctx.beginPath();
+      ctx.arc(cx + wx, wheelY, 5, 0, Math.PI*2);
+      ctx.fillStyle = '#333';
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(cx + wx, wheelY, 2, 0, Math.PI*2);
+      ctx.fillStyle = '#aaa';
+      ctx.fill();
+    });
+
+    // Spark trail if flying
+    if(!cart.onTrack && playState === 'flying') {
+      for(var sp = 0; sp < 6; sp++) {
+        ctx.beginPath();
+        ctx.arc(cx - 8 - sp*4, cy + (Math.random()-0.5)*6, 2-sp*0.2, 0, Math.PI*2);
+        ctx.fillStyle = 'rgba(245,166,35,' + (0.8 - sp*0.12) + ')';
+        ctx.fill();
+      }
+    }
+
+    // Flight arc indicator
+    if(cart.launchX && cart.launchY && !cart.onTrack) {
+      var lx = toCanvas(canvas, cart.launchX, cart.launchY);
+      ctx.beginPath();
+      ctx.setLineDash([3,4]);
+      ctx.moveTo(lx[0], lx[1]);
+      ctx.lineTo(cx, cy);
+      ctx.strokeStyle = 'rgba(245,166,35,0.4)';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+  }
+}
+
+function goToResult() {
+  if(animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
+  showScreen('result');
+
+  var mathPts = learnScore;
+  var flightPts = Math.min(50, Math.round(flightDistance / 5));
+  var total = mathPts + flightPts;
+
+  var emoji, title, sub;
+  if(total >= 35) { emoji = '🏆'; title = 'LEGENDARY RIDE!'; sub = 'Outstanding analysis and an incredible launch. Engineers like you build the best coasters in the world.'; }
+  else if(total >= 22) { emoji = '🎢'; title = 'GREAT RIDE!'; sub = 'Solid maths and a decent launch. Keep practising those tangent estimates!'; }
+  else if(total >= 12) { emoji = '😬'; title = 'ROUGH RIDE!'; sub = 'The cart made it — but the analysis needs work. Review your tangent gradients and try again.'; }
+  else { emoji = '💥'; title = 'WIPEOUT!'; sub = 'Not to worry — every engineer crashes a few prototypes. Have another go!'; }
+
+  document.getElementById('resultEmoji').textContent = emoji;
+  document.getElementById('resultTitle').textContent = title;
+  document.getElementById('resultSub').textContent = sub;
+  document.getElementById('resMathScore').textContent = mathPts + '/12';
+  document.getElementById('resFlightDist').textContent = Math.round(flightDistance) + 'm';
+  document.getElementById('resTotal').textContent = total;
+
+  // Build submission text
+  var lines = [
+    'ThunderPeak Roller Coaster — Student Submission',
+    'Name: ' + studentName,
+    'Date: ' + new Date().toLocaleDateString(),
+    '',
+    'MATHS ANALYSIS (Tangent Gradients)',
+    '─────────────────────────────',
+  ];
+  questions.forEach(function(q, i) {
+    var r = questionResults[i] || {val:'—', true:q.trueGrad.toFixed(2), pts:0};
+    lines.push('Q'+(i+1)+' (x='+q.x+'m): My answer = '+r.val+'  |  True ≈ '+r.true+'  |  '+r.pts+'/3 pts');
+  });
+  lines.push('');
+  lines.push('Maths score: '+mathPts+'/12');
+  lines.push('Flight distance: '+Math.round(flightDistance)+'m (+'+flightPts+' bonus pts)');
+  lines.push('TOTAL: '+total+' points');
+  document.getElementById('submissionText').textContent = lines.join('\n');
+
+  document.getElementById('resMathScore').textContent = mathPts + '/12';
+}
+
+function copySubmission() {
+  var txt = document.getElementById('submissionText').textContent;
+  navigator.clipboard.writeText(txt).then(function() {
+    showToast('Copied to clipboard!');
+  }).catch(function() {
+    showToast('Select the text and copy manually');
+  });
+}
+
+function restartAll() {
+  cloneDefaultPts();
+  learnScore = 0;
+  questionResults = [];
+  flightDistance = 0;
+  cartLaunched = false;
+  qAnswered = [false,false,false,false];
+  qScores = [0,0,0,0];
+  currentQ = 0;
+  playState = 'ready';
+  cart = null;
+  document.getElementById('learnScore').textContent = '0 pts';
+  showScreen('intro');
+}
+
+// ══════════════════════════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════════════════════════
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function() { t.classList.remove('show'); }, 2500);
+}
+
+// Enter key on answer input
+document.getElementById('ansInput').addEventListener('keydown', function(e) {
+  if(e.key === 'Enter' && !document.getElementById('checkBtn').disabled) checkAnswer();
+});
+
+// Resize handler for canvases
+window.addEventListener('resize', function() {
+  var activeScreen = document.querySelector('.screen.active');
+  if(!activeScreen) return;
+  var id = activeScreen.id;
+  if(id === 'learn') { initGraphCanvas(); loadQuestion(currentQ); }
+  if(id === 'build') { initBuildCanvas(); }
+  if(id === 'play') { initPlayCanvas(); }
+});
+</script>
+</body>
+</html>
