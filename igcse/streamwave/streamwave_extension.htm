@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StreamWave — Level 9 Clearance</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+
+:root {
+  --bg:    #F0F4FF;
+  --white: #FFFFFF;
+  --navy:  #0D1B4B;
+  --teal:  #00A896;
+  --pink:  #D63AF9;
+  --amber: #F59E0B;
+  --green: #059669;
+  --red:   #DC2626;
+  --purp:  #7C3AED;
+  --ink:   #1A1A2E;
+  --mid:   #4A5568;
+  --dim:   #718096;
+  --rule:  #E2E8F0;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── LANDING ── */
+#landing {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  background: #0A0F1E;
+  position: relative;
+  overflow: hidden;
+}
+
+#landing::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(rgba(214,58,249,0.06) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(214,58,249,0.06) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+/* Glow orbs */
+#landing::after {
+  content: '';
+  position: absolute;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(214,58,249,0.12) 0%, transparent 70%);
+  top: -100px; right: -100px;
+  pointer-events: none;
+}
+
+.glow-orb {
+  position: absolute;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(0,168,150,0.1) 0%, transparent 70%);
+  bottom: -80px; left: -80px;
+  pointer-events: none;
+}
+
+.landing-inner {
+  position: relative; z-index: 1;
+  text-align: center; max-width: 560px;
+}
+
+.classified-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(214,58,249,0.1);
+  border: 1px solid rgba(214,58,249,0.3);
+  border-radius: 999px;
+  padding: 7px 18px;
+  margin-bottom: 28px;
+  animation: badgepulse 2s ease-in-out infinite;
+}
+@keyframes badgepulse { 0%,100%{opacity:1} 50%{opacity:0.7} }
+
+.classified-badge span {
+  font-size: 12px; font-weight: 700;
+  color: var(--pink); letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.land-title {
+  font-size: clamp(2rem, 6vw, 3rem);
+  font-weight: 800;
+  color: #FFFFFF;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin-bottom: 10px;
+}
+.land-title em { color: var(--pink); font-style: normal; }
+
+.land-sub {
+  font-size: 0.95rem;
+  color: rgba(255,255,255,0.45);
+  margin-bottom: 36px;
+  line-height: 1.65;
+}
+
+/* Briefing box */
+.briefing-box {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 16px;
+  padding: 28px;
+  text-align: left;
+  margin-bottom: 24px;
+}
+
+.briefing-header {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.briefing-from {
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+}
+
+.briefing-name {
+  font-size: 14px; font-weight: 600;
+  color: var(--pink);
+}
+
+.briefing-body {
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: rgba(255,255,255,0.6);
+}
+
+.briefing-body strong { color: rgba(255,255,255,0.9); font-weight: 600; }
+
+.briefing-sig {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  font-size: 12px;
+  color: rgba(255,255,255,0.3);
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.04em;
+}
+
+.start-btn {
+  width: 100%;
+  padding: 15px;
+  background: linear-gradient(135deg, var(--pink), #9B1FD4);
+  border: none; border-radius: 12px;
+  color: white; font-family: 'Inter', sans-serif;
+  font-size: 15px; font-weight: 700;
+  cursor: pointer; transition: all 0.15s;
+  letter-spacing: 0.01em;
+  box-shadow: 0 4px 24px rgba(214,58,249,0.35);
+}
+.start-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(214,58,249,0.45); }
+
+/* ── WORKSHEET ── */
+#worksheet { display: none; }
+
+.sheet-wrap {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 24px 16px 80px;
+}
+
+/* CLASSIFIED header */
+.sheet-header {
+  background: #0A0F1E;
+  border-radius: 14px;
+  padding: 28px 32px;
+  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(214,58,249,0.2);
+}
+.sheet-header::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(214,58,249,0.12) 0%, transparent 60%);
+}
+.sh-inner {
+  position: relative; z-index: 1;
+  display: flex; align-items: flex-start;
+  justify-content: space-between; flex-wrap: wrap; gap: 16px;
+}
+.sh-left h1 { font-size: 1.5rem; font-weight: 700; color: white; letter-spacing: -0.02em; margin-bottom: 4px; }
+.sh-left p  { font-size: 13px; color: rgba(255,255,255,0.45); }
+.classified-stamp {
+  background: rgba(214,58,249,0.15);
+  border: 1.5px solid rgba(214,58,249,0.4);
+  color: var(--pink);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem; font-weight: 700;
+  padding: 8px 18px; border-radius: 8px;
+  letter-spacing: 0.08em; white-space: nowrap;
+}
+
+.nav-bar {
+  display: flex; align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px; flex-wrap: wrap; gap: 12px;
+}
+.back-btn {
+  display: flex; align-items: center; gap: 7px;
+  font-size: 13px; font-weight: 500; color: var(--mid);
+  background: white; border: 1px solid var(--rule);
+  border-radius: 8px; padding: 8px 14px; cursor: pointer; transition: all 0.15s;
+}
+.back-btn:hover { border-color: var(--pink); color: var(--pink); }
+
+/* Warning banner */
+.warning-banner {
+  background: linear-gradient(135deg, rgba(214,58,249,0.06), rgba(124,58,237,0.06));
+  border: 1px solid rgba(214,58,249,0.2);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 28px;
+  font-size: 13.5px;
+  color: var(--mid);
+  line-height: 1.6;
+}
+.warning-banner strong { color: var(--ink); font-weight: 700; }
+.warning-banner .wb-title {
+  font-size: 12px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--pink); margin-bottom: 6px;
+}
+
+/* Lesson divider */
+.lesson-div {
+  display: flex; align-items: center; gap: 14px;
+  margin: 32px 0 20px;
+}
+.lesson-div .ld-line { flex: 1; height: 1px; background: var(--rule); }
+.lesson-div .ld-label {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--dim); white-space: nowrap;
+}
+
+/* Task card */
+.task-card {
+  background: white;
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.task-header {
+  padding: 14px 20px;
+  display: flex; align-items: center; gap: 14px;
+}
+.task-num {
+  width: 36px; height: 36px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem; font-weight: 700;
+  color: white; flex-shrink: 0;
+}
+.task-header-text { flex: 1; }
+.task-header-text h3 { font-size: 14px; font-weight: 700; color: var(--ink); }
+.task-header-text p  { font-size: 12px; color: var(--dim); margin-top: 1px; }
+.task-marks {
+  font-size: 12px; font-weight: 600; color: var(--dim);
+  background: var(--bg); padding: 4px 10px;
+  border-radius: 999px; white-space: nowrap;
+}
+
+.task-body {
+  display: grid; grid-template-columns: 200px 1fr;
+  border-top: 1px solid var(--rule);
+}
+.maths-used {
+  background: #F8FAFF;
+  border-right: 1px solid var(--rule);
+  padding: 16px;
+}
+.mu-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--dim); margin-bottom: 10px;
+}
+.mu-item {
+  font-size: 12px; color: var(--mid);
+  padding: 3px 0;
+  display: flex; align-items: center; gap: 6px;
+}
+.mu-item::before {
+  content: ''; display: inline-block;
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--accent-color, var(--pink)); flex-shrink: 0;
+}
+
+.task-content { padding: 20px 24px; }
+.task-intro {
+  font-size: 14px; color: var(--mid);
+  margin-bottom: 16px; line-height: 1.6;
+}
+
+.formula-box {
+  background: #F5F0FF;
+  border: 1px solid #D8C5FF;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin: 12px 0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px; font-weight: 600;
+  color: #3B1A7A;
+  line-height: 1.8;
+}
+.formula-box .f-label {
+  font-size: 10px; font-weight: 400;
+  color: #7A5AAA; font-family: 'Inter', sans-serif;
+  display: block; margin-top: 2px;
+}
+.formula-box.split {
+  display: flex; gap: 24px; justify-content: center; text-align: left;
+}
+
+.question-list { margin-top: 16px; }
+.q-item {
+  display: flex; gap: 10px;
+  padding: 9px 0; border-bottom: 1px solid var(--rule);
+  font-size: 13.5px; color: var(--ink);
+  line-height: 1.5; align-items: flex-start;
+}
+.q-item:last-child { border-bottom: none; }
+.q-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px; font-weight: 600;
+  color: white; background: var(--accent-color, var(--pink));
+  padding: 2px 8px; border-radius: 4px;
+  flex-shrink: 0; margin-top: 1px;
+}
+
+/* Answer area */
+.answer-area {
+  background: #FDF6FF;
+  border-top: 1px solid #E8C5FF;
+  padding: 14px 20px;
+}
+.aa-label {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--purp); margin-bottom: 10px;
+}
+.answer-lines { display: flex; flex-direction: column; gap: 0; }
+.ans-line { border-bottom: 1px solid #E8C5FF; height: 34px; }
+
+/* Colour classes */
+.cx1 { background: #7C3AED; }
+.cx2 { background: #0891B2; }
+.cx3 { background: #B45309; }
+
+/* Hint chip */
+.hint-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: rgba(124,58,237,0.07);
+  border: 1px solid rgba(124,58,237,0.2);
+  border-radius: 20px; padding: 3px 10px;
+  font-size: 11px; color: var(--purp); font-weight: 600;
+  margin-top: 8px; cursor: default;
+}
+
+@media (max-width:600px) {
+  .task-body { grid-template-columns: 1fr; }
+  .maths-used { border-right: none; border-bottom: 1px solid var(--rule); }
+  .formula-box.split { flex-direction: column; gap: 8px; }
+}
+
+@media print {
+  #landing { display: none !important; }
+  #worksheet { display: block !important; }
+  .nav-bar { display: none !important; }
+  .task-card { break-inside: avoid; }
+  body { background: white; }
+  .answer-area { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════ LANDING ═══════════ -->
+<div id="landing">
+  <div class="glow-orb"></div>
+  <div class="landing-inner">
+
+    <div class="classified-badge">
+      <span>🔒 Level 9 Clearance Required</span>
+    </div>
+
+    <h1 class="land-title">StreamWave<br><em>Crisis Protocol</em></h1>
+    <p class="land-sub">Extension Task · For those who cracked the algorithm early<br>Harder. Stranger. The CEO needs answers.</p>
+
+    <div class="briefing-box">
+      <div class="briefing-header">
+        <div>
+          <div class="briefing-from">Encrypted message from</div>
+          <div class="briefing-name">V. Hartley · CEO, StreamWave</div>
+        </div>
+        <span style="font-size:1.5rem">📩</span>
+      </div>
+      <div class="briefing-body">
+        You finished early. Good. That means you're ready for what the others aren't.<br><br>
+        <strong>Three crises hit the platform today.</strong> Our infrastructure team made a rounding error that could cost us millions. Our network expansion is failing geometry checks. And someone needs to verify — algebraically, formally — that our growth model actually holds.<br><br>
+        These aren't practice questions. <strong>These are the real problems.</strong> No hints. No worked examples. Just you, the maths, and what the business needs.
+      </div>
+      <div class="briefing-sig">CLASSIFIED · LEVEL 9 · DO NOT DISTRIBUTE · SW-CRISIS-01</div>
+    </div>
+
+    <button class="start-btn" onclick="startTask()">Accept the brief →</button>
+  </div>
+</div>
+
+<!-- ═══════════ WORKSHEET ═══════════ -->
+<div id="worksheet">
+  <div class="sheet-wrap">
+
+    <div class="nav-bar">
+      <button class="back-btn" onclick="goBack()">← Back to briefing</button>
+    </div>
+
+    <div class="sheet-header">
+      <div class="sh-inner">
+        <div class="sh-left">
+          <h1>StreamWave — Crisis Protocol</h1>
+          <p>Level 9 Extension · Mr. Goddard's Maths · Show all working · Interpret every answer in context</p>
+        </div>
+        <div class="classified-stamp">🔒 CLASSIFIED</div>
+      </div>
+    </div>
+
+    <div class="warning-banner">
+      <div class="wb-title">⚠ Mission parameters</div>
+      These three tasks cover material at the very top of the IGCSE specification.
+      <strong>Show every line of working.</strong> The CEO doesn't just want the answer —
+      she wants to see the mathematics that proves it. Each task is independent; tackle them in any order.
+    </div>
+
+    <!-- ── TASK X1: ALGEBRAIC PROOF ── -->
+    <div class="task-card" style="--accent-color:#7C3AED">
+      <div class="task-header">
+        <div class="task-num cx1">X1</div>
+        <div class="task-header-text">
+          <h3>The Growth Proof</h3>
+          <p>Algebraic proof · Odd/even integers · Formal mathematical argument</p>
+        </div>
+        <div class="task-marks">Crisis 1</div>
+      </div>
+      <div class="task-body">
+        <div class="maths-used" style="--accent-color:#7C3AED">
+          <div class="mu-label">Maths used</div>
+          <div class="mu-item">Algebraic proof</div>
+          <div class="mu-item">Integer expressions</div>
+          <div class="mu-item">Formal argument</div>
+          <div class="mu-item">Proof by counter-example</div>
+        </div>
+        <div class="task-content">
+          <p class="task-intro">
+            StreamWave's data scientists claim their monthly growth model has a special mathematical property.
+            They need it formally verified before presenting to investors.
+          </p>
+          <div class="formula-box">
+            The model states that for any integer n, the expression:<br>
+            <strong>n³ − n</strong><br>
+            represents the net change in users (thousands) over a growth cycle.
+          </div>
+
+          <div class="question-list">
+            <div class="q-item">
+              <span class="q-label" style="background:#7C3AED">(a)</span>
+              <span>Show algebraically that n³ − n is the product of three consecutive integers. Write it in fully factorised form.</span>
+            </div>
+            <div class="q-item">
+              <span class="q-label" style="background:#7C3AED">(b)</span>
+              <span>Hence prove that n³ − n is always divisible by 6 for any positive integer n. You must show a complete, formal proof — the investors have mathematicians on their board.</span>
+            </div>
+            <div class="q-item">
+              <span class="q-label" style="background:#7C3AED">(c)</span>
+              <span>A junior analyst claims: <em>"n³ − n is always divisible by 12."</em> Prove or disprove this claim. If you disprove it, a single counter-example is sufficient.</span>
+            </div>
+            <div class="q-item">
+              <span class="q-label" style="background:#7C3AED">(d)</span>
+              <span>The analyst then claims: <em>"The sum of any three consecutive integers is always divisible by 3."</em> Prove this algebraically. What does this mean in context for StreamWave's 3-month rolling averages?</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="answer-area">
+        <div class="aa-label">Working &amp; Answer</div>
+        <div class="answer-lines">
+          <div class="ans-line"></div><div class="ans-line"></div><div class="ans-line"></div>
+          <div class="ans-line"></div><div class="ans-line"></div><div class="ans-line"></div>
+          <div class="ans-line"></div><div class="ans-line"></div><div class="ans-line"></div>
+          <div class="ans-line"></div><div class="ans-line"></div><div class="ans-line"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TASK X2: VECTORS ── -->
+    <div class="task-card" style="--accent-color:#0891B2">
+      <div class="task-header">
+        <div class="task-num cx2">X2</div>
+        <div class="task-header-text">
+          <h3>The Network Geometry</h3>
+          <p>Vectors · Collinearity · Ratio along a line segment</p>
+        </div>
+        <div class="task-marks">Crisis 2</div>
+      </div>
+      <div class="task-body">
+        <div class="maths-used" style="--accent-color:#0891B2">
+          <div class="mu-label">Maths used</div>
+          <div class="mu-item">Column vectors</div>
+          <div class="mu-item">Proving collinearity</div>
+          <div class="mu-item">Dividing a line in ratio</div>
+          <div class="mu-item">Vector paths</div>
+        </div>
+        <div class="task-content">
+          <p class="task-intro">
+            StreamWave is planning three server hub locations across a city grid. The infrastructure team
+            modelled them as position vectors from the city centre O.
+          </p>
+          <div class="formula-box split">
+            <div>
+              <strong>OA = 2a + b</strong>
+              <span class="f-label">Hub Alpha</span>
+            </div>
+            <div>
+              <strong>OB = 5a − 2b</strong>
+              <span class="f-label">Hub Beta</span>
+            </div>
+            <div>
+              <strong>OC = 8a − 5b</strong>
+              <span class="f-label">Hub Gamma</span>
+            </div>
+          </div>
+
+          <div class="question-list">
+            <div class="q-item">
+              <span class="q-label" style="background:#0891B2">(a)</span>
+              <span>Find vector AB in terms of a and b.</span>
+            </div>
+            <div class="q-item">
+              <span class="q-label" style="background:#0891B2">(b)</span>
+              <span>Find vector AC in terms of a and b.</span>
+            </div>
+            <div class="q-item">
+              <span class="q-label" style="background:#0891B2">(c)</span>
+              <span>Prove that A, B and C are collinear. What does this mean for StreamWave's hub placement strategy?</span>
+            </div>
+            <div class="q-item">
+              <span class="q-label" style="background:#0891B2">(d)</span>
+              <span>The engineers want to place a signal booster at point M, which divides AC in the ratio 2 : 1. Find the position vector of M in terms of a and b.</span>
+            </div>
+            <div class="q-item">
+              <span class="q-label" style="background:#0891B2">(e)</span>
+              <span>A rival company places a hub at point D where OD = 14a − 11b. Is D on the same straight line as A, B and C? Show your reasoning fully.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="answer-area">
+        <div class="aa-label">Working &amp; Answer</div>
+        <div class="answer-lines">
+          <div class="ans-line"></div><div class="ans-line"></div><div class="ans-line"></div>
+          <div class="ans-line"></div><div class="ans-line"></div><div class="ans-line"></div>
+          <div class="ans-line"></div><div class="ans-line"></div><div class="ans-line"></div>
+          <div class="ans-line"></div><div class="ans-line"></div><div class="ans-line"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TASK X3: BOUNDS ── -->
+    <div class="task-card" style="--accent-color:#B45309">
+      <div class="task-header">
+        <div class="task-num cx3">X3</div>
+        <div class="task-header-text">
+          <h3>The Rounding Crisis</h3>
+          <p>Upper &amp; lower bounds · Compound calculations · Error interval</p>
+        </div>
+        <div class="task-marks">Crisis 3</div>
+      </div>
+      <div class="task-body">
+        <div class="maths-used" style="--accent-color:#B45309">
+          <div class="mu-label">Maths used</div>
+          <div class="mu-item">Upper &amp; lower bounds</div>
+          <div class="mu-item">Compound measure bounds</div>
+          <div class="mu-item">Maximum/minimum values</div>
+          <div class="mu-item">Percentage error</div>
+        </div>
+        <div class="task-content">
+          <p class="task-intro">
+            StreamWave's infrastructure team rounded key figures when calculating server bandwidth.
+            The CEO needs to know the worst-case financial exposure from these rounding errors.
+          </p>
+          <div class="formula-box">
+            <strong>Revenue per GB = Total Revenue ÷ Data Transferred</strong><br>
+            <span class="f-label">Used to price StreamWave's wholesale data contracts</span>
+          </div>
+
+          <p class="task-intro" style="margin-top:14px">
+            The team recorded:
+          </p>
+          <div class="formula-box split">
+            <div>
+              <strong>Total Revenue = £2 400 000</strong>
+              <span class="f-label">Rounded to the nearest £100 000</span>
+            </div>
+            <div>
+              <strong>Data Transferred = 3 800 GB</strong>
+              <span class="f-label">Rounded to the nearest 100 GB</span>
+            </div>
+          </div>
+
+          <div class="question-list">
+            <div class="q-item">
+              <span class="q-label" style="background:#B45309">(a)</span>
+              <span>Write down the upper and lower bounds for Total Revenue and for Data Transferred.</span>
+            </div>
+            <div class="q-item">
+              <span class="q-label" style="background:#B45309">(b)</span>
+              <span>Calculate the upper bound for Revenue per GB. Show your working clearly, explaining which combination of bounds you are using and why.</span>
+            </div>
+            <div class="q-item">
+              <span class="q-label" style="background:#B45309">(c)</span>
+              <span>Calculate the lower bound for Revenue per GB.</span>
+            </div>
+            <div class="q-item">
+              <span class="q-label" style="background:#B45309">(d)</span>
+              <span>StreamWave signed a contract guaranteeing clients £620 per GB. Using your bounds, determine whether StreamWave can definitely honour this contract, definitely cannot honour it, or whether it is uncertain. Justify your answer fully.</span>
+            </div>
+            <div class="q-item">
+              <span class="q-label" style="background:#B45309">(e)</span>
+              <span>The percentage error in a rounded value is defined as: (bound − rounded value) / rounded value × 100. Calculate the maximum percentage error in the Revenue per GB figure. Give your answer to 3 significant figures.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="answer-area">
+        <div class="aa-label">Working &amp; Answer</div>
+        <div class="answer-lines">
+          <div class="ans-line"></div><div class="ans-line"></div><div class="ans-line"></div>
+          <div class="ans-line"></div><div class="ans-line"></div><div class="ans-line"></div>
+          <div class="ans-line"></div><div class="ans-line"></div><div class="ans-line"></div>
+          <div class="ans-line"></div><div class="ans-line"></div><div class="ans-line"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Closing brief -->
+    <div class="task-card" style="border-top:3px solid #0A0F1E">
+      <div class="task-header" style="background:#0A0F1E">
+        <div class="task-num" style="background:rgba(214,58,249,0.2);font-size:1.2rem">📩</div>
+        <div class="task-header-text">
+          <h3 style="color:white">Final Message from the CEO</h3>
+          <p style="color:rgba(255,255,255,0.45)">Encrypted · StreamWave Internal</p>
+        </div>
+      </div>
+      <div class="task-content" style="background:#F8FAFF">
+        <p class="task-intro">
+          <em>"If you've made it here, you're not a student anymore. You're a data scientist.<br><br>
+          The work you've done today keeps 280 million people listening. Present your findings — clearly, confidently, with the maths to back every word.<br><br>
+          StreamWave is counting on you."</em>
+        </p>
+        <p style="font-size:12px;color:var(--dim);margin-top:10px">— V. Hartley · CEO, StreamWave</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function startTask() {
+  document.getElementById('landing').style.display = 'none';
+  document.getElementById('worksheet').style.display = 'block';
+  window.scrollTo(0,0);
+}
+function goBack() {
+  document.getElementById('worksheet').style.display = 'none';
+  document.getElementById('landing').style.display = 'flex';
+  window.scrollTo(0,0);
+}
+</script>
+</body>
+</html>
