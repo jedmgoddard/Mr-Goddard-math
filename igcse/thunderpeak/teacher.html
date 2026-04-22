@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ThunderPeak — Teacher Guide</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@400;600;700;800;900&display=swap');
+:root {
+  --navy:#0D1B4B; --teal:#00A896; --gold:#F5A623; --green:#27AE60;
+  --red:#E74C3C; --amber:#F39C12; --ink:#1A1A2E; --mid:#4A5568;
+  --dim:#718096; --bg:#F0F4FF; --white:#fff; --rule:#E2E8F0;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;-webkit-font-smoothing:antialiased;}
+.top-bar{background:var(--navy);padding:14px 28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+.logo{font-family:'Bangers',cursive;font-size:1.5rem;letter-spacing:2px;color:var(--gold);}
+.logo span{color:#E94560;}
+.teacher-tag{background:#E74C3C;color:white;font-size:11px;font-weight:800;letter-spacing:.12em;padding:5px 14px;border-radius:999px;text-transform:uppercase;}
+.wrap{max-width:880px;margin:0 auto;padding:28px 20px 80px;}
+h1{font-family:'Bangers',cursive;font-size:2.2rem;letter-spacing:2px;color:var(--navy);margin-bottom:6px;}
+.intro-sub{font-size:14px;color:var(--mid);margin-bottom:28px;line-height:1.6;}
+.section{margin-bottom:32px;}
+.section-h{font-size:15px;font-weight:800;color:var(--navy);margin-bottom:14px;display:flex;align-items:center;gap:8px;padding-bottom:8px;border-bottom:2px solid var(--rule);}
+.section-h .tag{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:999px;color:white;}
+.tag-teal{background:var(--teal);}
+.tag-gold{background:var(--gold);color:var(--ink)!important;}
+.tag-red{background:var(--red);}
+.tag-green{background:var(--green);}
+
+/* Timing table */
+.timing-table{width:100%;border-collapse:collapse;font-size:13px;background:white;border-radius:10px;overflow:hidden;border:1px solid var(--rule);box-shadow:0 2px 8px rgba(0,0,0,.05);}
+.timing-table th{background:var(--navy);color:rgba(255,255,255,.85);padding:10px 14px;text-align:left;font-weight:700;font-size:11px;letter-spacing:.05em;}
+.timing-table td{padding:10px 14px;border-bottom:1px solid var(--rule);vertical-align:top;line-height:1.55;}
+.timing-table tr:last-child td{border-bottom:none;}
+.timing-table tr:nth-child(even) td{background:#F8FAFF;}
+.time-cell{font-family:'Bangers',cursive;font-size:1rem;color:var(--red);letter-spacing:1px;white-space:nowrap;}
+
+/* Answer cards */
+.ans-card{background:white;border:1px solid var(--rule);border-radius:12px;overflow:hidden;margin-bottom:14px;box-shadow:0 2px 6px rgba(0,0,0,.04);}
+.ans-card-header{padding:12px 18px;border-bottom:1px solid var(--rule);display:flex;align-items:center;gap:10px;}
+.ans-num{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Bangers',cursive;font-size:.95rem;color:white;flex-shrink:0;}
+.ans-card-header h3{font-size:13.5px;font-weight:800;color:var(--ink);flex:1;}
+.ans-body{padding:14px 18px;}
+.ans-row{display:grid;grid-template-columns:100px 1fr;gap:10px;padding:8px 0;border-bottom:1px solid var(--rule);font-size:13px;}
+.ans-row:last-child{border-bottom:none;}
+.ans-key{font-weight:800;color:var(--green);}
+.ans-val{color:var(--ink);line-height:1.55;}
+.ans-note{font-size:11.5px;color:var(--dim);margin-top:3px;font-style:italic;}
+.accept-box{background:#ECFDF5;border:1px solid #6EE7B7;border-radius:6px;padding:6px 12px;margin-top:6px;font-size:12px;color:#065F46;font-weight:700;}
+.warn-box{background:#FFF8EC;border:1px solid #FCD34D;border-radius:6px;padding:8px 12px;margin-top:8px;font-size:12px;color:#78350F;line-height:1.5;}
+
+/* Tips */
+.tip-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:4px;}
+.tip-card{background:white;border:1px solid var(--rule);border-radius:10px;padding:14px 16px;font-size:13px;color:var(--mid);line-height:1.55;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+.tip-card strong{color:var(--ink);display:block;margin-bottom:4px;font-size:13px;}
+
+/* Misconceptions */
+.mc-item{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--rule);font-size:13px;}
+.mc-item:last-child{border-bottom:none;}
+.mc-icon{font-size:1.1rem;flex-shrink:0;width:24px;text-align:center;}
+.mc-text{color:var(--mid);line-height:1.55;}
+.mc-text strong{color:var(--ink);}
+
+/* Phase pills */
+.phase-strip{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;}
+.phase-pill{padding:8px 18px;border-radius:999px;font-size:12px;font-weight:800;letter-spacing:.04em;}
+.pp1{background:#7C3AED;color:white;}
+.pp2{background:#D97706;color:white;}
+.pp3{background:#DC2626;color:white;}
+
+@media(max-width:600px){.ans-row{grid-template-columns:1fr;}  .ans-key{margin-bottom:2px;}}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div class="logo">Thunder<span>Peak</span> — Teacher Guide</div>
+  <span class="teacher-tag">🔐 Teacher Only</span>
+</div>
+
+<div class="wrap">
+  <h1>ThunderPeak Roller Coaster</h1>
+  <p class="intro-sub">Interactive activity covering <strong>displacement-time graphs, gradients of curves, and tangent approximations</strong> in a real-world context. Approx 30 minutes. Students work individually or in pairs.</p>
+
+  <div class="phase-strip">
+    <span class="phase-pill pp1">Phase 1: Analysis (15 min)</span>
+    <span class="phase-pill pp2">Phase 2: Build (8 min)</span>
+    <span class="phase-pill pp3">Phase 3: Launch (7 min)</span>
+  </div>
+
+  <!-- TIMING -->
+  <div class="section">
+    <div class="section-h"><span class="tag tag-teal">Timing</span> Lesson Plan</div>
+    <table class="timing-table">
+      <thead><tr><th>Time</th><th>Activity</th><th>Your role</th></tr></thead>
+      <tbody>
+        <tr><td class="time-cell">0–3 min</td><td><strong>Introduction slide</strong><br>Set the scene — students are junior engineers at ThunderPeak Rides. Explain the three phases.</td><td>Show intro slide, share student file link in Teams chat</td></tr>
+        <tr><td class="time-cell">3–18 min</td><td><strong>Phase 1: Analysis</strong><br>Students read the height-distance graph, click to draw tangents at 4 marked points, enter gradient estimates.</td><td>Circulate. Key question: "What does a negative gradient tell us about the coaster here?"</td></tr>
+        <tr><td class="time-cell">18–22 min</td><td><strong>Brief whole-class check</strong><br>Show the correct gradients. Discuss what each gradient means in context (speed of height change).</td><td>Use the slides to reveal answers. Ask: "Which point has gradient ≈ 0 and why?"</td></tr>
+        <tr><td class="time-cell">22–28 min</td><td><strong>Phase 2 & 3: Build and Launch</strong><br>Students drag control points to reshape their track, then launch the cart and watch the physics play out.</td><td>Let them enjoy this. It's motivational payoff. Ask early finishers: "What track shape gives maximum flight distance?"</td></tr>
+        <tr><td class="time-cell">28–30 min</td><td><strong>Submission</strong><br>Students copy their submission box and paste into Google Classroom.</td><td>Collect via Classroom assignment</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- MARK SCHEME -->
+  <div class="section">
+    <div class="section-h"><span class="tag tag-green">Mark Scheme</span> Tangent Gradient Questions</div>
+    <p style="font-size:13px;color:var(--mid);margin-bottom:16px;line-height:1.6;">
+      The graph shows <strong>height (m) on the y-axis</strong> vs <strong>horizontal distance (m) on the x-axis</strong>. Gradient = change in height ÷ change in horizontal distance. Negative gradient = descending. Accept any answer within ±0.12 for full marks, within ±0.25 for partial.
+    </p>
+
+    <div class="ans-card">
+      <div class="ans-card-header">
+        <div class="ans-num" style="background:#7C3AED">Q1</div>
+        <h3>Gradient at x = 120m — Top of first big descent</h3>
+      </div>
+      <div class="ans-body">
+        <div class="ans-row">
+          <div class="ans-key">True gradient</div>
+          <div class="ans-val"><strong>≈ −0.93</strong>
+            <div class="ans-note">The track drops steeply at this point — about 0.93m of height lost per metre of horizontal travel.</div>
+            <div class="accept-box">Full marks: −1.05 to −0.81 &nbsp;|&nbsp; Partial (1pt): −1.18 to −0.68</div>
+          </div>
+        </div>
+        <div class="ans-row">
+          <div class="ans-key">Context answer</div>
+          <div class="ans-val">The coaster is descending steeply — height is decreasing rapidly relative to horizontal distance. The magnitude tells us how steep the drop feels to riders.</div>
+        </div>
+        <div class="warn-box">⚠ Common error: Students draw the tangent as horizontal (gradient = 0) because the curve looks nearly flat from a distance at this scale. Prompt them to look carefully at the slope direction.</div>
+      </div>
+    </div>
+
+    <div class="ans-card">
+      <div class="ans-card-header">
+        <div class="ans-num" style="background:#BE185D">Q2</div>
+        <h3>Gradient at x = 300m — Bottom of first valley</h3>
+      </div>
+      <div class="ans-body">
+        <div class="ans-row">
+          <div class="ans-key">True gradient</div>
+          <div class="ans-val"><strong>≈ 0</strong>
+            <div class="ans-note">At the minimum point of the curve, the tangent is horizontal.</div>
+            <div class="accept-box">Full marks: −0.12 to +0.12 &nbsp;|&nbsp; Partial: −0.25 to +0.25</div>
+          </div>
+        </div>
+        <div class="ans-row">
+          <div class="ans-key">Key teaching point</div>
+          <div class="ans-val">This is the <strong>most important conceptual question</strong>. At a minimum (or maximum), the gradient is zero because the tangent is horizontal. Students who understand this have grasped the link between stationary points and zero gradient.</div>
+        </div>
+        <div class="warn-box">⚠ Many students will say gradient = 0 but not be able to explain why. Push for: "The tangent at the bottom of a valley is flat, so rise = 0, therefore gradient = rise/run = 0."</div>
+      </div>
+    </div>
+
+    <div class="ans-card">
+      <div class="ans-card-header">
+        <div class="ans-num" style="background:#DC2626">Q3</div>
+        <h3>Gradient at x = 440m — Near top of second hill</h3>
+      </div>
+      <div class="ans-body">
+        <div class="ans-row">
+          <div class="ans-key">True gradient</div>
+          <div class="ans-val"><strong>≈ −0.02 (approximately 0)</strong>
+            <div class="ans-note">Near a maximum, the gradient approaches zero. The track is almost flat at the crest.</div>
+            <div class="accept-box">Full marks: −0.14 to +0.10 &nbsp;|&nbsp; Partial: −0.27 to +0.23</div>
+          </div>
+        </div>
+        <div class="ans-row">
+          <div class="ans-key">Context answer</div>
+          <div class="ans-val">Near the peak of a hill, the track briefly levels out. This is where riders feel momentarily weightless. The gradient is close to 0 because we are near a local maximum.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ans-card">
+      <div class="ans-card-header">
+        <div class="ans-num" style="background:#059669">Q4</div>
+        <h3>Gradient at x = 560m — Mid-descent on second drop</h3>
+      </div>
+      <div class="ans-body">
+        <div class="ans-row">
+          <div class="ans-key">True gradient</div>
+          <div class="ans-val"><strong>≈ −0.88</strong>
+            <div class="ans-note">Steeply descending again, similar magnitude to Q1.</div>
+            <div class="accept-box">Full marks: −1.00 to −0.76 &nbsp;|&nbsp; Partial: −1.13 to −0.63</div>
+          </div>
+        </div>
+        <div class="ans-row">
+          <div class="ans-key">Context answer</div>
+          <div class="ans-val">The track is descending almost as steeply as the first drop. Riders are accelerating downward rapidly. Compare this to Q2 — the contrast between gradient 0 and gradient −0.88 demonstrates how sharply the slope changes over the ride.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DISCUSSION QUESTIONS -->
+  <div class="section">
+    <div class="section-h"><span class="tag tag-gold">Discussion</span> Suggested class questions</div>
+    <div class="tip-row">
+      <div class="tip-card"><strong>After Q2</strong> "Why is the gradient zero at the very bottom of the valley? What does this mean for the rider?"</div>
+      <div class="tip-card"><strong>After Q3</strong> "Compare the gradient at the top of the hill to the gradient halfway down. What's happening to the speed of height change?"</div>
+      <div class="tip-card"><strong>After all 4</strong> "If gradient represents rate of change of height — what would gradient represent if this were a speed-time graph instead?"</div>
+      <div class="tip-card"><strong>Build phase</strong> "What track shape gives the longest flight? Can you design the track so the cart flies rather than slides to a stop?"</div>
+    </div>
+  </div>
+
+  <!-- MISCONCEPTIONS -->
+  <div class="section">
+    <div class="section-h"><span class="tag tag-red">Watch for</span> Common misconceptions</div>
+    <div class="ans-card">
+      <div class="ans-body">
+        <div class="mc-item">
+          <span class="mc-icon">⚠️</span>
+          <div class="mc-text"><strong>Confusing gradient with height</strong> — Students may say "the gradient is 80 because the height is 80m." Remind them gradient = rise ÷ run, not just the y-value.</div>
+        </div>
+        <div class="mc-item">
+          <span class="mc-icon">⚠️</span>
+          <div class="mc-text"><strong>Forgetting the sign</strong> — A descending track has a negative gradient. Students who give positive answers for descending sections need to reconsider their rise direction.</div>
+        </div>
+        <div class="mc-item">
+          <span class="mc-icon">⚠️</span>
+          <div class="mc-text"><strong>Drawing the tangent too short</strong> — A tangent that only spans 10–20m of horizontal distance will give an unreliable gradient estimate. Encourage students to extend their tangent line across a wider range.</div>
+        </div>
+        <div class="mc-item">
+          <span class="mc-icon">⚠️</span>
+          <div class="mc-text"><strong>Gradient ≠ speed of cart</strong> — The gradient is the rate of height change with horizontal distance, not the speed of the cart. These are related but distinct. The cart's speed depends on the component of velocity along the track.</div>
+        </div>
+        <div class="mc-item">
+          <span class="mc-icon">💡</span>
+          <div class="mc-text"><strong>Positive teaching moment at Q2 and Q3</strong> — If students get ≈ 0 for the minimum and maximum, use this to preview stationary points and the second derivative test. "How could we tell whether this zero gradient is a peak or a valley?"</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCORING -->
+  <div class="section">
+    <div class="section-h"><span class="tag tag-teal">Scoring</span> How points work</div>
+    <div class="tip-row">
+      <div class="tip-card"><strong>3 points</strong> — Within ±0.12 of true gradient. Full credit.</div>
+      <div class="tip-card"><strong>1 point</strong> — Within ±0.25 of true gradient. Partial credit — reasonable tangent drawn but reading slightly off.</div>
+      <div class="tip-card"><strong>0 points</strong> — Outside ±0.25. Worked answer and hint shown to student automatically.</div>
+      <div class="tip-card"><strong>Bonus: Flight distance</strong> — Students earn up to 50 bonus points (10 points per 50m flown) from the launch phase. This incentivises engagement with the build phase.</div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
