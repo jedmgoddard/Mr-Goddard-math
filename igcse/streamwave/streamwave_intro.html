@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StreamWave — Crack the Algorithm · Intro</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --navy:  #0D1B4B;
+  --teal:  #00A896;
+  --pink:  #D63AF9;
+  --amber: #F59E0B;
+  --green: #059669;
+  --white: #FFFFFF;
+  --dim:   rgba(255,255,255,0.55);
+  --rule:  rgba(255,255,255,0.12);
+}
+
+html, body {
+  width: 100%; height: 100%;
+  background: var(--navy);
+  font-family: 'Inter', sans-serif;
+  overflow: hidden;
+  color: var(--white);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Deck container ── */
+.deck {
+  width: 100vw; height: 100vh;
+  position: relative;
+}
+
+/* ── Individual slide ── */
+.slide {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  justify-content: center; align-items: center;
+  padding: 60px 80px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+.slide.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* ── Background variants ── */
+.slide-1 {
+  background:
+    radial-gradient(ellipse 70% 60% at 80% 10%, rgba(0,168,150,0.18) 0%, transparent 65%),
+    radial-gradient(ellipse 50% 70% at 10% 90%, rgba(214,58,249,0.14) 0%, transparent 65%),
+    var(--navy);
+}
+.slide-2, .slide-4 {
+  background:
+    radial-gradient(ellipse 60% 50% at 90% 20%, rgba(0,168,150,0.12) 0%, transparent 60%),
+    var(--navy);
+}
+.slide-3, .slide-5 {
+  background:
+    radial-gradient(ellipse 60% 50% at 10% 80%, rgba(214,58,249,0.1) 0%, transparent 60%),
+    var(--navy);
+}
+.slide-6 {
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 50%, rgba(0,168,150,0.15) 0%, transparent 70%),
+    var(--navy);
+}
+
+/* Dot grid texture */
+.slide::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image: radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none;
+}
+
+/* ── SLIDE 1 — Title ── */
+.s1-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 600; letter-spacing: 3px;
+  color: var(--teal); text-transform: uppercase;
+  margin-bottom: 20px;
+  display: flex; align-items: center; gap: 10px;
+}
+.s1-tag::before { content: ''; width: 28px; height: 1px; background: var(--teal); }
+.s1-tag::after  { content: ''; width: 28px; height: 1px; background: var(--teal); }
+
+.s1-title {
+  font-size: clamp(52px, 8vw, 96px);
+  font-weight: 900;
+  line-height: 0.95;
+  text-align: center;
+  letter-spacing: -2px;
+}
+.s1-title .crack { color: var(--white); }
+.s1-title .algo  {
+  background: linear-gradient(135deg, var(--teal), var(--pink));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.s1-sub {
+  margin-top: 28px;
+  font-size: 15px; font-weight: 400; color: var(--dim);
+  text-align: center; letter-spacing: 0.03em;
+}
+.s1-sub strong { color: var(--white); font-weight: 600; }
+
+.s1-pills {
+  display: flex; gap: 10px; margin-top: 36px; flex-wrap: wrap; justify-content: center;
+}
+.pill {
+  padding: 6px 16px; border-radius: 30px;
+  font-size: 12px; font-weight: 600; letter-spacing: 0.04em;
+}
+.pill-teal  { background: rgba(0,168,150,0.15); color: var(--teal);  border: 1px solid rgba(0,168,150,0.3); }
+.pill-pink  { background: rgba(214,58,249,0.12); color: var(--pink);  border: 1px solid rgba(214,58,249,0.25); }
+.pill-amber { background: rgba(245,158,11,0.12); color: var(--amber); border: 1px solid rgba(245,158,11,0.25); }
+
+.streamwave-logo {
+  position: absolute; bottom: 36px; left: 50%; transform: translateX(-50%);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; letter-spacing: 4px; color: rgba(255,255,255,0.2);
+  text-transform: uppercase;
+}
+
+/* ── SLIDE 2 — Scenario ── */
+.s2-layout {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 60px; width: 100%; max-width: 960px;
+  align-items: center;
+}
+.s2-left {}
+.s2-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; letter-spacing: 3px; color: var(--teal);
+  text-transform: uppercase; margin-bottom: 16px;
+}
+.s2-heading { font-size: clamp(32px, 4vw, 52px); font-weight: 800; line-height: 1.05; letter-spacing: -1px; margin-bottom: 20px; }
+.s2-body { font-size: 15px; line-height: 1.7; color: var(--dim); }
+.s2-body strong { color: var(--white); font-weight: 600; }
+
+.s2-stats {
+  display: flex; flex-direction: column; gap: 18px;
+}
+.stat-block {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--rule);
+  border-radius: 14px; padding: 20px 24px;
+}
+.stat-num {
+  font-size: 36px; font-weight: 800; letter-spacing: -1px;
+  background: linear-gradient(135deg, var(--teal), #7efff5);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.stat-label { font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--dim); margin-top: 4px; }
+
+/* ── SLIDE 3 — How it works ── */
+.s3-heading { font-size: clamp(28px, 3.5vw, 44px); font-weight: 800; letter-spacing: -1px; text-align: center; margin-bottom: 48px; }
+.s3-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 100%; max-width: 860px; }
+.rule-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--rule);
+  border-radius: 16px; padding: 24px 26px;
+  display: flex; gap: 18px; align-items: flex-start;
+}
+.rule-icon { font-size: 28px; flex-shrink: 0; margin-top: 2px; }
+.rule-title { font-size: 14px; font-weight: 700; color: var(--white); margin-bottom: 6px; }
+.rule-desc  { font-size: 13px; line-height: 1.55; color: var(--dim); }
+.rule-tag   { display: inline-block; margin-top: 10px; font-size: 11px; font-weight: 600; letter-spacing: 1px; padding: 3px 10px; border-radius: 20px; }
+.tag-teal  { background: rgba(0,168,150,0.15); color: var(--teal); }
+.tag-pink  { background: rgba(214,58,249,0.12); color: var(--pink); }
+.tag-amber { background: rgba(245,158,11,0.12); color: var(--amber); }
+.tag-green { background: rgba(5,150,105,0.15); color: var(--green); }
+
+/* ── SLIDE 4 — Task overview ── */
+.s4-heading { font-size: clamp(28px, 3.5vw, 44px); font-weight: 800; letter-spacing: -1px; margin-bottom: 12px; }
+.s4-sub { font-size: 14px; color: var(--dim); margin-bottom: 40px; }
+.tasks-list { width: 100%; max-width: 700px; display: flex; flex-direction: column; gap: 14px; }
+.task-row {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--rule);
+  border-radius: 14px; padding: 18px 22px;
+  display: flex; align-items: center; gap: 20px;
+}
+.task-num {
+  width: 36px; height: 36px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; font-weight: 800; flex-shrink: 0;
+}
+.task-num-1 { background: rgba(0,168,150,0.2);  color: var(--teal); }
+.task-num-2 { background: rgba(214,58,249,0.15); color: var(--pink); }
+.task-num-3 { background: rgba(245,158,11,0.15); color: var(--amber); }
+.task-info { flex: 1; }
+.task-name { font-size: 15px; font-weight: 700; color: var(--white); }
+.task-topic { font-size: 12px; color: var(--dim); margin-top: 2px; }
+.task-time {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px; font-weight: 600; color: var(--dim);
+  white-space: nowrap;
+}
+
+/* ── SLIDE 5 — The Pitch ── */
+.s5-heading { font-size: clamp(28px, 3.5vw, 44px); font-weight: 800; letter-spacing: -1px; text-align: center; margin-bottom: 8px; }
+.s5-sub { font-size: 13px; color: var(--dim); text-align: center; margin-bottom: 40px; letter-spacing: 0.05em; }
+.pitch-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; width: 100%; max-width: 820px; }
+.pitch-item {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--rule);
+  border-radius: 14px; padding: 20px 22px;
+  display: flex; gap: 14px; align-items: flex-start;
+}
+.pitch-icon { font-size: 22px; flex-shrink: 0; }
+.pitch-text { font-size: 13px; line-height: 1.55; color: var(--dim); }
+.pitch-text strong { color: var(--white); font-weight: 600; display: block; margin-bottom: 3px; }
+
+/* ── SLIDE 6 — Go ── */
+.s6-center { text-align: center; }
+.s6-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; letter-spacing: 4px; color: var(--teal);
+  text-transform: uppercase; margin-bottom: 24px;
+}
+.s6-main { font-size: clamp(44px, 7vw, 88px); font-weight: 900; letter-spacing: -2px; line-height: 1; margin-bottom: 12px; }
+.s6-sub  { font-size: clamp(22px, 3vw, 36px); font-weight: 300; color: var(--teal); letter-spacing: -0.5px; margin-bottom: 40px; }
+.s6-tagline { font-size: 15px; color: var(--dim); letter-spacing: 0.04em; }
+.s6-tagline strong { color: var(--white); }
+
+/* ── Navigation controls ── */
+.nav-bar {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: center;
+  gap: 16px; padding: 14px 24px;
+  background: rgba(7, 15, 45, 0.85);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(255,255,255,0.07);
+}
+.nav-btn {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: var(--white); font-size: 16px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: all 0.18s;
+}
+.nav-btn:hover { background: rgba(0,168,150,0.2); border-color: var(--teal); }
+.nav-btn:disabled { opacity: 0.25; cursor: default; }
+.slide-counter {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px; color: var(--dim); letter-spacing: 2px;
+  min-width: 56px; text-align: center;
+}
+.dot-row { display: flex; gap: 6px; align-items: center; }
+.nav-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: rgba(255,255,255,0.18);
+  transition: all 0.3s; cursor: pointer;
+}
+.nav-dot.active { background: var(--teal); width: 18px; border-radius: 3px; }
+
+/* Fullscreen btn */
+.fs-btn {
+  position: fixed; top: 20px; right: 20px; z-index: 100;
+  background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12);
+  color: var(--dim); font-size: 14px; padding: 7px 14px; border-radius: 8px;
+  cursor: pointer; font-family: inherit; font-size: 11px; letter-spacing: 1px;
+  transition: all 0.18s;
+}
+.fs-btn:hover { background: rgba(0,168,150,0.15); color: var(--teal); border-color: var(--teal); }
+
+/* Footer credit on each slide */
+.slide-footer {
+  position: absolute; bottom: 60px; left: 50%; transform: translateX(-50%);
+  font-size: 10px; letter-spacing: 3px; color: rgba(255,255,255,0.15);
+  text-transform: uppercase; font-family: 'JetBrains Mono', monospace;
+  white-space: nowrap;
+}
+
+/* Keyboard hint */
+.key-hint {
+  position: fixed; top: 20px; left: 20px; z-index: 100;
+  font-size: 10px; letter-spacing: 1px; color: rgba(255,255,255,0.2);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+@media (max-width: 700px) {
+  .slide { padding: 40px 24px 80px; }
+  .s2-layout { grid-template-columns: 1fr; gap: 28px; }
+  .s2-stats { flex-direction: row; flex-wrap: wrap; }
+  .stat-block { flex: 1; min-width: 120px; }
+  .s3-grid, .pitch-grid { grid-template-columns: 1fr; }
+  .s4-sub { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="key-hint">← → ARROW KEYS · SPACE</div>
+<button class="fs-btn" onclick="toggleFS()">⛶ FULLSCREEN</button>
+
+<div class="deck" id="deck">
+
+  <!-- ── SLIDE 1: Title ── -->
+  <div class="slide slide-1 active">
+    <div class="s1-tag">Live Lesson · Year 10 IGCSE Higher</div>
+    <div class="s1-title">
+      <div class="crack">CRACK THE</div>
+      <div class="algo">ALGORITHM</div>
+    </div>
+    <div class="s1-sub">A Mathematics Project &nbsp;·&nbsp; <strong>StreamWave</strong> &nbsp;·&nbsp; Two 80-minute lessons</div>
+    <div class="s1-pills">
+      <span class="pill pill-teal">Work in pairs or small teams</span>
+      <span class="pill pill-pink">Real maths. Real stakes.</span>
+      <span class="pill pill-amber">🎵 Data Science Division</span>
+    </div>
+    <div class="streamwave-logo">StreamWave · Est. 2024</div>
+  </div>
+
+  <!-- ── SLIDE 2: The Scenario ── -->
+  <div class="slide slide-2">
+    <div class="s2-layout">
+      <div class="s2-left">
+        <div class="s2-eyebrow">The Scenario</div>
+        <div class="s2-heading">You've just<br>been hired.</div>
+        <div class="s2-body">
+          <strong>StreamWave</strong> is a music streaming startup going head-to-head with Spotify.<br><br>
+          Your team are the <strong>junior data scientists</strong>.<br><br>
+          Your job: build and optimise the mathematics behind the entire platform — the recommendation engine, the revenue model, and the traffic system.
+        </div>
+      </div>
+      <div class="s2-stats">
+        <div class="stat-block">
+          <div class="stat-num">280M+</div>
+          <div class="stat-label">Users · Monthly Active</div>
+        </div>
+        <div class="stat-block">
+          <div class="stat-num">£1.2B</div>
+          <div class="stat-label">Revenue · Annual Target</div>
+        </div>
+        <div class="stat-block">
+          <div class="stat-num">100M</div>
+          <div class="stat-label">Tracks · In Catalogue</div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer">Mr. Goddard's Maths · Crack the Algorithm · Year 10 IGCSE</div>
+  </div>
+
+  <!-- ── SLIDE 3: How It Works ── -->
+  <div class="slide slide-3">
+    <div class="s3-heading">How This Works</div>
+    <div class="s3-grid">
+      <div class="rule-card">
+        <div class="rule-icon">👥</div>
+        <div>
+          <div class="rule-title">Work in pairs or small teams</div>
+          <div class="rule-desc">Discuss your reasoning — the maths is hard, two heads are better than one.</div>
+          <span class="rule-tag tag-teal">Collaborative</span>
+        </div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-icon">🎯</div>
+        <div>
+          <div class="rule-title">Real-world context throughout</div>
+          <div class="rule-desc">Every answer should connect back to StreamWave. What does it mean for the business?</div>
+          <span class="rule-tag tag-pink">Applied Maths</span>
+        </div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-icon">📋</div>
+        <div>
+          <div class="rule-title">5 tasks across 2 lessons</div>
+          <div class="rule-desc">Each task gets harder. Show all working — your CEO wants to see the maths.</div>
+          <span class="rule-tag tag-amber">Progressive</span>
+        </div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-icon">🎤</div>
+        <div>
+          <div class="rule-title">3-minute pitch at the end</div>
+          <div class="rule-desc">End of Lesson 2: each team presents their key findings to the class.</div>
+          <span class="rule-tag tag-green">Presentation</span>
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer">Mr. Goddard's Maths · Crack the Algorithm · Year 10 IGCSE</div>
+  </div>
+
+  <!-- ── SLIDE 4: Task Overview ── -->
+  <div class="slide slide-4">
+    <div class="s4-heading">Lesson 1 — Building the Models</div>
+    <div class="s4-sub">Three tasks · Work through in order · Show all working</div>
+    <div class="tasks-list">
+      <div class="task-row">
+        <div class="task-num task-num-1">01</div>
+        <div class="task-info">
+          <div class="task-name">Recommendation Score</div>
+          <div class="task-topic">Composite &amp; inverse functions</div>
+        </div>
+        <div class="task-time">22 min</div>
+      </div>
+      <div class="task-row">
+        <div class="task-num task-num-2">02</div>
+        <div class="task-info">
+          <div class="task-name">Maximising Revenue</div>
+          <div class="task-topic">Completing the square (a &gt; 1)</div>
+        </div>
+        <div class="task-time">28 min</div>
+      </div>
+      <div class="task-row">
+        <div class="task-num task-num-3">03</div>
+        <div class="task-info">
+          <div class="task-name">Peak Traffic</div>
+          <div class="task-topic">Differentiation &amp; 2nd derivative</div>
+        </div>
+        <div class="task-time">18 min</div>
+      </div>
+    </div>
+    <div class="slide-footer">Mr. Goddard's Maths · Crack the Algorithm · Year 10 IGCSE</div>
+  </div>
+
+  <!-- ── SLIDE 5: The Pitch ── -->
+  <div class="slide slide-5">
+    <div class="s5-heading">🎤 The Pitch</div>
+    <div class="s5-sub">3 MINUTES PER TEAM · NO SLIDES NEEDED · JUST YOUR MATHS AND YOUR VOICE</div>
+    <div class="pitch-grid">
+      <div class="pitch-item">
+        <div class="pitch-icon">📈</div>
+        <div class="pitch-text">
+          <strong>Revenue &amp; Listeners</strong>
+          What is the peak revenue and optimal listener count?
+        </div>
+      </div>
+      <div class="pitch-item">
+        <div class="pitch-icon">⏰</div>
+        <div class="pitch-text">
+          <strong>Peak Traffic</strong>
+          When does StreamWave hit peak traffic? What should the team do about it?
+        </div>
+      </div>
+      <div class="pitch-item">
+        <div class="pitch-icon">👥</div>
+        <div class="pitch-text">
+          <strong>User Mix</strong>
+          How many Premium vs Free users should the platform target?
+        </div>
+      </div>
+      <div class="pitch-item">
+        <div class="pitch-icon">💡</div>
+        <div class="pitch-text">
+          <strong>Key Finding</strong>
+          One surprising or interesting finding from your analysis.
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer">Mr. Goddard's Maths · Crack the Algorithm · Year 10 IGCSE</div>
+  </div>
+
+  <!-- ── SLIDE 6: Go ── -->
+  <div class="slide slide-6">
+    <div class="s6-center">
+      <div class="s6-eyebrow">StreamWave is counting on you</div>
+      <div class="s6-main">Good luck,</div>
+      <div class="s6-sub">Data Scientists.</div>
+      <div class="s6-tagline"><strong>Mr. Goddard's Maths</strong> &nbsp;·&nbsp; Year 10 IGCSE Higher</div>
+    </div>
+  </div>
+
+</div><!-- /deck -->
+
+<!-- ── Navigation bar ── -->
+<div class="nav-bar">
+  <button class="nav-btn" id="prevBtn" onclick="go(-1)" disabled>←</button>
+  <div class="dot-row" id="dotRow"></div>
+  <span class="slide-counter" id="counter">1 / 6</span>
+  <button class="nav-btn" id="nextBtn" onclick="go(1)">→</button>
+</div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const total  = slides.length;
+let cur = 0;
+
+// Build dots
+const dotRow = document.getElementById('dotRow');
+slides.forEach((_, i) => {
+  const d = document.createElement('div');
+  d.className = 'nav-dot' + (i === 0 ? ' active' : '');
+  d.onclick = () => goTo(i);
+  dotRow.appendChild(d);
+});
+
+function goTo(n) {
+  slides[cur].classList.remove('active');
+  dotRow.children[cur].classList.remove('active');
+  cur = Math.max(0, Math.min(n, total - 1));
+  slides[cur].classList.add('active');
+  dotRow.children[cur].classList.add('active');
+  document.getElementById('counter').textContent = `${cur + 1} / ${total}`;
+  document.getElementById('prevBtn').disabled = cur === 0;
+  document.getElementById('nextBtn').disabled = cur === total - 1;
+}
+
+function go(dir) { goTo(cur + dir); }
+
+// Keyboard nav
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === ' ')  { e.preventDefault(); go(1); }
+  if (e.key === 'ArrowLeft')                     { e.preventDefault(); go(-1); }
+});
+
+// Fullscreen
+function toggleFS() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch(() => {});
+  } else {
+    document.exitFullscreen();
+  }
+}
+</script>
+</body>
+</html>
