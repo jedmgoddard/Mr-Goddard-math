@@ -238,15 +238,19 @@ body {
   top: 10px;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(0,0,0,0.7);
-  color: rgba(255,255,255,0.8);
-  font-size: 11px;
-  font-weight: 600;
-  padding: 5px 14px;
+  background: rgba(0,0,0,0.85);
+  color: #f5a623;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 16px;
   border-radius: 999px;
   white-space: nowrap;
   pointer-events: none;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.03em;
+  border: 1px solid rgba(245,166,35,0.4);
+  max-width: 90%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .question-panel {
@@ -845,7 +849,7 @@ body {
       <div class="hud-box">
         <div class="hud-label">Speed</div>
         <div class="hud-val teal" id="hudSpeed">0</div>
-        <div style="font-size:10px;color:rgba(255,255,255,0.3)">m/s</div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.3)">km/h</div>
       </div>
       <div class="hud-box">
         <div class="hud-label">Height</div>
@@ -1148,19 +1152,26 @@ function onGraphClick(e) {
 
   if(tangentStep === 0) {
     tangentPt1 = [cx, cy];
+    tangentPt1.mx = Math.round(metres[0]);
+    tangentPt1.my = Math.round(metres[1]);
     tangentStep = 1;
-    document.getElementById('graphInstr').textContent = 'Good! Now click a second point to complete your tangent line.';
+    document.getElementById('graphInstr').textContent = 'Point A placed at (' + tangentPt1.mx + 'm, ' + tangentPt1.my + 'm). Now click a second point.';
   } else if(tangentStep === 1) {
     tangentPt2 = [cx, cy];
+    tangentPt2.mx = Math.round(metres[0]);
+    tangentPt2.my = Math.round(metres[1]);
     tangentStep = 2;
-    document.getElementById('graphInstr').textContent = 'Tangent drawn! Calculate the gradient and enter it below.';
+    document.getElementById('graphInstr').textContent =
+      'A (' + tangentPt1.mx + 'm, ' + tangentPt1.my + 'm)  →  B (' + tangentPt2.mx + 'm, ' + tangentPt2.my + 'm)  |  Now calculate the gradient!';
     document.getElementById('checkBtn').disabled = false;
   } else {
-    // Reset
+    // Reset with new first point
     tangentPt1 = [cx, cy];
+    tangentPt1.mx = Math.round(metres[0]);
+    tangentPt1.my = Math.round(metres[1]);
     tangentPt2 = null;
     tangentStep = 1;
-    document.getElementById('graphInstr').textContent = 'Now click a second point.';
+    document.getElementById('graphInstr').textContent = 'Point A placed at (' + tangentPt1.mx + 'm, ' + tangentPt1.my + 'm). Now click a second point.';
     document.getElementById('checkBtn').disabled = true;
   }
   drawGraph();
@@ -1182,15 +1193,16 @@ function drawGraph() {
   ctx.fillStyle = skyGrad;
   ctx.fillRect(0, 0, W, H);
 
-  // Grid
-  ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+  // Grid — brighter, labelled
   ctx.lineWidth = 1;
   for(var gx = 0; gx <= 8; gx++) {
     var px = pad.l + (gx/8) * gw;
+    ctx.strokeStyle = gx % 2 === 0 ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.05)';
     ctx.beginPath(); ctx.moveTo(px, pad.t); ctx.lineTo(px, pad.t + gh); ctx.stroke();
   }
   for(var gy = 0; gy <= 7; gy++) {
     var py = pad.t + (gy/7) * gh;
+    ctx.strokeStyle = gy % 1 === 0 ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.04)';
     ctx.beginPath(); ctx.moveTo(pad.l, py); ctx.lineTo(pad.l + gw, py); ctx.stroke();
   }
 
@@ -1202,9 +1214,9 @@ function drawGraph() {
   ctx.beginPath();
   ctx.moveTo(pad.l, pad.t + gh); ctx.lineTo(pad.l + gw, pad.t + gh); ctx.stroke();
 
-  // Axis labels
-  ctx.fillStyle = 'rgba(255,255,255,0.45)';
-  ctx.font = '10px Nunito';
+  // Axis labels — larger and clearer
+  ctx.fillStyle = 'rgba(255,255,255,0.7)';
+  ctx.font = 'bold 11px Nunito';
   ctx.textAlign = 'right';
   for(var i = 0; i <= 7; i++) {
     var hVal = Math.round(TRACK_H - (i / 7) * TRACK_H);
@@ -1304,13 +1316,74 @@ function drawGraph() {
 
   // Current tangent
   if(tangentPt1) {
+    // Point A dot
     ctx.beginPath();
     ctx.arc(tangentPt1[0], tangentPt1[1], 5, 0, Math.PI*2);
     ctx.fillStyle = '#e94560';
     ctx.fill();
+    ctx.strokeStyle = 'white';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // Crosshairs
+    ctx.strokeStyle = 'rgba(233,69,96,0.35)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([3,3]);
+    ctx.beginPath(); ctx.moveTo(tangentPt1[0], pad.t); ctx.lineTo(tangentPt1[0], pad.t+gh); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(pad.l, tangentPt1[1]); ctx.lineTo(pad.l+gw, tangentPt1[1]); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Coordinate label bubble — flip side if too close to right edge
+    var lx1 = tangentPt1[0] + 10;
+    var ly1 = tangentPt1[1] - 10;
+    var label1 = 'A (' + (tangentPt1.mx||'?') + 'm, ' + (tangentPt1.my||'?') + 'm)';
+    ctx.font = 'bold 11px Nunito';
+    var tw1 = ctx.measureText(label1).width;
+    if(lx1 + tw1 + 10 > W) lx1 = tangentPt1[0] - tw1 - 18;
+    ctx.fillStyle = 'rgba(233,69,96,0.85)';
+    ctx.beginPath();
+    ctx.roundRect(lx1 - 4, ly1 - 13, tw1 + 10, 20, 4);
+    ctx.fill();
+    ctx.fillStyle = 'white';
+    ctx.textAlign = 'left';
+    ctx.fillText(label1, lx1 + 1, ly1);
   }
+
   if(tangentPt1 && tangentPt2) {
     drawTangentLine(ctx, tangentPt1, tangentPt2, '#e94560', 2, true);
+
+    // Point B dot
+    ctx.beginPath();
+    ctx.arc(tangentPt2[0], tangentPt2[1], 5, 0, Math.PI*2);
+    ctx.fillStyle = '#f5a623';
+    ctx.fill();
+    ctx.strokeStyle = 'white';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // Crosshairs B
+    ctx.strokeStyle = 'rgba(245,166,35,0.35)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([3,3]);
+    ctx.beginPath(); ctx.moveTo(tangentPt2[0], pad.t); ctx.lineTo(tangentPt2[0], pad.t+gh); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(pad.l, tangentPt2[1]); ctx.lineTo(pad.l+gw, tangentPt2[1]); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Coordinate label bubble B
+    var lx2 = tangentPt2[0] + 10;
+    var ly2 = tangentPt2[1] + 22;
+    var label2 = 'B (' + (tangentPt2.mx||'?') + 'm, ' + (tangentPt2.my||'?') + 'm)';
+    ctx.font = 'bold 11px Nunito';
+    var tw2 = ctx.measureText(label2).width;
+    if(lx2 + tw2 + 10 > W) lx2 = tangentPt2[0] - tw2 - 18;
+    if(ly2 + 20 > H - pad.b) ly2 = tangentPt2[1] - 18;
+    ctx.fillStyle = 'rgba(245,166,35,0.9)';
+    ctx.beginPath();
+    ctx.roundRect(lx2 - 4, ly2 - 13, tw2 + 10, 20, 4);
+    ctx.fill();
+    ctx.fillStyle = '#1a1a2e';
+    ctx.textAlign = 'left';
+    ctx.fillText(label2, lx2 + 1, ly2);
   }
 }
 
@@ -1764,8 +1837,8 @@ function launchCart() {
 
   // Initial speed from height (energy conservation)
   var topH = Math.max.apply(null, controlPts.map(function(p){return p[1];}));
-  cart.speed = Math.sqrt(2 * 9.8 * (topH - startY + 50)); // give initial push too
-  cart.speed = Math.max(cart.speed, 15);
+  cart.speed = Math.sqrt(2 * 9.8 * (topH - startY + 80));
+  cart.speed = Math.max(cart.speed, 22); // always start with decent speed
 
   playState = 'running';
   document.getElementById('launchBtn').textContent = '↺ Reset';
@@ -1793,98 +1866,112 @@ function launchCart() {
 }
 
 function updateCart(dt) {
-  var G = 9.8; // m/s^2
-  var FRICTION = 0.992;
-  var SPEED_SCALE = 5; // pixels to metres scale for fun speeds
+  var G = 18;           // exaggerated gravity for drama
+  var FRICTION = 0.997; // barely any friction — cart keeps speed
+  var SPEED_SCALE = 12; // much faster along track
 
   if(cart.onTrack) {
-    // Move along track using energy conservation
     var currentH = getTrackY(cart.x, controlPts);
-    var dx = 4; // metres per frame step (track speed)
+    var dx = 4;
 
-    // Get gradient at current position
-    var dy = getTrackY(cart.x + 1, controlPts) - getTrackY(cart.x - 1, controlPts);
-    var gradient = dy / 2;
-
-    // Speed based on height change (energy conservation simplified)
-    // v^2 = v0^2 + 2g*delta_h
+    // Energy conservation — exaggerated height bonus
     var nextH = getTrackY(cart.x + dx, controlPts);
     var dh = nextH - currentH;
-    var newSpeedSq = cart.speed * cart.speed - 2 * G * dh;
-    if(newSpeedSq < 0.5) newSpeedSq = 0.5;
+    var newSpeedSq = cart.speed * cart.speed - 2 * G * dh * 0.6;
+    if(newSpeedSq < 1) newSpeedSq = 1;
     cart.speed = Math.sqrt(newSpeedSq) * FRICTION;
+    cart.speed = Math.min(cart.speed, 80); // cap so it stays visible
 
     cart.x += cart.speed * dt * SPEED_SCALE;
     cart.y = getTrackY(cart.x, controlPts);
 
+    // Wobble factor based on speed — cart shakes at high speed
+    cart.wobble = (cart.speed > 30) ? (Math.random() - 0.5) * 4 : 0;
+
     // Update HUD
-    document.getElementById('hudSpeed').textContent = Math.round(cart.speed);
+    document.getElementById('hudSpeed').textContent = Math.round(cart.speed * 3.6) + ' km/h';
     document.getElementById('hudHeight').textContent = Math.round(cart.y);
 
-    // Check if reached end of track
+    // Reached end of track — launch!
     if(cart.x >= TRACK_W) {
-      // Launched off end
-      var endGrad = (getTrackY(TRACK_W, controlPts) - getTrackY(TRACK_W - 10, controlPts)) / 10;
+      var endGrad = (getTrackY(TRACK_W, controlPts) - getTrackY(TRACK_W - 8, controlPts)) / 8;
       var angle = Math.atan(endGrad);
-      cart.vx = cart.speed * SPEED_SCALE * Math.cos(angle) * 0.3;
-      cart.vy = cart.speed * SPEED_SCALE * Math.sin(angle) * 0.3;
+      // Exaggerated launch velocity
+      cart.vx = cart.speed * 0.55 * Math.cos(angle);
+      cart.vy = cart.speed * 0.55 * Math.sin(angle) + 8; // extra upward kick
       cart.onTrack = false;
       cart.launchX = cart.x;
       cart.launchY = cart.y;
+      cart.trailPts = [];
       playState = 'flying';
       document.getElementById('hudStatus').textContent = 'AIRBORNE! 🚀';
       document.getElementById('hudStatus').style.color = '#f5a623';
+      // Screen shake
+      cart.shakeFrames = 12;
     }
 
-    // Check for early derailment — if gradient too steep and speed too low
-    // or if track goes negative (underground - shouldn't happen with clamped pts)
-    if(cart.speed < 1 && currentH < 5) {
+    // Fell off bottom
+    if(cart.y < 0 && cart.x > 50) {
       cart.onTrack = false;
       cart.launchX = cart.x;
-      cart.launchY = cart.y;
-      cart.vx = 2; cart.vy = 1;
+      cart.launchY = Math.max(cart.y, 0);
+      cart.vx = cart.speed * 0.3;
+      cart.vy = 4;
+      cart.trailPts = [];
       playState = 'flying';
     }
 
   } else if(playState === 'flying') {
-    // Projectile motion
-    cart.x += cart.vx * dt * 10;
-    cart.vy -= G * dt * 2;
-    cart.y += cart.vy * dt * 10;
+    // Store trail
+    if(!cart.trailPts) cart.trailPts = [];
+    cart.trailPts.push([cart.x, cart.y]);
+    if(cart.trailPts.length > 30) cart.trailPts.shift();
 
-    document.getElementById('hudSpeed').textContent = Math.round(Math.sqrt(cart.vx*cart.vx + cart.vy*cart.vy) * 3);
+    // Exaggerated projectile
+    cart.x  += cart.vx * dt * 14;
+    cart.vy -= G * dt * 1.4;
+    cart.y  += cart.vy * dt * 14;
+    cart.spin = (cart.spin || 0) + cart.vx * dt * 8; // spin in air
+
+    document.getElementById('hudSpeed').textContent = Math.round(Math.sqrt(cart.vx*cart.vx + cart.vy*cart.vy) * 5) + ' km/h';
     document.getElementById('hudHeight').textContent = Math.max(0, Math.round(cart.y));
 
-    var trackY = getTrackY(Math.min(cart.x, TRACK_W), controlPts);
-    var groundY = 0;
+    // Hit ground
+    if(cart.y <= 0) {
+      cart.y = 0;
+      var impact = Math.abs(cart.vy);
+      cart.vy = -cart.vy * 0.45; // bouncy!
+      cart.vx = cart.vx * 0.72;
+      cart.bounces = (cart.bounces || 0) + 1;
+      cart.spin = 0;
+      cart.shakeFrames = Math.min(20, Math.round(impact * 1.5));
 
-    // Hit the ground or track
-    if(cart.y <= groundY || (cart.x < TRACK_W && cart.y <= trackY && cart.vy < 0)) {
-      // Landed
-      cart.y = Math.max(groundY, 0);
-      cart.vy = -cart.vy * 0.25; // bounce
-      cart.vx = cart.vx * 0.6;
-      cart.bounces++;
-
+      // Record flight distance
       if(cart.launchX !== null) {
-        var flightDist = Math.max(0, cart.x - cart.launchX);
-        if(flightDist > flightDistance) flightDistance = flightDist;
-        document.getElementById('hudDist').textContent = Math.round(flightDist) + 'm';
-        cart.maxFlightX = cart.x;
+        var fd = Math.max(0, cart.x - cart.launchX);
+        if(fd > flightDistance) {
+          flightDistance = fd;
+          document.getElementById('hudDist').textContent = Math.round(flightDistance) + 'm';
+        }
       }
 
-      if(Math.abs(cart.vy) < 2 && Math.abs(cart.vx) < 1) {
+      // Stop when bounces get tiny
+      if(Math.abs(cart.vy) < 3 && Math.abs(cart.vx) < 2) {
+        cart.vy = 0; cart.vx = 0;
         playState = 'done';
       }
     }
 
-    // Off the right side
-    if(cart.x > TRACK_W + 200) {
-      playState = 'done';
-      flightDistance = Math.max(flightDistance, cart.x - (cart.launchX || TRACK_W));
+    // Way off screen — done
+    if(cart.x > TRACK_W + 400 || cart.x < -100) {
+      flightDistance = Math.max(flightDistance, Math.abs(cart.x - (cart.launchX || TRACK_W)));
       document.getElementById('hudDist').textContent = Math.round(flightDistance) + 'm';
+      playState = 'done';
     }
   }
+
+  // Decay shake
+  if(cart.shakeFrames > 0) cart.shakeFrames--;
 }
 
 function drawPlayFrame(ctx, canvas, cart) {
@@ -1988,70 +2075,119 @@ function drawPlayFrame(ctx, canvas, cart) {
     ctx.fillText(Math.round((al/4)*TRACK_W)+'m', pad.l+(al/4)*gw, pad.t+gh+16);
   }
 
+  // Screen shake
+  var shakeX = 0, shakeY = 0;
+  if(cart && cart.shakeFrames > 0) {
+    shakeX = (Math.random() - 0.5) * cart.shakeFrames * 1.5;
+    shakeY = (Math.random() - 0.5) * cart.shakeFrames * 1.5;
+  }
+  ctx.save();
+  ctx.translate(shakeX, shakeY);
+
   // Draw cart
   if(cart) {
     var cx, cy;
     if(cart.onTrack) {
-      var cpx = toCanvas(canvas, Math.min(cart.x, TRACK_W), cart.y);
+      var grad = (getTrackY(cart.x + 2, controlPts) - getTrackY(cart.x - 2, controlPts)) / 4;
+      var cartAngle = Math.atan(grad) * 0.6; // tilt with slope
+      var cpx = toCanvas(canvas, Math.min(cart.x, TRACK_W), cart.y + (cart.wobble || 0));
       cx = cpx[0]; cy = cpx[1];
     } else {
-      var cpx2 = toCanvas(canvas, Math.min(cart.x, TRACK_W + 150), Math.max(0, cart.y));
+      var cpx2 = toCanvas(canvas, Math.min(Math.max(cart.x, -150), TRACK_W + 300), Math.max(-10, cart.y));
       cx = cpx2[0]; cy = cpx2[1];
     }
 
-    // Cart shadow on ground
+    // Trail (sparks when flying)
+    if(!cart.onTrack && cart.trailPts && cart.trailPts.length > 1) {
+      cart.trailPts.forEach(function(tp, ti) {
+        var tpx = toCanvas(canvas, Math.min(tp[0], TRACK_W+300), Math.max(-10, tp[1]));
+        var alpha = ti / cart.trailPts.length;
+        ctx.beginPath();
+        ctx.arc(tpx[0] + shakeX*-1, tpx[1] + shakeY*-1, 3 * alpha, 0, Math.PI*2);
+        ctx.fillStyle = 'rgba(245,166,35,' + (alpha * 0.6) + ')';
+        ctx.fill();
+      });
+    }
+
+    // Speed lines on track
+    if(cart.onTrack && cart.speed > 25) {
+      for(var sl = 1; sl <= 4; sl++) {
+        var slx = toCanvas(canvas, cart.x - sl * 18, cart.y);
+        ctx.beginPath();
+        ctx.moveTo(slx[0], slx[1] - 4);
+        ctx.lineTo(slx[0] - 8, slx[1] - 4);
+        ctx.strokeStyle = 'rgba(255,255,255,' + (0.5 - sl*0.1) + ')';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+      }
+    }
+
+    // Cart shadow
+    var shadowPY = toCanvas(canvas, cart.x, 0)[1];
+    var shadowScale = Math.max(0.2, 1 - (cy - shadowPY) / (H * 0.5));
     ctx.beginPath();
-    ctx.ellipse(cx, groundPY + 4, 12, 3, 0, 0, Math.PI*2);
-    ctx.fillStyle = 'rgba(0,0,0,0.3)';
+    ctx.ellipse(cx, Math.min(shadowPY, groundPY) + 4, 14 * shadowScale, 3 * shadowScale, 0, 0, Math.PI*2);
+    ctx.fillStyle = 'rgba(0,0,0,' + (0.3 * shadowScale) + ')';
     ctx.fill();
+
+    // Draw cart with rotation (spin in air, tilt on track)
+    ctx.save();
+    ctx.translate(cx, cy);
+    var drawAngle = cart.onTrack ? (cartAngle || 0) : (cart.spin || 0);
+    ctx.rotate(drawAngle);
+
+    var cartW = 24, cartH = 14;
 
     // Cart body
-    var cartW = 22, cartH = 14;
     ctx.fillStyle = '#e94560';
     ctx.beginPath();
-    ctx.roundRect(cx - cartW/2, cy - cartH - 4, cartW, cartH, 4);
+    ctx.roundRect(-cartW/2, -cartH - 4, cartW, cartH, 4);
     ctx.fill();
 
-    // Cart shine
-    ctx.fillStyle = 'rgba(255,255,255,0.2)';
-    ctx.fillRect(cx - cartW/2 + 3, cy - cartH - 4 + 3, cartW - 6, 3);
+    // Shine strip
+    ctx.fillStyle = 'rgba(255,255,255,0.25)';
+    ctx.fillRect(-cartW/2 + 3, -cartH - 4 + 3, cartW - 6, 3);
+
+    // Eyes (funny face at high speed)
+    if(cart.speed > 40 || (!cart.onTrack)) {
+      ctx.fillStyle = 'white';
+      ctx.beginPath(); ctx.ellipse(-5, -cartH+2, 3, 4, 0, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(5,  -cartH+2, 3, 4, 0, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = '#1a1a2e';
+      ctx.beginPath(); ctx.arc(-5, -cartH+3, 1.5, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(5,  -cartH+3, 1.5, 0, Math.PI*2); ctx.fill();
+    }
 
     // Wheels
-    var wheelY = cy - 4;
-    [-7, 7].forEach(function(wx) {
+    [-8, 8].forEach(function(wx) {
       ctx.beginPath();
-      ctx.arc(cx + wx, wheelY, 5, 0, Math.PI*2);
-      ctx.fillStyle = '#333';
+      ctx.arc(wx, -2, 5, 0, Math.PI*2);
+      ctx.fillStyle = '#222';
       ctx.fill();
       ctx.beginPath();
-      ctx.arc(cx + wx, wheelY, 2, 0, Math.PI*2);
+      ctx.arc(wx, -2, 2, 0, Math.PI*2);
       ctx.fillStyle = '#aaa';
       ctx.fill();
     });
 
-    // Spark trail if flying
-    if(!cart.onTrack && playState === 'flying') {
-      for(var sp = 0; sp < 6; sp++) {
+    ctx.restore();
+
+    // Impact star burst on bounce
+    if(cart.shakeFrames > 14) {
+      for(var star = 0; star < 8; star++) {
+        var starA = (star / 8) * Math.PI * 2;
+        var starR = (16 - cart.shakeFrames + 14) * 3;
         ctx.beginPath();
-        ctx.arc(cx - 8 - sp*4, cy + (Math.random()-0.5)*6, 2-sp*0.2, 0, Math.PI*2);
-        ctx.fillStyle = 'rgba(245,166,35,' + (0.8 - sp*0.12) + ')';
-        ctx.fill();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + Math.cos(starA) * starR, cy + Math.sin(starA) * starR);
+        ctx.strokeStyle = 'rgba(245,166,35,' + (cart.shakeFrames / 20) + ')';
+        ctx.lineWidth = 2;
+        ctx.stroke();
       }
     }
-
-    // Flight arc indicator
-    if(cart.launchX && cart.launchY && !cart.onTrack) {
-      var lx = toCanvas(canvas, cart.launchX, cart.launchY);
-      ctx.beginPath();
-      ctx.setLineDash([3,4]);
-      ctx.moveTo(lx[0], lx[1]);
-      ctx.lineTo(cx, cy);
-      ctx.strokeStyle = 'rgba(245,166,35,0.4)';
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-      ctx.setLineDash([]);
-    }
   }
+
+  ctx.restore(); // end shake transform
 }
 
 function goToResult() {
