@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mr. Goddard's Penalty Shootout – Set Notation</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800;900&display=swap');
+
+:root {
+–gold:   #f5c518;
+–white:  #ffffff;
+–navy:   #0e1b3d;
+–dknavy: #070f22;
+–red:    #e63946;
+–green:  #2dc653;
+–grey:   #8899aa;
+–ltgrey: #c8d4e4;
+–panel:  rgba(7,15,34,0.94);
+–teal:   #00c9b1;
+–purple: #9b59b6;
+–timer-safe: #2dc653;
+–timer-warn: #f5c518;
+–timer-danger: #e63946;
+}
+
+- { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+body {
+font-family: ‘Nunito’, sans-serif;
+background: var(–dknavy);
+color: var(–white);
+min-height: 100vh;
+}
+
+body::before {
+content: ‘’;
+position: fixed; inset: 0; z-index: 0;
+background:
+repeating-linear-gradient(0deg, transparent 0px, transparent 55px, rgba(0,0,0,0.07) 55px, rgba(0,0,0,0.07) 110px),
+linear-gradient(175deg, #0f5c1e 0%, #1a7a2e 40%, #145f23 100%);
+}
+
+/* ── Header ── */
+.header {
+position: relative; z-index: 10;
+background: var(–dknavy);
+border-bottom: 4px solid var(–gold);
+padding: 14px 24px;
+display: flex; align-items: center; gap: 14px;
+box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+}
+.header-icon { font-size: 1.9rem; }
+.header-titles h1 {
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: 1.45rem; letter-spacing: 2.5px;
+color: var(–gold); line-height: 1;
+}
+.header-titles p { color: var(–grey); font-size: 0.78rem; margin-top: 2px; }
+.score-pill {
+margin-left: auto;
+background: var(–gold); color: var(–navy);
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: 1rem; letter-spacing: 1px;
+padding: 6px 15px; border-radius: 30px; white-space: nowrap;
+}
+
+/* ── Name banner ── */
+.name-banner {
+position: relative; z-index: 10;
+background: rgba(7,15,34,0.96);
+border-bottom: 2px solid rgba(245,197,24,0.25);
+padding: 10px 24px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+}
+.name-banner label { font-weight: 800; font-size: 0.85rem; color: var(–gold); }
+.name-input {
+border: 2px solid rgba(245,197,24,0.35); border-radius: 8px;
+padding: 6px 12px; font-size: 0.88rem; font-family: inherit;
+background: rgba(255,255,255,0.06); color: var(–white);
+outline: none; width: 185px; transition: border-color 0.2s;
+}
+.name-input::placeholder { color: var(–grey); }
+.name-input:focus { border-color: var(–gold); }
+.name-note { font-size: 0.73rem; color: var(–grey); font-style: italic; }
+
+/* Set display banner */
+.set-banner {
+position: relative; z-index: 10;
+background: rgba(0,201,177,0.08);
+border-bottom: 1px solid rgba(0,201,177,0.2);
+padding: 10px 24px;
+font-size: 0.85rem;
+color: var(–teal);
+font-weight: 700;
+letter-spacing: 0.02em;
+line-height: 1.7;
+}
+.set-banner span { color: rgba(255,255,255,0.6); font-weight: 600; margin-right: 6px; }
+
+/* ── Progress dots ── */
+.progress-strip {
+position: relative; z-index: 10;
+background: rgba(7,15,34,0.88);
+padding: 10px 24px;
+display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+}
+.prog-label { font-size: 0.72rem; color: var(–grey); white-space: nowrap; font-weight: 700; letter-spacing: 0.5px; }
+.balls-row { display: flex; gap: 7px; flex-wrap: wrap; }
+.ball-dot {
+width: 20px; height: 20px; border-radius: 50%;
+border: 2px solid rgba(255,255,255,0.15);
+background: rgba(255,255,255,0.07);
+transition: all 0.35s cubic-bezier(.34,1.56,.64,1);
+font-size: 0.6rem; display: flex; align-items: center; justify-content: center;
+}
+.ball-dot.scored { background: var(–green); border-color: var(–green); box-shadow: 0 0 8px var(–green); }
+.ball-dot.missed { background: var(–red);   border-color: var(–red);   box-shadow: 0 0 8px var(–red); }
+.ball-dot.current { background: var(–gold); border-color: var(–gold); animation: bpulse 0.9s ease-in-out infinite; }
+@keyframes bpulse { 0%,100%{transform:scale(1);box-shadow:0 0 6px var(–gold)} 50%{transform:scale(1.25);box-shadow:0 0 14px var(–gold)} }
+
+/* ── Game area ── */
+.game-area {
+position: relative; z-index: 10;
+max-width: 720px; margin: 24px auto 0; padding: 0 16px;
+}
+
+/* ── Goal ── */
+.goal-wrap {
+display: flex; justify-content: center;
+margin-bottom: 16px;
+position: relative; user-select: none;
+}
+.goal-svg { width: min(400px, 100%); display: block; }
+
+/* Timer ring around goal */
+.timer-ring-wrap {
+position: absolute;
+top: 50%; left: 50%; transform: translate(-50%, -50%);
+pointer-events: none;
+display: none;
+}
+.timer-ring-wrap.visible { display: block; }
+.timer-svg { width: min(420px,100%); overflow: visible; }
+.timer-ring-bg { fill: none; stroke: rgba(255,255,255,0.07); stroke-width: 6; }
+.timer-ring-fill { fill: none; stroke-width: 6; stroke-linecap: round;
+transform-origin: center; transform: rotate(-90deg);
+transition: stroke-dashoffset 0.1s linear, stroke 0.3s ease;
+}
+
+/* Timer countdown bubble */
+.timer-bubble {
+position: absolute;
+top: -18px; right: -10px;
+width: 44px; height: 44px; border-radius: 50%;
+display: flex; align-items: center; justify-content: center;
+font-family: ‘Bebas Neue’, sans-serif; font-size: 1.3rem;
+color: var(–navy); font-weight: 900;
+box-shadow: 0 2px 12px rgba(0,0,0,0.5);
+transition: background 0.3s, transform 0.15s;
+display: none; z-index: 30;
+}
+.timer-bubble.visible { display: flex; }
+.timer-bubble.safe   { background: var(–timer-safe); }
+.timer-bubble.warn   { background: var(–timer-warn); }
+.timer-bubble.danger { background: var(–timer-danger); animation: dangerpulse 0.3s ease-in-out infinite; }
+@keyframes dangerpulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.15)} }
+
+/* Zones overlay */
+.zones-overlay {
+position: absolute;
+top: 0; left: 50%; transform: translateX(-50%);
+display: none; pointer-events: none;
+}
+.zones-overlay.visible { display: block; pointer-events: all; }
+
+.goal-zone {
+position: absolute; cursor: pointer;
+border: 2px solid transparent; border-radius: 4px;
+background: rgba(245,197,24,0.0);
+transition: background 0.15s, border-color 0.15s;
+display: flex; align-items: center; justify-content: center;
+}
+.goal-zone:hover {
+background: rgba(245,197,24,0.22);
+border-color: rgba(245,197,24,0.7);
+}
+.goal-zone .zone-arrow { font-size: 1.3rem; opacity: 0; transition: opacity 0.15s; pointer-events: none; }
+.goal-zone:hover .zone-arrow { opacity: 1; }
+
+/* Shoot prompt */
+.shoot-prompt {
+position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%);
+font-family: ‘Bebas Neue’, sans-serif; font-size: 0.95rem; letter-spacing: 2px;
+color: var(–gold); animation: promptpulse 0.7s ease-in-out infinite;
+white-space: nowrap; pointer-events: none; display: none;
+}
+.shoot-prompt.visible { display: block; }
+@keyframes promptpulse { 0%,100%{opacity:1} 50%{opacity:0.35} }
+
+/* Ball */
+.ball-svg {
+position: absolute;
+width: 46px; height: 46px;
+left: 50%; bottom: -8px;
+transform: translateX(-50%);
+filter: drop-shadow(0 4px 10px rgba(0,0,0,0.6));
+transition: none; z-index: 20; pointer-events: none;
+}
+.ball-svg.shooting {
+transition: left 0.5s cubic-bezier(.15,.8,.3,1), bottom 0.5s cubic-bezier(.15,.8,.3,1),
+transform 0.5s ease, opacity 0.5s ease;
+}
+
+/* Result flash */
+.result-flash {
+position: absolute; top: 6px; left: 50%; transform: translateX(-50%);
+font-family: ‘Bebas Neue’, sans-serif; font-size: 2.3rem; letter-spacing: 3px;
+opacity: 0; pointer-events: none; white-space: nowrap;
+text-shadow: 0 2px 16px rgba(0,0,0,0.7); transition: opacity 0.25s; z-index: 30;
+}
+.result-flash.show { opacity: 1; }
+.result-flash.goal { color: var(–green); }
+.result-flash.miss { color: var(–red); }
+.result-flash.timeout { color: var(–red); }
+
+/* ── Question card ── */
+.q-card {
+background: var(–panel);
+border: 2px solid rgba(245,197,24,0.25);
+border-radius: 14px; padding: 20px 22px;
+backdrop-filter: blur(8px);
+box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+margin-bottom: 16px;
+}
+.q-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.q-num {
+font-family: ‘Bebas Neue’, sans-serif;
+background: var(–gold); color: var(–navy);
+padding: 3px 11px; border-radius: 20px;
+font-size: 0.95rem; letter-spacing: 1px; white-space: nowrap;
+}
+.q-difficulty {
+font-size: 0.7rem; font-weight: 800; letter-spacing: 1.5px;
+text-transform: uppercase; padding: 2px 10px; border-radius: 20px;
+}
+.diff-easy   { background: rgba(45,198,83,0.15);  color: var(–green); }
+.diff-medium { background: rgba(245,197,24,0.15); color: var(–gold); }
+.diff-hard   { background: rgba(230,57,70,0.15);  color: var(–red); }
+
+.q-text {
+font-size: 1.05rem; font-weight: 800; color: var(–white);
+line-height: 1.4; margin-bottom: 16px;
+}
+.q-text .set-ref {
+display: inline-block;
+background: rgba(0,201,177,0.12);
+border: 1px solid rgba(0,201,177,0.25);
+border-radius: 6px; padding: 2px 8px;
+font-family: ‘Bebas Neue’, sans-serif; font-size: 1rem;
+color: var(–teal); letter-spacing: 1px; margin: 0 2px;
+}
+
+/* MCQ */
+.options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+.opt-btn {
+padding: 10px 12px;
+background: rgba(255,255,255,0.06);
+border: 2px solid rgba(255,255,255,0.12);
+border-radius: 10px; color: var(–white); font-family: ‘Nunito’, sans-serif;
+font-size: 0.9rem; font-weight: 700; cursor: pointer; text-align: left;
+transition: all 0.18s;
+}
+.opt-btn:hover:not(:disabled) { background: rgba(245,197,24,0.12); border-color: var(–gold); transform: translateY(-1px); }
+.opt-btn:disabled { cursor: default; }
+.opt-btn.correct { background: rgba(45,198,83,0.18); border-color: var(–green); color: var(–green); }
+.opt-btn.wrong   { background: rgba(230,57,70,0.18);  border-color: var(–red);   color: var(–red); }
+
+/* Typed */
+.typed-row { display: flex; gap: 9px; align-items: center; flex-wrap: wrap; }
+.typed-hint { font-size: 0.72rem; color: var(–grey); font-style: italic; width: 100%; margin-bottom: 4px; }
+.typed-input {
+flex: 1; min-width: 160px; max-width: 280px;
+border: 2px solid rgba(255,255,255,0.15); border-radius: 9px;
+padding: 9px 12px; font-size: 0.95rem; font-family: ‘Nunito’, sans-serif;
+background: rgba(255,255,255,0.07); color: var(–white);
+outline: none; transition: border-color 0.2s;
+}
+.typed-input::placeholder { color: var(–grey); }
+.typed-input:focus { border-color: var(–gold); }
+.typed-input.correct { border-color: var(–green); background: rgba(45,198,83,0.1); color: var(–green); }
+.typed-input.wrong   { border-color: var(–red);   background: rgba(230,57,70,0.1);  color: var(–red); }
+
+.shoot-btn {
+padding: 9px 20px; background: var(–gold); color: var(–navy);
+border: none; border-radius: 9px; font-family: ‘Bebas Neue’, sans-serif;
+font-size: 1.05rem; letter-spacing: 1.5px; cursor: pointer;
+transition: transform 0.12s, background 0.15s; white-space: nowrap;
+}
+.shoot-btn:hover { background: #d4a800; transform: scale(1.04); }
+.shoot-btn:active { transform: scale(0.96); }
+.shoot-btn:disabled { background: var(–grey); cursor: default; transform: none; }
+
+/* Feedback */
+.q-feedback {
+margin-top: 9px; font-size: 0.86rem; font-weight: 700;
+display: none; padding: 6px 11px; border-radius: 7px;
+}
+.q-feedback.correct { display: block; background: rgba(45,198,83,0.15); color: var(–green); }
+.q-feedback.wrong   { display: block; background: rgba(230,57,70,0.15);  color: var(–red); }
+
+/* Nav */
+.nav-row { display: flex; justify-content: center; gap: 12px; margin-bottom: 28px; }
+.nav-btn {
+padding: 11px 28px; background: rgba(255,255,255,0.08);
+border: 2px solid rgba(255,255,255,0.15); border-radius: 10px; color: var(–white);
+font-family: ‘Bebas Neue’, sans-serif; font-size: 1.05rem; letter-spacing: 1.5px;
+cursor: pointer; transition: all 0.18s;
+}
+.nav-btn:hover { background: rgba(245,197,24,0.12); border-color: var(–gold); }
+.nav-btn.primary { background: var(–gold); color: var(–navy); border-color: var(–gold); }
+.nav-btn.primary:hover { background: #d4a800; }
+
+/* ── Final screen ── */
+#finalScreen {
+display: none; position: relative; z-index: 10;
+max-width: 720px; margin: 24px auto 40px; padding: 0 16px;
+}
+.final-card {
+background: var(–panel); border: 2px solid rgba(245,197,24,0.3);
+border-radius: 14px; padding: 28px 24px; backdrop-filter: blur(10px);
+box-shadow: 0 10px 40px rgba(0,0,0,0.6); text-align: center;
+}
+.final-card h2 { font-family: ‘Bebas Neue’, sans-serif; font-size: 2.2rem; letter-spacing: 3px; color: var(–gold); margin-bottom: 5px; }
+.final-score { font-family: ‘Bebas Neue’, sans-serif; font-size: 3.8rem; letter-spacing: 2px; color: var(–white); line-height: 1; }
+.final-score span { color: var(–gold); }
+.final-stars { font-size: 1.8rem; margin: 7px 0 3px; }
+.final-msg { color: var(–grey); font-size: 0.97rem; margin-bottom: 20px; font-weight: 700; }
+
+.breakdown { width: 100%; border-collapse: collapse; margin-bottom: 20px; text-align: left; font-size: 0.8rem; }
+.breakdown th { background: rgba(245,197,24,0.12); color: var(–gold); padding: 7px 9px; font-weight: 800; letter-spacing: 0.5px; border-bottom: 1px solid rgba(245,197,24,0.2); }
+.breakdown td { padding: 6px 9px; border-bottom: 1px solid rgba(255,255,255,0.06); color: var(–ltgrey); vertical-align: top; }
+.breakdown tr:last-child td { border-bottom: none; }
+
+/* Submission */
+.gen-section { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 18px; margin-top: 4px; }
+.gen-section h3 { font-family: ‘Bebas Neue’, sans-serif; font-size: 1.1rem; letter-spacing: 1.5px; color: var(–gold); margin-bottom: 10px; }
+.gen-btn { padding: 10px 24px; background: rgba(45,198,83,0.15); border: 2px solid var(–green); border-radius: 10px; color: var(–green); font-family: ‘Bebas Neue’, sans-serif; font-size: 1.05rem; letter-spacing: 1.5px; cursor: pointer; transition: all 0.18s; }
+.gen-btn:hover { background: rgba(45,198,83,0.28); }
+.summary-text-wrap { margin-top: 12px; display: none; text-align: left; }
+.summary-textarea { width: 100%; min-height: 260px; background: rgba(0,0,0,0.5); color: #7fffbc; border: 2px solid rgba(45,198,83,0.4); border-radius: 10px; padding: 12px; font-family: ‘Courier New’, monospace; font-size: 0.77rem; line-height: 1.65; resize: vertical; outline: none; }
+.copy-row { display: flex; align-items: center; gap: 12px; margin-top: 9px; flex-wrap: wrap; }
+.copy-btn { padding: 8px 20px; background: var(–gold); color: var(–navy); border: none; border-radius: 8px; font-family: ‘Bebas Neue’, sans-serif; font-size: 0.95rem; letter-spacing: 1px; cursor: pointer; transition: transform 0.12s; }
+.copy-btn:hover { background: #d4a800; transform: scale(1.03); }
+.copy-confirm { color: var(–green); font-weight: 800; font-size: 0.85rem; display: none; }
+.classroom-steps { margin-top: 10px; background: rgba(0,0,0,0.3); border-radius: 8px; padding: 10px 13px; color: var(–grey); font-size: 0.77rem; line-height: 1.75; text-align: left; }
+.classroom-steps strong { color: var(–gold); }
+
+.footer { position: relative; z-index: 10; text-align: center; padding: 16px; color: rgba(136,153,170,0.45); font-size: 0.73rem; }
+
+@media (max-width:480px) {
+.options-grid { grid-template-columns: 1fr; }
+.header-titles h1 { font-size: 1.1rem; }
+}
+</style>
+
+</head>
+<body>
+
+<div class="header">
+  <div class="header-icon">⚽</div>
+  <div class="header-titles">
+    <h1>MR. GODDARD'S PENALTY SHOOTOUT</h1>
+    <p>Set Notation Edition — Answer correctly, then pick your spot!</p>
+  </div>
+  <div class="score-pill" id="scoreDisplay">0 GOALS</div>
+</div>
+
+<div class="name-banner">
+  <label for="playerName">⚽ Player Name:</label>
+  <input class="name-input" id="playerName" type="text" placeholder="Type your full name" autocomplete="name">
+  <span class="name-note">Appears on your submission for Mr. Goddard</span>
+</div>
+
+<div class="set-banner" id="setBanner">Loading sets...</div>
+
+<div class="progress-strip">
+  <span class="prog-label">PENALTIES:</span>
+  <div class="balls-row" id="ballsRow"></div>
+</div>
+
+<div class="game-area" id="gameArea">
+
+  <div class="goal-wrap" id="goalWrap">
+    <svg class="goal-svg" id="goalSvg" viewBox="0 0 420 210" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id="net" width="21" height="21" patternUnits="userSpaceOnUse">
+          <path d="M21 0L0 0 0 21" fill="none" stroke="rgba(255,255,255,0.13)" stroke-width="0.8"/>
+        </pattern>
+      </defs>
+      <rect x="18" y="8" width="384" height="180" fill="url(#net)"/>
+      <polyline points="18,195 18,8 402,8 402,195" fill="none" stroke="#dde4ee" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+      <line x1="18" y1="195" x2="402" y2="195" stroke="#dde4ee" stroke-width="6"/>
+    </svg>
+
+```
+<!-- Timer ring -->
+<div class="timer-ring-wrap" id="timerRingWrap">
+  <svg class="timer-svg" viewBox="0 0 420 210" xmlns="http://www.w3.org/2000/svg">
+    <rect x="8" y="2" width="404" height="202" rx="4"
+          class="timer-ring-bg"/>
+    <rect id="timerRingFill" x="8" y="2" width="404" height="202" rx="4"
+          class="timer-ring-fill" stroke="var(--green)"
+          stroke-dasharray="1212" stroke-dashoffset="0"/>
+  </svg>
+</div>
+
+<!-- Timer bubble -->
+<div class="timer-bubble safe" id="timerBubble">5</div>
+
+<div class="zones-overlay" id="zonesOverlay"></div>
+<div class="shoot-prompt" id="shootPrompt">⚽ PICK YOUR SPOT!</div>
+
+<svg class="ball-svg" id="ballSvg" viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="26" cy="26" r="25" fill="white" stroke="#ccc" stroke-width="1"/>
+  <polygon points="26,4 31,16 21,16" fill="#222"/>
+  <polygon points="44,18 37,27 45,34" fill="#222"/>
+  <polygon points="37,46 26,39 30,28" fill="#222"/>
+  <polygon points="15,46 22,35 10,34" fill="#222"/>
+  <polygon points="8,18 19,27 11,34" fill="#222"/>
+  <circle cx="26" cy="26" r="7" fill="#222"/>
+</svg>
+
+<div class="result-flash" id="resultFlash"></div>
+```
+
+  </div>
+
+  <div class="q-card" id="qCard">
+    <div class="q-header">
+      <span class="q-num" id="qNum">Q1 / 10</span>
+      <span class="q-difficulty" id="qDiff"></span>
+    </div>
+    <div class="q-text" id="qText"></div>
+    <div id="qAnswerArea"></div>
+    <div class="q-feedback" id="qFeedback"></div>
+  </div>
+
+  <div class="nav-row" id="navRow" style="display:none;">
+    <button class="nav-btn primary" id="nextBtn" onclick="nextQuestion()">NEXT PENALTY →</button>
+  </div>
+</div>
+
+<div id="finalScreen">
+  <div class="final-card">
+    <h2>⚽ FULL TIME!</h2>
+    <div class="final-score" id="finalScore">0 <span>/ 10</span></div>
+    <div class="final-stars" id="finalStars"></div>
+    <div class="final-msg" id="finalMsg"></div>
+
+```
+<table class="breakdown">
+  <thead><tr>
+    <th style="width:28px"></th>
+    <th>Question</th>
+    <th>Your Answer</th>
+    <th>Correct Answer</th>
+  </tr></thead>
+  <tbody id="breakdownBody"></tbody>
+</table>
+
+<div class="gen-section">
+  <h3>📤 Submit to Mr. Goddard's Google Classroom</h3>
+  <button class="gen-btn" onclick="generateSummary()">📋 GENERATE MY SUBMISSION</button>
+  <div class="summary-text-wrap" id="summaryWrap">
+    <textarea class="summary-textarea" id="summaryText" readonly></textarea>
+    <div class="copy-row">
+      <button class="copy-btn" onclick="copySummary()">📋 Copy to Clipboard</button>
+      <span class="copy-confirm" id="copyConfirm">✅ Copied!</span>
+    </div>
+    <div class="classroom-steps">
+      <strong>How to submit to Google Classroom:</strong><br>
+      1. Click <strong>Copy to Clipboard</strong> above<br>
+      2. Open Google Classroom → find the Set Notation Shootout assignment<br>
+      3. Click <strong>Add private comment</strong> or the response box<br>
+      4. Paste with <strong>Ctrl+V</strong> (Cmd+V on Mac / long-press on iPad)<br>
+      5. Click <strong>Submit</strong> ✅
+    </div>
+  </div>
+</div>
+```
+
+  </div>
+</div>
+
+<div class="footer">Mr. Goddard's Penalty Shootout · Set Notation · ⚽</div>
+
+<script>
+// ─────────────────────────────────────────────────────────────────────────────
+// QUESTION SETS — 4 sets, each 10 questions, difficulty rising
+// Universal = {1..15}, A = even numbers, B = prime numbers (vary by set)
+// ─────────────────────────────────────────────────────────────────────────────
+const SETS = [
+  // ── SET 1 ──────────────────────────────────────────────────────────────────
+  {
+    label: 'ξ = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}   A = {even numbers}   B = {multiples of 3}',
+    xi: [1,2,3,4,5,6,7,8,9,10,11,12],
+    A: [2,4,6,8,10,12],
+    B: [3,6,9,12],
+    questions: [
+      { text:'List all the members of set <span class="set-ref">A</span>.', type:'typed', answer:'{2,4,6,8,10,12}', diff:'easy', solution:'A = even numbers from ξ = {2, 4, 6, 8, 10, 12}' },
+      { text:'List all the members of set <span class="set-ref">B</span>.', type:'mcq', options:['{3,6,9,12}','{2,6,12}','{3,6,9}','{1,3,6,9,12}'], answer:'{3,6,9,12}', diff:'easy', solution:"B = multiples of 3 from ξ = {3, 6, 9, 12}" },
+      { text:"List all the members of <span class=\"set-ref\">A'</span>. (A complement — numbers NOT in A)", type:'typed', answer:'{1,3,5,7,9,11}', diff:'easy', solution:"A' = numbers in ξ not in A = {1, 3, 5, 7, 9, 11}" },
+      { text:"List all the members of <span class=\"set-ref\">B'</span>.", type:'mcq', options:['{1,2,4,5,7,8,10,11}','{1,2,4,5,8,10}','{2,4,8,10}','{1,5,7,11}'], answer:'{1,2,4,5,7,8,10,11}', diff:'easy', solution:"B' = numbers NOT in B = {1, 2, 4, 5, 7, 8, 10, 11}" },
+      { text:'List the members of <span class="set-ref">A ∩ B</span>. (Numbers in BOTH A and B)', type:'typed', answer:'{6,12}', diff:'medium', solution:'A ∩ B = numbers in both A and B = {6, 12}' },
+      { text:"List the members of <span class=\"set-ref\">A' ∩ B</span>. (Numbers in B but NOT in A)", type:'mcq', options:['{3,9}','{6,12}','{3,6,9}','{9,12}'], answer:'{3,9}', diff:'medium', solution:"A' ∩ B = numbers in B but not A = {3, 9}" },
+      { text:'List the members of <span class="set-ref">A ∪ B</span>. (Numbers in A OR B or both)', type:'typed', answer:'{2,3,4,6,8,9,10,12}', diff:'medium', solution:'A ∪ B = {2, 3, 4, 6, 8, 9, 10, 12}' },
+      { text:"List the members of <span class=\"set-ref\">A' ∪ B</span>.", type:'mcq', options:['{1,3,5,6,7,9,11,12}','{3,6,9,12}','{1,3,5,7,9,11}','{1,3,5,9,11}'], answer:'{1,3,5,6,7,9,11,12}', diff:'medium', solution:"A' ∪ B = everything in A' or B = {1, 3, 5, 6, 7, 9, 11, 12}" },
+      { text:"List the members of <span class=\"set-ref\">(A ∪ B)'</span>. (Everything NOT in A ∪ B)", type:'typed', answer:'{1,5,7,11}', diff:'hard', solution:'A ∪ B = {2,3,4,6,8,9,10,12}, so (A ∪ B)\' = {1, 5, 7, 11}' },
+      { text:"List the members of <span class=\"set-ref\">(A ∩ B)'</span>.", type:'mcq', options:['{1,2,3,4,5,7,8,9,10,11}','{6,12}','{1,3,5,7,9,11}','{2,4,8,10}'], answer:'{1,2,3,4,5,7,8,9,10,11}', diff:'hard', solution:"A ∩ B = {6, 12}, so (A ∩ B)' = everything else = {1, 2, 3, 4, 5, 7, 8, 9, 10, 11}" },
+    ]
+  },
+
+  // ── SET 2 ──────────────────────────────────────────────────────────────────
+  {
+    label: 'ξ = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}   A = {odd numbers}   B = {factors of 12}',
+    xi: [1,2,3,4,5,6,7,8,9,10],
+    A: [1,3,5,7,9],
+    B: [1,2,3,4,6],
+    questions: [
+      { text:'List all the members of set <span class="set-ref">A</span>.', type:'mcq', options:['{1,3,5,7,9}','{1,3,5,7}','{3,5,7,9}','{1,2,3,5,7,9}'], answer:'{1,3,5,7,9}', diff:'easy', solution:'A = odd numbers from ξ = {1, 3, 5, 7, 9}' },
+      { text:'List all the members of set <span class="set-ref">B</span>. (Factors of 12 that are in ξ)', type:'typed', answer:'{1,2,3,4,6}', diff:'easy', solution:'Factors of 12 = 1,2,3,4,6,12. Those in ξ = {1, 2, 3, 4, 6}' },
+      { text:"List the members of <span class=\"set-ref\">A'</span>.", type:'typed', answer:'{2,4,6,8,10}', diff:'easy', solution:"A' = even numbers = {2, 4, 6, 8, 10}" },
+      { text:"List the members of <span class=\"set-ref\">B'</span>.", type:'mcq', options:['{5,7,8,9,10}','{7,8,9,10}','{5,7,9,10}','{5,6,7,8,9}'], answer:'{5,7,8,9,10}', diff:'easy', solution:"B' = numbers NOT in B = {5, 7, 8, 9, 10}" },
+      { text:'List the members of <span class="set-ref">A ∩ B</span>.', type:'mcq', options:['{1,3}','{1,2,3}','{3,6}','{1,3,9}'], answer:'{1,3}', diff:'medium', solution:'A ∩ B = numbers in BOTH A and B = {1, 3}' },
+      { text:"List the members of <span class=\"set-ref\">A' ∩ B</span>.", type:'typed', answer:'{2,4,6}', diff:'medium', solution:"A' ∩ B = in B but not A = {2, 4, 6}" },
+      { text:'List the members of <span class="set-ref">A ∪ B</span>.', type:'typed', answer:'{1,2,3,4,5,6,7,9}', diff:'medium', solution:'A ∪ B = everything in A or B = {1, 2, 3, 4, 5, 6, 7, 9}' },
+      { text:"List the members of <span class=\"set-ref\">A ∪ B'</span>.", type:'mcq', options:['{1,3,5,7,8,9,10}','{1,3,5,7,9}','{5,7,8,9,10}','{1,5,7,8,9,10}'], answer:'{1,3,5,7,8,9,10}', diff:'medium', solution:"A ∪ B' = A or not-B = {1,3,5,7,9} ∪ {5,7,8,9,10} = {1, 3, 5, 7, 8, 9, 10}" },
+      { text:"List the members of <span class=\"set-ref\">(A ∪ B)'</span>.", type:'typed', answer:'{8,10}', diff:'hard', solution:'A ∪ B = {1,2,3,4,5,6,7,9}, so (A ∪ B)\' = {8, 10}' },
+      { text:"List the members of <span class=\"set-ref\">(A' ∪ B')'</span>. This equals A ∩ B — can you see why?", type:'mcq', options:['{1,3}','{2,4,6}','{5,7,9}','{1,2,3}'], answer:'{1,3}', diff:'hard', solution:"By De Morgan's Law, (A'∪B')' = A ∩ B = {1, 3}" },
+    ]
+  },
+
+  // ── SET 3 ──────────────────────────────────────────────────────────────────
+  {
+    label: 'ξ = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}   A = {multiples of 5}   B = {square numbers}',
+    xi: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
+    A: [5,10,15],
+    B: [1,4,9],
+    questions: [
+      { text:'List all the members of set <span class="set-ref">A</span>.', type:'mcq', options:['{5,10,15}','{5,10}','{5,10,15,20}','{10,15}'], answer:'{5,10,15}', diff:'easy', solution:'Multiples of 5 in ξ = {5, 10, 15}' },
+      { text:'List all the members of set <span class="set-ref">B</span>. (Square numbers in ξ)', type:'typed', answer:'{1,4,9}', diff:'easy', solution:'Square numbers in ξ: 1²=1, 2²=4, 3²=9, 4²=16 (too big) → {1, 4, 9}' },
+      { text:"List the members of <span class=\"set-ref\">A'</span>.", type:'mcq', options:['{1,2,3,4,6,7,8,9,11,12,13,14}','{1,2,3,4,6,7,8,9}','{2,4,6,8,11,12,13,14}','{1,3,5,7,9,11,13,15}'], answer:'{1,2,3,4,6,7,8,9,11,12,13,14}', diff:'easy', solution:"A' = all numbers in ξ not in A = {1,2,3,4,6,7,8,9,11,12,13,14}" },
+      { text:"List the members of <span class=\"set-ref\">B'</span>.", type:'typed', answer:'{2,3,5,6,7,8,10,11,12,13,14,15}', diff:'easy', solution:"B' = all numbers in ξ not in B = {2,3,5,6,7,8,10,11,12,13,14,15}" },
+      { text:'What is <span class="set-ref">A ∩ B</span>?', type:'mcq', options:['{ } (empty set)','{5}','{1,5}','{9,10}'], answer:'{ } (empty set)', diff:'medium', solution:'No numbers are in both A and B. A ∩ B = ∅ (the empty set)' },
+      { text:'List the members of <span class="set-ref">A ∪ B</span>.', type:'typed', answer:'{1,4,5,9,10,15}', diff:'medium', solution:'A ∪ B = everything in A or B = {1, 4, 5, 9, 10, 15}' },
+      { text:"List the members of <span class=\"set-ref\">A' ∩ B</span>.", type:'mcq', options:['{1,4,9}','{ }','{1,4}','{9}'], answer:'{1,4,9}', diff:'medium', solution:"A' ∩ B = in B but not A. Since A ∩ B = ∅, A' ∩ B = B = {1, 4, 9}" },
+      { text:"List the members of <span class=\"set-ref\">A ∩ B'</span>.", type:'typed', answer:'{5,10,15}', diff:'medium', solution:"A ∩ B' = in A but not B. Since A ∩ B = ∅, A ∩ B' = A = {5, 10, 15}" },
+      { text:"List the members of <span class=\"set-ref\">(A ∪ B)'</span>.", type:'typed', answer:'{2,3,6,7,8,11,12,13,14}', diff:'hard', solution:'A ∪ B = {1,4,5,9,10,15}. Complement = everything else = {2,3,6,7,8,11,12,13,14}' },
+      { text:"List the members of <span class=\"set-ref\">(A ∩ B)'</span>. Think carefully!", type:'mcq', options:['{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15}','{ }','{1,4,5,9,10,15}','{2,3,6,7,8}'], answer:'{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15}', diff:'hard', solution:"A ∩ B = ∅, so (A ∩ B)' = complement of ∅ = the entire universal set ξ" },
+    ]
+  },
+
+  // ── SET 4 ──────────────────────────────────────────────────────────────────
+  {
+    label: 'ξ = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}   A = {prime numbers}   B = {multiples of 4}',
+    xi: [1,2,3,4,5,6,7,8,9,10,11,12],
+    A: [2,3,5,7,11],
+    B: [4,8,12],
+    questions: [
+      { text:'List all the members of set <span class="set-ref">A</span>. (Prime numbers in ξ)', type:'mcq', options:['{2,3,5,7,11}','{1,2,3,5,7,11}','{2,3,5,7}','{2,5,7,11}'], answer:'{2,3,5,7,11}', diff:'easy', solution:'Primes in ξ = {2, 3, 5, 7, 11}. Remember 1 is NOT a prime!' },
+      { text:'List all the members of set <span class="set-ref">B</span>.', type:'typed', answer:'{4,8,12}', diff:'easy', solution:'Multiples of 4 in ξ = {4, 8, 12}' },
+      { text:"List the members of <span class=\"set-ref\">A'</span>.", type:'typed', answer:'{1,4,6,8,9,10,12}', diff:'easy', solution:"A' = not prime = {1, 4, 6, 8, 9, 10, 12}" },
+      { text:"List the members of <span class=\"set-ref\">B'</span>.", type:'mcq', options:['{1,2,3,5,6,7,9,10,11}','{1,2,3,5,7,9,11}','{1,2,3,6,9,10}','{2,3,5,6,7,9,11}'], answer:'{1,2,3,5,6,7,9,10,11}', diff:'easy', solution:"B' = not multiples of 4 = {1, 2, 3, 5, 6, 7, 9, 10, 11}" },
+      { text:'List the members of <span class="set-ref">A ∩ B</span>.', type:'mcq', options:['{ } (empty set)','{4}','{2,4}','{8}'], answer:'{ } (empty set)', diff:'medium', solution:'No number is both prime and a multiple of 4. A ∩ B = ∅' },
+      { text:"List the members of <span class=\"set-ref\">A' ∩ B</span>.", type:'typed', answer:'{4,8,12}', diff:'medium', solution:"A' ∩ B = in B but not prime. Since A ∩ B = ∅, all of B qualifies = {4, 8, 12}" },
+      { text:'List the members of <span class="set-ref">A ∪ B</span>.', type:'typed', answer:'{2,3,4,5,7,8,11,12}', diff:'medium', solution:'A ∪ B = primes or multiples of 4 = {2, 3, 4, 5, 7, 8, 11, 12}' },
+      { text:"List the members of <span class=\"set-ref\">A' ∪ B'</span>.", type:'mcq', options:['{1,2,3,4,5,6,7,8,9,10,11,12}','{1,4,6,8,9,10,12}','{1,2,3,5,6,7,9,10,11}','{1,6,9,10}'], answer:'{1,2,3,4,5,6,7,8,9,10,11,12}', diff:'medium', solution:"A' ∪ B' = everything not in A, OR everything not in B. Together they cover all of ξ = {1..12}. (By De Morgan: equals (A∩B)' = ξ since A∩B = ∅)" },
+      { text:"List the members of <span class=\"set-ref\">(A ∪ B)'</span>.", type:'typed', answer:'{1,6,9,10}', diff:'hard', solution:'A ∪ B = {2,3,4,5,7,8,11,12}. Complement = {1, 6, 9, 10}' },
+      { text:"List the members of <span class=\"set-ref\">(A' ∩ B')'</span>. Use De Morgan's Law to help.", type:'mcq', options:['{2,3,4,5,7,8,11,12}','{1,6,9,10}','{ }','{4,8,12}'], answer:'{2,3,4,5,7,8,11,12}', diff:'hard', solution:"By De Morgan's Law: (A' ∩ B')' = A ∪ B = {2, 3, 4, 5, 7, 8, 11, 12}" },
+    ]
+  },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ZONES
+// ─────────────────────────────────────────────────────────────────────────────
+const ZONES = [
+  { id:'tl', label:'↖', ballL:'18%', ballB:'78%' },
+  { id:'tc', label:'⬆', ballL:'50%', ballB:'82%' },
+  { id:'tr', label:'↗', ballL:'82%', ballB:'78%' },
+  { id:'bl', label:'↙', ballL:'18%', ballB:'42%' },
+  { id:'bc', label:'⬇', ballL:'50%', ballB:'38%' },
+  { id:'br', label:'↘', ballL:'82%', ballB:'42%' },
+];
+const MISSES = [
+  { ballL:'-10%', ballB:'30%' }, { ballL:'108%', ballB:'25%' },
+  { ballL:'50%',  ballB:'-18%' }, { ballL:'-8%', ballB:'-12%' },
+];
+
+// Timer
+const TIMER_SECONDS = 5;
+const RING_PERIMETER = 1212;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────────────────────────────────────
+let activeSet, questions;
+let current = 0, answered = false, shooting = false;
+let goals = 0, results = [];
+let timerInterval = null;
+let timerRemaining = TIMER_SECONDS;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────────────────────────────────────
+function init() {
+  // Pick random set
+  activeSet = SETS[Math.floor(Math.random() * SETS.length)];
+  questions = activeSet.questions;
+
+  // Show set definitions
+  document.getElementById('setBanner').innerHTML =
+    '<span>Today\'s sets:</span>' + activeSet.label;
+
+  buildDots();
+  buildZones();
+  renderQuestion(0);
+}
+
+function buildDots() {
+  const row = document.getElementById('ballsRow');
+  row.innerHTML = '';
+  questions.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'ball-dot' + (i === 0 ? ' current' : '');
+    d.id = 'dot' + i;
+    row.appendChild(d);
+  });
+}
+
+function buildZones() {
+  const overlay = document.getElementById('zonesOverlay');
+  overlay.innerHTML = '';
+  const netX=18, netY=8, netW=384, netH=187;
+
+  ZONES.forEach((z, i) => {
+    const div = document.createElement('div');
+    div.className = 'goal-zone';
+    div.id = 'zone-' + z.id;
+    div.innerHTML = `<span class="zone-arrow">${z.label}</span>`;
+    div.onclick = () => playerShoot(z);
+    const col = i % 3, row2 = Math.floor(i / 3);
+    const zW = netW/3, zH = netH/2;
+    div.style.left   = ((netX + col*zW)/420*100) + '%';
+    div.style.top    = ((netY + row2*zH)/210*100) + '%';
+    div.style.width  = (zW/420*100) + '%';
+    div.style.height = (zH/210*100) + '%';
+    overlay.appendChild(div);
+  });
+
+  // Sync overlay size
+  const svg = document.getElementById('goalSvg');
+  const wrap = document.getElementById('goalWrap');
+  function sync() {
+    const r = svg.getBoundingClientRect();
+    const wr = wrap.getBoundingClientRect();
+    overlay.style.width  = r.width + 'px';
+    overlay.style.height = r.height + 'px';
+    overlay.style.top    = (r.top - wr.top) + 'px';
+    overlay.style.left   = (r.left - wr.left) + 'px';
+    overlay.style.transform = 'none';
+
+    // Also sync timer ring wrap
+    const trw = document.getElementById('timerRingWrap');
+    trw.style.width  = r.width + 'px';
+    trw.style.height = r.height + 'px';
+    trw.style.top    = (r.top - wr.top) + 'px';
+    trw.style.left   = (r.left - wr.left) + 'px';
+    trw.style.transform = 'none';
+  }
+  sync();
+  window.addEventListener('resize', sync);
+  document.fonts.ready.then(sync);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// RENDER QUESTION
+// ─────────────────────────────────────────────────────────────────────────────
+function renderQuestion(idx) {
+  answered = false; shooting = false;
+  stopTimer();
+  const q = questions[idx];
+
+  document.getElementById('qNum').textContent  = `Q${idx+1} / ${questions.length}`;
+  const diffEl = document.getElementById('qDiff');
+  diffEl.textContent = q.diff.toUpperCase();
+  diffEl.className = 'q-difficulty diff-' + q.diff;
+  document.getElementById('qText').innerHTML = q.text;
+  document.getElementById('qFeedback').className = 'q-feedback';
+  document.getElementById('qFeedback').textContent = '';
+  document.getElementById('navRow').style.display = 'none';
+
+  document.getElementById('zonesOverlay').classList.remove('visible');
+  document.getElementById('shootPrompt').classList.remove('visible');
+  document.getElementById('timerRingWrap').classList.remove('visible');
+  document.getElementById('timerBubble').classList.remove('visible');
+  resetBall();
+
+  const area = document.getElementById('qAnswerArea');
+  area.innerHTML = '';
+
+  if (q.type === 'mcq') {
+    const grid = document.createElement('div');
+    grid.className = 'options-grid';
+    q.options.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'opt-btn';
+      btn.textContent = opt;
+      btn.onclick = () => submitAnswer(normSet(opt) === normSet(q.answer), opt, q);
+      grid.appendChild(btn);
+    });
+    area.appendChild(grid);
+  } else {
+    const hint = document.createElement('div');
+    hint.className = 'typed-hint';
+    hint.textContent = 'Type your answer as a set, e.g.  {2, 4, 6}  — order and spaces don\'t matter';
+    const row = document.createElement('div');
+    row.className = 'typed-row';
+    const inp = document.createElement('input');
+    inp.className = 'typed-input'; inp.id = 'typedInput';
+    inp.placeholder = '{...}';
+    inp.onkeydown = e => { if (e.key === 'Enter') checkTyped(q); };
+    const btn = document.createElement('button');
+    btn.className = 'shoot-btn'; btn.textContent = '⚽ CHECK!';
+    btn.onclick = () => checkTyped(q);
+    row.appendChild(inp); row.appendChild(btn);
+    area.appendChild(hint); area.appendChild(row);
+    setTimeout(() => inp.focus(), 80);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// NORMALISE SET ANSWER — sorts numbers, strips spaces/brackets
+// ─────────────────────────────────────────────────────────────────────────────
+function normSet(s) {
+  if (!s) return '';
+  const str = s.toString().toLowerCase().trim();
+  // Empty set variants
+  if (str === '{}' || str === '∅' || str === 'empty' || str === 'empty set' ||
+      str === '{ }' || str === '{empty set}' || str === '{ } (empty set)' || str.includes('empty')) return '[]';
+  // Extract numbers
+  const nums = str.match(/\d+/g);
+  if (!nums) return str;
+  return JSON.stringify(nums.map(Number).sort((a,b)=>a-b));
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CHECK TYPED
+// ─────────────────────────────────────────────────────────────────────────────
+function checkTyped(q) {
+  if (answered) return;
+  const inp = document.getElementById('typedInput');
+  const raw = inp.value.trim();
+  if (!raw) return;
+  const correct = normSet(raw) === normSet(q.answer);
+  inp.disabled = true;
+  inp.classList.add(correct ? 'correct' : 'wrong');
+  document.querySelector('.shoot-btn').disabled = true;
+  submitAnswer(correct, raw, q);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SUBMIT ANSWER
+// ─────────────────────────────────────────────────────────────────────────────
+function submitAnswer(correct, studentAns, q) {
+  if (answered) return;
+  answered = true;
+
+  document.querySelectorAll('.opt-btn').forEach(btn => {
+    btn.disabled = true;
+    if (normSet(btn.textContent) === normSet(q.answer)) btn.classList.add('correct');
+    else if (normSet(btn.textContent) === normSet(studentAns) && !correct) btn.classList.add('wrong');
+  });
+
+  if (correct) {
+    window._pendingShot = { q, studentAns };
+    showZonesAndTimer();
+  } else {
+    autoMiss(q, studentAns);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SHOW ZONES + START TIMER
+// ─────────────────────────────────────────────────────────────────────────────
+function showZonesAndTimer() {
+  document.getElementById('zonesOverlay').classList.add('visible');
+  document.getElementById('shootPrompt').classList.add('visible');
+  document.getElementById('timerRingWrap').classList.add('visible');
+  document.getElementById('timerBubble').classList.add('visible');
+
+  timerRemaining = TIMER_SECONDS;
+  updateTimerDisplay();
+
+  timerInterval = setInterval(() => {
+    timerRemaining -= 0.1;
+    if (timerRemaining <= 0) {
+      timerRemaining = 0;
+      stopTimer();
+      timeOut();
+    }
+    updateTimerDisplay();
+  }, 100);
+}
+
+function updateTimerDisplay() {
+  const pct = timerRemaining / TIMER_SECONDS;
+  const offset = RING_PERIMETER * (1 - pct);
+  const ring = document.getElementById('timerRingFill');
+  const bubble = document.getElementById('timerBubble');
+  const secs = Math.ceil(timerRemaining);
+
+  ring.style.strokeDashoffset = offset;
+
+  let col, cls;
+  if (pct > 0.5)      { col = 'var(--timer-safe)';   cls = 'safe'; }
+  else if (pct > 0.25){ col = 'var(--timer-warn)';   cls = 'warn'; }
+  else                { col = 'var(--timer-danger)';  cls = 'danger'; }
+
+  ring.style.stroke = col;
+  bubble.textContent = secs;
+  bubble.className = 'timer-bubble visible ' + cls;
+}
+
+function stopTimer() {
+  if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+  document.getElementById('timerRingWrap').classList.remove('visible');
+  document.getElementById('timerBubble').classList.remove('visible');
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TIME OUT — keeper saves automatically
+// ─────────────────────────────────────────────────────────────────────────────
+function timeOut() {
+  if (shooting) return;
+  shooting = true;
+  document.getElementById('zonesOverlay').classList.remove('visible');
+  document.getElementById('shootPrompt').classList.remove('visible');
+  const { q, studentAns } = window._pendingShot;
+  const m = MISSES[Math.floor(Math.random() * MISSES.length)];
+  animateBall(m.ballL, m.ballB, false, () => {
+    showResult(false, q, studentAns, true);
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PLAYER SHOOTS
+// ─────────────────────────────────────────────────────────────────────────────
+function playerShoot(zone) {
+  if (shooting) return;
+  shooting = true;
+  stopTimer();
+  document.getElementById('zonesOverlay').classList.remove('visible');
+  document.getElementById('shootPrompt').classList.remove('visible');
+  const { q, studentAns } = window._pendingShot;
+  animateBall(zone.ballL, zone.ballB, true, () => {
+    showResult(true, q, studentAns, false);
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// AUTO MISS (wrong answer)
+// ─────────────────────────────────────────────────────────────────────────────
+function autoMiss(q, studentAns) {
+  shooting = true;
+  const m = MISSES[Math.floor(Math.random() * MISSES.length)];
+  animateBall(m.ballL, m.ballB, false, () => {
+    showResult(false, q, studentAns, false);
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// BALL ANIMATION
+// ─────────────────────────────────────────────────────────────────────────────
+function resetBall() {
+  const ball = document.getElementById('ballSvg');
+  ball.style.transition = 'none';
+  ball.style.left = '50%'; ball.style.bottom = '-8px';
+  ball.style.transform = 'translateX(-50%) scale(1) rotate(0deg)';
+  ball.style.opacity = '1';
+  const flash = document.getElementById('resultFlash');
+  flash.className = 'result-flash'; flash.textContent = '';
+}
+
+function animateBall(destL, destB, scored, cb) {
+  const ball = document.getElementById('ballSvg');
+  ball.getBoundingClientRect();
+  ball.style.transition = 'left 0.5s cubic-bezier(.15,.8,.3,1), bottom 0.5s cubic-bezier(.15,.8,.3,1), transform 0.5s ease, opacity 0.5s ease';
+  ball.style.left = destL; ball.style.bottom = destB;
+  ball.style.transform = `translateX(-50%) scale(${scored ? 0.52 : 0.65}) rotate(${scored ? 540 : 200}deg)`;
+  ball.style.opacity = scored ? '0.85' : '0.35';
+  setTimeout(cb, 530);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SHOW RESULT
+// ─────────────────────────────────────────────────────────────────────────────
+function showResult(scored, q, studentAns, timedOut) {
+  shooting = false;
+  const flash = document.getElementById('resultFlash');
+  const fb = document.getElementById('qFeedback');
+
+  if (scored) {
+    goals++;
+    flash.textContent = '⚽ GOAL!'; flash.className = 'result-flash show goal';
+    fb.className = 'q-feedback correct';
+    fb.textContent = '✅ Correct! ' + q.solution;
+  } else {
+    const label = timedOut ? '⏰ TIME\'S UP!' : '❌ WIDE!';
+    flash.textContent = label; flash.className = 'result-flash show miss';
+    fb.className = 'q-feedback wrong';
+    fb.textContent = (timedOut ? '⏰ Too slow — ' : '❌ Incorrect. ') + q.solution;
+  }
+
+  results.push({ topic: q.diff, text: q.text.replace(/<[^>]+>/g,''), studentAns, correctAns: q.answer, scored, timedOut: timedOut||false });
+  document.getElementById('scoreDisplay').textContent = goals + (goals===1?' GOAL':' GOALS');
+
+  const dot = document.getElementById('dot'+current);
+  if (dot) { dot.classList.remove('current'); dot.classList.add(scored?'scored':'missed'); dot.textContent = scored?'⚽':'✕'; }
+  const nextDot = document.getElementById('dot'+(current+1));
+  if (nextDot) nextDot.classList.add('current');
+
+  document.getElementById('navRow').style.display = 'flex';
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// NAVIGATION
+// ─────────────────────────────────────────────────────────────────────────────
+function nextQuestion() {
+  current++;
+  if (current >= questions.length) showFinal();
+  else renderQuestion(current);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// FINAL
+// ─────────────────────────────────────────────────────────────────────────────
+function showFinal() {
+  document.getElementById('gameArea').style.display = 'none';
+  document.getElementById('finalScreen').style.display = 'block';
+  document.getElementById('finalScore').innerHTML = `${goals} <span>/ ${questions.length}</span>`;
+
+  const pct = (goals/questions.length)*100;
+  let stars, msg;
+  if (pct===100)    { stars='⭐⭐⭐⭐⭐'; msg='PERFECT SCORE! Set notation superstar! 🏆'; }
+  else if (pct>=80) { stars='⭐⭐⭐⭐';   msg='Excellent! Nearly there! 🌟'; }
+  else if (pct>=60) { stars='⭐⭐⭐';     msg='Good effort — keep practising! ⚽'; }
+  else if (pct>=40) { stars='⭐⭐';       msg='Getting there — review your sets! 💪'; }
+  else              { stars='⭐';         msg='Back to training — you can do this! 📝'; }
+  document.getElementById('finalStars').textContent = stars;
+  document.getElementById('finalMsg').textContent = msg;
+
+  const tbody = document.getElementById('breakdownBody');
+  tbody.innerHTML = '';
+  results.forEach((r,i) => {
+    const tr = document.createElement('tr');
+    const icon = r.scored ? '⚽' : (r.timedOut ? '⏰' : '❌');
+    tr.innerHTML = `<td>${icon}</td>
+      <td><strong>Q${i+1}</strong> [${r.topic}]<br><span style="color:var(--grey);font-size:0.73rem">${r.text.substring(0,70)}${r.text.length>70?'…':''}</span></td>
+      <td style="color:${r.scored?'var(--green)':'var(--red)'}">${r.studentAns||'—'}</td>
+      <td style="color:var(--ltgrey)">${r.correctAns}</td>`;
+    tbody.appendChild(tr);
+  });
+  document.getElementById('finalScreen').scrollIntoView({ behavior:'smooth' });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SUBMISSION
+// ─────────────────────────────────────────────────────────────────────────────
+function generateSummary() {
+  const name = document.getElementById('playerName').value.trim() || '(Name not entered)';
+  const now  = new Date().toLocaleString('en-GB',{dateStyle:'short',timeStyle:'short'});
+  const pct  = Math.round((goals/questions.length)*100);
+
+  let L = [];
+  L.push('╔═══════════════════════════════════════════════════════╗');
+  L.push('║   MR. GODDARD\'S PENALTY SHOOTOUT — SUBMISSION        ║');
+  L.push('║   Topic: Set Notation                                 ║');
+  L.push('╚═══════════════════════════════════════════════════════╝');
+  L.push('');
+  L.push(`Player    : ${name}`);
+  L.push(`Submitted : ${now}`);
+  L.push(`Score     : ${goals} / ${questions.length} goals  (${pct}%)`);
+  L.push(`Sets used : ${activeSet.label}`);
+  L.push('');
+  L.push('─────────────────────────────────────────────────────────');
+  L.push('  QUESTION BREAKDOWN');
+  L.push('─────────────────────────────────────────────────────────');
+  results.forEach((r,i) => {
+    const icon = r.scored ? '⚽ GOAL' : (r.timedOut ? '⏰ TIMEOUT' : '❌ MISS');
+    L.push(`  ${icon}  Q${i+1} [${r.topic.toUpperCase()}]`);
+    L.push(`  Question : ${r.text}`);
+    L.push(`  Your ans : ${r.studentAns||'—'}`);
+    L.push(`  Correct  : ${r.correctAns}`);
+    L.push('');
+  });
+  L.push('─────────────────────────────────────────────────────────');
+  L.push(`  FINAL SCORE: ${goals} / ${questions.length}  (${pct}%)`);
+  L.push('═════════════════════════════════════════════════════════');
+
+  document.getElementById('summaryText').value = L.join('\n');
+  document.getElementById('summaryWrap').style.display = 'block';
+  setTimeout(() => document.getElementById('summaryText').scrollIntoView({behavior:'smooth',block:'nearest'}), 100);
+}
+
+function copySummary() {
+  const ta = document.getElementById('summaryText');
+  ta.select(); ta.setSelectionRange(0,99999);
+  try { navigator.clipboard.writeText(ta.value).catch(()=>document.execCommand('copy')); }
+  catch(e) { document.execCommand('copy'); }
+  const c = document.getElementById('copyConfirm');
+  c.style.display='inline';
+  setTimeout(()=>{ c.style.display='none'; },3000);
+}
+
+init();
+</script>
+
+</body>
+</html>
