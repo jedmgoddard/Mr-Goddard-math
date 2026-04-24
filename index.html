@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -10,176 +11,176 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --folder-amber:    #F0A500;
-  --folder-amber-lt: #F7C244;
-  --folder-amber-dk: #C07800;
-  --folder-body:     #F5B800;
-  --folder-tab:      #E8A800;
-  --folder-shadow:   rgba(180, 120, 0, 0.35);
-  --folder-gloss:    rgba(255,255,255,0.55);
-  --folder-inner:    rgba(255,255,255,0.08);
+–folder-amber:    #F0A500;
+–folder-amber-lt: #F7C244;
+–folder-amber-dk: #C07800;
+–folder-body:     #F5B800;
+–folder-tab:      #E8A800;
+–folder-shadow:   rgba(180, 120, 0, 0.35);
+–folder-gloss:    rgba(255,255,255,0.55);
+–folder-inner:    rgba(255,255,255,0.08);
 
-  --ks3:   #2563EB;
-  --igcse: #16A34A;
-  --ib:    #7C3AED;
-  --slaa:  #9333EA;
-  --slai:  #6D28D9;
+–ks3:   #2563EB;
+–igcse: #16A34A;
+–ib:    #7C3AED;
+–slaa:  #9333EA;
+–slai:  #6D28D9;
 
-  --card-bg:     rgba(255,255,255,0.72);
-  --card-border: rgba(255,255,255,0.9);
-  --card-shadow: 0 2px 12px rgba(160,100,0,0.18);
-  --text-dark:   #1C1C1E;
-  --text-mid:    #3C3C43;
-  --text-light:  #6C6C70;
+–card-bg:     rgba(255,255,255,0.72);
+–card-border: rgba(255,255,255,0.9);
+–card-shadow: 0 2px 12px rgba(160,100,0,0.18);
+–text-dark:   #1C1C1E;
+–text-mid:    #3C3C43;
+–text-light:  #6C6C70;
 }
 
 html, body {
-  min-height: 100vh;
-  background: #1C1C1E;
-  background-image: radial-gradient(ellipse at 30% 0%, rgba(80,80,100,0.4) 0%, transparent 60%),
-                    radial-gradient(ellipse at 80% 100%, rgba(40,40,60,0.5) 0%, transparent 60%);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 48px 20px 80px;
-  -webkit-font-smoothing: antialiased;
+min-height: 100vh;
+background: #1C1C1E;
+background-image: radial-gradient(ellipse at 30% 0%, rgba(80,80,100,0.4) 0%, transparent 60%),
+radial-gradient(ellipse at 80% 100%, rgba(40,40,60,0.5) 0%, transparent 60%);
+font-family: ‘Inter’, -apple-system, BlinkMacSystemFont, sans-serif;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: flex-start;
+padding: 48px 20px 80px;
+-webkit-font-smoothing: antialiased;
 }
 
 /* ── WORDMARK ── */
 .wordmark {
-  text-align: center;
-  margin-bottom: 40px;
+text-align: center;
+margin-bottom: 40px;
 }
 .wordmark h1 {
-  font-size: 15px;
-  font-weight: 500;
-  color: rgba(255,255,255,0.85);
-  letter-spacing: 0.01em;
+font-size: 15px;
+font-weight: 500;
+color: rgba(255,255,255,0.85);
+letter-spacing: 0.01em;
 }
 .wordmark p {
-  font-size: 12px;
-  font-weight: 400;
-  color: rgba(255,255,255,0.35);
-  margin-top: 3px;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+font-size: 12px;
+font-weight: 400;
+color: rgba(255,255,255,0.35);
+margin-top: 3px;
+letter-spacing: 0.04em;
+text-transform: uppercase;
 }
 
 /* ── OUTER FOLDER ── */
 .folder-wrap {
-  width: 100%;
-  max-width: 780px;
-  position: relative;
+width: 100%;
+max-width: 780px;
+position: relative;
 }
 
 /* ── TABS ── */
 .tabs {
-  display: flex;
-  align-items: flex-end;
-  gap: 0;
-  padding-left: 28px;
-  position: relative;
-  z-index: 2;
+display: flex;
+align-items: flex-end;
+gap: 0;
+padding-left: 28px;
+position: relative;
+z-index: 2;
 }
 
 .tab-btn {
-  position: relative;
-  height: 38px;
-  padding: 0 28px;
-  border: none;
-  cursor: pointer;
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.01em;
-  color: rgba(90,60,0,0.6);
-  background: var(--folder-tab);
-  border-radius: 10px 10px 0 0;
-  margin-right: 3px;
-  transition: all 0.18s cubic-bezier(0.25,0.46,0.45,0.94);
-  outline: none;
-  /* Top gloss */
-  background-image: linear-gradient(
-    to bottom,
-    rgba(255,255,255,0.38) 0%,
-    rgba(255,255,255,0.12) 50%,
-    rgba(0,0,0,0.04) 100%
-  );
-  background-color: #D49800;
-  box-shadow: 0 -1px 0 rgba(255,255,255,0.25) inset,
-              0 1px 0 rgba(0,0,0,0.1);
+position: relative;
+height: 38px;
+padding: 0 28px;
+border: none;
+cursor: pointer;
+font-family: inherit;
+font-size: 13px;
+font-weight: 600;
+letter-spacing: 0.01em;
+color: rgba(90,60,0,0.6);
+background: var(–folder-tab);
+border-radius: 10px 10px 0 0;
+margin-right: 3px;
+transition: all 0.18s cubic-bezier(0.25,0.46,0.45,0.94);
+outline: none;
+/* Top gloss */
+background-image: linear-gradient(
+to bottom,
+rgba(255,255,255,0.38) 0%,
+rgba(255,255,255,0.12) 50%,
+rgba(0,0,0,0.04) 100%
+);
+background-color: #D49800;
+box-shadow: 0 -1px 0 rgba(255,255,255,0.25) inset,
+0 1px 0 rgba(0,0,0,0.1);
 }
 
 .tab-btn::before {
-  content: '';
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  height: 3px;
-  background: #D49800;
-  z-index: 1;
+content: ‘’;
+position: absolute;
+bottom: 0; left: 0; right: 0;
+height: 3px;
+background: #D49800;
+z-index: 1;
 }
 
 .tab-btn:hover:not(.active) {
-  background-color: #E0A600;
-  color: rgba(70,44,0,0.75);
+background-color: #E0A600;
+color: rgba(70,44,0,0.75);
 }
 
 .tab-btn.active {
-  background-color: var(--folder-body);
-  color: rgba(60,38,0,0.85);
-  height: 43px;
-  z-index: 10;
+background-color: var(–folder-body);
+color: rgba(60,38,0,0.85);
+height: 43px;
+z-index: 10;
 }
 
 .tab-btn.active::before {
-  background: var(--folder-body);
+background: var(–folder-body);
 }
 
 .tab-dot {
-  display: inline-block;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  margin-right: 7px;
-  vertical-align: middle;
-  position: relative;
-  top: -1px;
+display: inline-block;
+width: 7px;
+height: 7px;
+border-radius: 50%;
+margin-right: 7px;
+vertical-align: middle;
+position: relative;
+top: -1px;
 }
 
 /* ── FOLDER BODY ── */
 .folder-body {
-  background: var(--folder-body);
-  border-radius: 0 16px 16px 16px;
-  position: relative;
-  z-index: 5;
-  overflow: hidden;
-  /* Gloss layers */
-  background-image:
-    linear-gradient(170deg,
-      rgba(255,255,255,0.55) 0%,
-      rgba(255,255,255,0.15) 18%,
-      rgba(255,255,255,0.0) 40%,
-      rgba(0,0,0,0.06) 100%
-    );
-  background-color: var(--folder-body);
-  box-shadow:
-    0 30px 80px rgba(0,0,0,0.55),
-    0 0 0 0.5px rgba(255,200,60,0.4),
-    inset 0 1px 0 rgba(255,255,255,0.6),
-    inset 0 -1px 0 rgba(180,110,0,0.3);
-  padding: 28px 28px 36px;
+background: var(–folder-body);
+border-radius: 0 16px 16px 16px;
+position: relative;
+z-index: 5;
+overflow: hidden;
+/* Gloss layers */
+background-image:
+linear-gradient(170deg,
+rgba(255,255,255,0.55) 0%,
+rgba(255,255,255,0.15) 18%,
+rgba(255,255,255,0.0) 40%,
+rgba(0,0,0,0.06) 100%
+);
+background-color: var(–folder-body);
+box-shadow:
+0 30px 80px rgba(0,0,0,0.55),
+0 0 0 0.5px rgba(255,200,60,0.4),
+inset 0 1px 0 rgba(255,255,255,0.6),
+inset 0 -1px 0 rgba(180,110,0,0.3);
+padding: 28px 28px 36px;
 }
 
 /* subtle inner vignette */
 .folder-body::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(ellipse at 50% 100%, rgba(160,100,0,0.18) 0%, transparent 70%);
-  pointer-events: none;
-  z-index: 0;
+content: ‘’;
+position: absolute;
+inset: 0;
+background: radial-gradient(ellipse at 50% 100%, rgba(160,100,0,0.18) 0%, transparent 70%);
+pointer-events: none;
+z-index: 0;
 }
 
 /* ── PANEL SWITCHER ── */
@@ -190,129 +191,129 @@ html, body {
 
 /* ── SECTION HEADER ── */
 .section-hd {
-  margin-bottom: 20px;
-  padding-bottom: 14px;
-  border-bottom: 0.5px solid rgba(160,110,0,0.3);
+margin-bottom: 20px;
+padding-bottom: 14px;
+border-bottom: 0.5px solid rgba(160,110,0,0.3);
 }
 
 .section-hd h2 {
-  font-size: 20px;
-  font-weight: 600;
-  color: rgba(50,30,0,0.9);
-  letter-spacing: -0.01em;
+font-size: 20px;
+font-weight: 600;
+color: rgba(50,30,0,0.9);
+letter-spacing: -0.01em;
 }
 
 .section-hd p {
-  font-size: 13px;
-  color: rgba(80,55,0,0.6);
-  margin-top: 3px;
-  font-weight: 400;
+font-size: 13px;
+color: rgba(80,55,0,0.6);
+margin-top: 3px;
+font-weight: 400;
 }
 
 /* ── IB SUB-HEADER ── */
 .ib-sub-hd {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgba(80,55,0,0.5);
-  margin: 22px 0 12px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
+font-size: 11px;
+font-weight: 600;
+letter-spacing: 0.08em;
+text-transform: uppercase;
+color: rgba(80,55,0,0.5);
+margin: 22px 0 12px;
+display: flex;
+align-items: center;
+gap: 10px;
 }
 .ib-sub-hd::after {
-  content: '';
-  flex: 1;
-  height: 0.5px;
-  background: rgba(160,110,0,0.25);
+content: ‘’;
+flex: 1;
+height: 0.5px;
+background: rgba(160,110,0,0.25);
 }
 
 /* ── CARD GRID ── */
 .card-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-  gap: 14px;
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+gap: 14px;
 }
 
 /* ── CARD ── */
 .card {
-  background: rgba(255,255,255,0.76);
-  backdrop-filter: blur(20px) saturate(1.8);
-  -webkit-backdrop-filter: blur(20px) saturate(1.8);
-  border: 0.5px solid rgba(255,255,255,0.95);
-  border-radius: 16px;
-  padding: 18px 18px 15px;
-  text-decoration: none;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  cursor: pointer;
-  transition: transform 0.2s cubic-bezier(0.25,0.46,0.45,0.94),
-              box-shadow 0.2s cubic-bezier(0.25,0.46,0.45,0.94),
-              background 0.15s;
-  box-shadow:
-    0 2px 8px rgba(140,90,0,0.15),
-    inset 0 1px 0 rgba(255,255,255,0.9);
-  position: relative;
-  overflow: hidden;
+background: rgba(255,255,255,0.76);
+backdrop-filter: blur(20px) saturate(1.8);
+-webkit-backdrop-filter: blur(20px) saturate(1.8);
+border: 0.5px solid rgba(255,255,255,0.95);
+border-radius: 16px;
+padding: 18px 18px 15px;
+text-decoration: none;
+display: flex;
+flex-direction: column;
+gap: 6px;
+cursor: pointer;
+transition: transform 0.2s cubic-bezier(0.25,0.46,0.45,0.94),
+box-shadow 0.2s cubic-bezier(0.25,0.46,0.45,0.94),
+background 0.15s;
+box-shadow:
+0 2px 8px rgba(140,90,0,0.15),
+inset 0 1px 0 rgba(255,255,255,0.9);
+position: relative;
+overflow: hidden;
 }
 
 .card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 0.5px;
-  background: rgba(255,255,255,0.95);
+content: ‘’;
+position: absolute;
+top: 0; left: 0; right: 0;
+height: 0.5px;
+background: rgba(255,255,255,0.95);
 }
 
 .card:hover {
-  transform: translateY(-2px) scale(1.01);
-  box-shadow:
-    0 8px 28px rgba(120,70,0,0.22),
-    inset 0 1px 0 rgba(255,255,255,0.9);
-  background: rgba(255,255,255,0.88);
+transform: translateY(-2px) scale(1.01);
+box-shadow:
+0 8px 28px rgba(120,70,0,0.22),
+inset 0 1px 0 rgba(255,255,255,0.9);
+background: rgba(255,255,255,0.88);
 }
 
 .card:active {
-  transform: translateY(0) scale(0.99);
+transform: translateY(0) scale(0.99);
 }
 
 .card-soon {
-  opacity: 0.4;
-  pointer-events: none;
-  cursor: default;
+opacity: 0.4;
+pointer-events: none;
+cursor: default;
 }
 
 /* ── CARD ACCENT BAR ── */
 .accent {
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 2.5px;
-  border-radius: 16px 16px 0 0;
+position: absolute;
+top: 0; left: 0; right: 0;
+height: 2.5px;
+border-radius: 16px 16px 0 0;
 }
-.accent-ks3   { background: var(--ks3); }
-.accent-igcse { background: var(--igcse); }
-.accent-slaa  { background: var(--slaa); }
-.accent-slai  { background: var(--slai); }
+.accent-ks3   { background: var(–ks3); }
+.accent-igcse { background: var(–igcse); }
+.accent-slaa  { background: var(–slaa); }
+.accent-slai  { background: var(–slai); }
 
 /* ── CARD CONTENT ── */
 .card-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 4px;
+display: flex;
+align-items: center;
+justify-content: space-between;
+margin-top: 4px;
 }
 
 .card-icon {
-  width: 38px;
-  height: 38px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  flex-shrink: 0;
+width: 38px;
+height: 38px;
+border-radius: 10px;
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 18px;
+flex-shrink: 0;
 }
 
 .icon-ks3   { background: rgba(37,99,235,0.1); }
@@ -321,88 +322,89 @@ html, body {
 .icon-slai  { background: rgba(109,40,217,0.1); }
 
 .soon-pill {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: rgba(120,80,0,0.5);
-  background: rgba(160,110,0,0.1);
-  padding: 2px 8px;
-  border-radius: 20px;
+font-size: 10px;
+font-weight: 600;
+letter-spacing: 0.06em;
+text-transform: uppercase;
+color: rgba(120,80,0,0.5);
+background: rgba(160,110,0,0.1);
+padding: 2px 8px;
+border-radius: 20px;
 }
 
 .card-label {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  margin-top: 10px;
+font-size: 11px;
+font-weight: 600;
+letter-spacing: 0.06em;
+text-transform: uppercase;
+margin-top: 10px;
 }
 
-.label-ks3   { color: var(--ks3); }
-.label-igcse { color: var(--igcse); }
-.label-slaa  { color: var(--slaa); }
-.label-slai  { color: var(--slai); }
+.label-ks3   { color: var(–ks3); }
+.label-igcse { color: var(–igcse); }
+.label-slaa  { color: var(–slaa); }
+.label-slai  { color: var(–slai); }
 
 .card-name {
-  font-size: 15px;
-  font-weight: 600;
-  color: #1C1C1E;
-  letter-spacing: -0.01em;
-  line-height: 1.25;
+font-size: 15px;
+font-weight: 600;
+color: #1C1C1E;
+letter-spacing: -0.01em;
+line-height: 1.25;
 }
 
 .card-desc {
-  font-size: 12.5px;
-  color: #5A5A62;
-  line-height: 1.55;
-  font-weight: 400;
-  flex: 1;
+font-size: 12.5px;
+color: #5A5A62;
+line-height: 1.55;
+font-weight: 400;
+flex: 1;
 }
 
 .card-foot {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 0.5px solid rgba(0,0,0,0.07);
+display: flex;
+align-items: center;
+justify-content: space-between;
+margin-top: 10px;
+padding-top: 10px;
+border-top: 0.5px solid rgba(0,0,0,0.07);
 }
 
 .card-type {
-  font-size: 11px;
-  color: rgba(90,90,100,0.7);
-  font-weight: 500;
+font-size: 11px;
+color: rgba(90,90,100,0.7);
+font-weight: 500;
 }
 
 .open-arrow {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  font-weight: 600;
-  flex-shrink: 0;
-  transition: transform 0.15s;
+width: 24px;
+height: 24px;
+border-radius: 50%;
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 12px;
+font-weight: 600;
+flex-shrink: 0;
+transition: transform 0.15s;
 }
 
-.arrow-ks3   { background: rgba(37,99,235,0.1);  color: var(--ks3); }
-.arrow-igcse { background: rgba(22,163,74,0.1);  color: var(--igcse); }
-.arrow-slaa  { background: rgba(147,51,234,0.1); color: var(--slaa); }
-.arrow-slai  { background: rgba(109,40,217,0.1); color: var(--slai); }
+.arrow-ks3   { background: rgba(37,99,235,0.1);  color: var(–ks3); }
+.arrow-igcse { background: rgba(22,163,74,0.1);  color: var(–igcse); }
+.arrow-slaa  { background: rgba(147,51,234,0.1); color: var(–slaa); }
+.arrow-slai  { background: rgba(109,40,217,0.1); color: var(–slai); }
 
 .card:hover .open-arrow { transform: translateX(2px); }
 
 /* ── RESPONSIVE ── */
 @media (max-width: 560px) {
-  body { padding: 32px 12px 60px; }
-  .tab-btn { padding: 0 18px; font-size: 12px; }
-  .folder-body { padding: 20px 16px 28px; border-radius: 0 12px 12px 12px; }
-  .card-grid { grid-template-columns: 1fr; }
+body { padding: 32px 12px 60px; }
+.tab-btn { padding: 0 18px; font-size: 12px; }
+.folder-body { padding: 20px 16px 28px; border-radius: 0 12px 12px 12px; }
+.card-grid { grid-template-columns: 1fr; }
 }
 </style>
+
 </head>
 <body>
 
@@ -414,6 +416,7 @@ html, body {
 <div class="folder-wrap">
 
   <!-- TABS -->
+
   <div class="tabs">
     <button class="tab-btn active" data-tab="ks3" onclick="openTab('ks3')">
       <span class="tab-dot" style="background:var(--ks3)"></span>KS3
@@ -427,179 +430,197 @@ html, body {
   </div>
 
   <!-- FOLDER BODY -->
+
   <div class="folder-body">
     <div class="panels">
 
-      <!-- KS3 -->
-      <div class="panel active" id="panel-ks3">
-        <div class="section-hd">
-          <h2>KS3</h2>
-          <p>Years 7–9 &nbsp;·&nbsp; Interactive worksheets and activities</p>
+```
+  <!-- KS3 -->
+  <div class="panel active" id="panel-ks3">
+    <div class="section-hd">
+      <h2>KS3</h2>
+      <p>Years 7–9 &nbsp;·&nbsp; Interactive worksheets and activities</p>
+    </div>
+    <div class="card-grid">
+
+      <a class="card" href="ks3/ratio-detectives/index.html">
+        <div class="accent accent-ks3"></div>
+        <div class="card-top">
+          <div class="card-icon icon-ks3">🔍</div>
         </div>
-        <div class="card-grid">
-
-          <a class="card" href="ks3/ratio-detectives/index.html">
-            <div class="accent accent-ks3"></div>
-            <div class="card-top">
-              <div class="card-icon icon-ks3">🔍</div>
-            </div>
-            <div class="card-label label-ks3">Year 7 · Ratio</div>
-            <div class="card-name">Ratio Detectives</div>
-            <div class="card-desc">Simplifying, dividing, combining and ratios with a difference. Tiered Bronze, Silver, Gold questions with instant feedback.</div>
-            <div class="card-foot">
-              <span class="card-type">Worksheet</span>
-              <span class="open-arrow arrow-ks3">›</span>
-            </div>
-          </a>
-
-          <a class="card" href="ks3/percentages-shootout/index.html">
-            <div class="accent accent-ks3"></div>
-            <div class="card-top">
-              <div class="card-icon icon-ks3">⚽</div>
-            </div>
-            <div class="card-label label-ks3">Year 7–9 · Percentages</div>
-            <div class="card-name">Mixed Percentages Penalty Shootout</div>
-            <div class="card-desc">Percentage of an amount, increase &amp; decrease, reverse percentages and percentage change. Answer correctly to score!</div>
-            <div class="card-foot">
-              <span class="card-type">Penalty Shootout</span>
-              <span class="open-arrow arrow-ks3">›</span>
-            </div>
-          </a>
-
-          <div class="card card-soon">
-            <div class="accent accent-ks3"></div>
-            <div class="card-top">
-              <div class="card-icon icon-ks3">📐</div>
-              <span class="soon-pill">Soon</span>
-            </div>
-            <div class="card-label label-ks3">KS3</div>
-            <div class="card-name">More coming</div>
-            <div class="card-desc">Further KS3 activities will be added here.</div>
-            <div class="card-foot">
-              <span class="card-type">—</span>
-            </div>
-          </div>
-
+        <div class="card-label label-ks3">Year 7 · Ratio</div>
+        <div class="card-name">Ratio Detectives</div>
+        <div class="card-desc">Simplifying, dividing, combining and ratios with a difference. Tiered Bronze, Silver, Gold questions with instant feedback.</div>
+        <div class="card-foot">
+          <span class="card-type">Worksheet</span>
+          <span class="open-arrow arrow-ks3">›</span>
         </div>
-      </div>
+      </a>
 
-      <!-- IGCSE -->
-      <div class="panel" id="panel-igcse">
-        <div class="section-hd">
-          <h2>IGCSE</h2>
-          <p>Pearson Edexcel 4MA1 &nbsp;·&nbsp; Higher Tier</p>
+      <a class="card" href="ks3/percentages-shootout/index.html">
+        <div class="accent accent-ks3"></div>
+        <div class="card-top">
+          <div class="card-icon icon-ks3">⚽</div>
         </div>
-        <div class="card-grid">
+        <div class="card-label label-ks3">Year 7–9 · Percentages</div>
+        <div class="card-name">Mixed Percentages Penalty Shootout</div>
+        <div class="card-desc">Percentage of an amount, increase &amp; decrease, reverse percentages and percentage change. Answer correctly to score!</div>
+        <div class="card-foot">
+          <span class="card-type">Penalty Shootout</span>
+          <span class="open-arrow arrow-ks3">›</span>
+        </div>
+      </a>
 
-          <a class="card" href="igcse/exodus/index.html">
-            <div class="accent accent-igcse"></div>
-            <div class="card-top">
-              <div class="card-icon icon-igcse">🛸</div>
-            </div>
-            <div class="card-label label-igcse">Year 10 · Higher</div>
-            <div class="card-name">Operation: Exodus</div>
-            <div class="card-desc">Escape room from the hardest 4MA1/2H questions. Calculus, vectors, frustums, composite functions. 9 barriers, randomised every time.</div>
-            <div class="card-foot">
-              <span class="card-type">Escape Room</span>
-              <span class="open-arrow arrow-igcse">›</span>
-            </div>
-          </a>
+      <a class="card" href="ks3/set-notation-shootout/index.html">
+        <div class="accent accent-ks3"></div>
+        <div class="card-top">
+          <div class="card-icon icon-ks3">⚽</div>
+        </div>
+        <div class="card-label label-ks3">Year 7–9 · Set Notation</div>
+        <div class="card-name">Set Notation Penalty Shootout</div>
+        <div class="card-desc">Unions, intersections, complements and more. Answer correctly then race the timer to score your goal — 4 randomised question sets!</div>
+        <div class="card-foot">
+          <span class="card-type">Penalty Shootout</span>
+          <span class="open-arrow arrow-ks3">›</span>
+        </div>
+      </a>
 
-          <div class="card" style="cursor:default;">
-            <div class="accent accent-igcse"></div>
-            <div class="card-top">
-              <div class="card-icon icon-igcse">📡</div>
-            </div>
-            <div class="card-label label-igcse">IGCSE · Statistics</div>
-            <div class="card-name">StreamWave — Crack the Algorithm</div>
-            <div class="card-desc">Analyse streaming data to uncover statistical patterns. Averages, cumulative frequency, box plots and more.</div>
-            <div class="card-foot" style="flex-direction:column; align-items:stretch; gap:8px;">
-              <a href="igcse/streamwave/streamwave_student.html" style="display:block; text-align:center; background:#16A34A; color:#fff; font-weight:700; font-size:14px; padding:11px 0; border-radius:10px; text-decoration:none; letter-spacing:0.01em; transition:background 0.15s;" onmouseover="this.style.background='#15803d'" onmouseout="this.style.background='#16A34A'">⚡ Student Activity</a>
-              <a href="igcse/streamwave/streamwave_extension.html" style="display:block; text-align:center; background:rgba(124,58,237,0.12); color:#7C3AED; font-weight:700; font-size:12px; padding:8px 0; border-radius:9px; text-decoration:none; border:1.5px solid rgba(124,58,237,0.3); transition:background 0.15s;" onmouseover="this.style.background='rgba(124,58,237,0.2)'" onmouseout="this.style.background='rgba(124,58,237,0.12)'">🔒 Level 9 Extension</a>
-              <a href="igcse/streamwave/streamwave_teacher.html" style="display:block; text-align:center; background:rgba(22,163,74,0.1); color:#16A34A; font-weight:600; font-size:12px; padding:7px 0; border-radius:8px; text-decoration:none; border:1.5px solid rgba(22,163,74,0.35); transition:background 0.15s;" onmouseover="this.style.background='rgba(22,163,74,0.2)'" onmouseout="this.style.background='rgba(22,163,74,0.1)'">🔑 Teacher Mark Scheme</a>
-              <a href="igcse/streamwave/streamwave_intro.html" style="display:block; text-align:center; background:rgba(22,163,74,0.06); color:rgba(22,163,74,0.7); font-weight:600; font-size:11px; padding:6px 0; border-radius:8px; text-decoration:none; border:1px solid rgba(22,163,74,0.2); transition:background 0.15s;" onmouseover="this.style.background='rgba(22,163,74,0.12)'" onmouseout="this.style.background='rgba(22,163,74,0.06)'">🎬 Intro Slideshow (Teacher)</a>
-            </div>
-          </div>
-
-          <div class="card" style="cursor:default;">
-            <div class="accent accent-igcse"></div>
-            <div class="card-top">
-              <div class="card-icon icon-igcse">🎢</div>
-            </div>
-            <div class="card-label label-igcse">IGCSE · Calculus</div>
-            <div class="card-name">ThunderPeak</div>
-            <div class="card-desc">Analyse a roller coaster using tangent gradients and rates of change. Draw tangents, estimate gradients, then build your own track.</div>
-            <div class="card-foot" style="flex-direction:column; align-items:stretch; gap:8px;">
-              <a href="igcse/thunderpeak/index.html" style="display:block; text-align:center; background:#16A34A; color:#fff; font-weight:700; font-size:14px; padding:11px 0; border-radius:10px; text-decoration:none; letter-spacing:0.01em; transition:background 0.15s;" onmouseover="this.style.background='#15803d'" onmouseout="this.style.background='#16A34A'">⚡ Student Activity</a>
-              <a href="igcse/thunderpeak/slides.html" style="display:block; text-align:center; background:rgba(22,163,74,0.1); color:#16A34A; font-weight:600; font-size:12px; padding:7px 0; border-radius:8px; text-decoration:none; border:1.5px solid rgba(22,163,74,0.35); transition:background 0.15s;" onmouseover="this.style.background='rgba(22,163,74,0.2)'" onmouseout="this.style.background='rgba(22,163,74,0.1)'">🎬 Intro Slides (Teacher)</a>
-              <a href="igcse/thunderpeak/teacher.html" style="display:block; text-align:center; background:rgba(22,163,74,0.06); color:rgba(22,163,74,0.7); font-weight:600; font-size:11px; padding:6px 0; border-radius:8px; text-decoration:none; border:1px solid rgba(22,163,74,0.2); transition:background 0.15s;" onmouseover="this.style.background='rgba(22,163,74,0.12)'" onmouseout="this.style.background='rgba(22,163,74,0.06)'">📋 Teacher Instructions</a>
-            </div>
-          </div>
-
+      <div class="card card-soon">
+        <div class="accent accent-ks3"></div>
+        <div class="card-top">
+          <div class="card-icon icon-ks3">📐</div>
+          <span class="soon-pill">Soon</span>
+        </div>
+        <div class="card-label label-ks3">KS3</div>
+        <div class="card-name">More coming</div>
+        <div class="card-desc">Further KS3 activities will be added here.</div>
+        <div class="card-foot">
+          <span class="card-type">—</span>
         </div>
       </div>
 
-      <!-- IB -->
-      <div class="panel" id="panel-ib">
-        <div class="section-hd">
-          <h2>IB Mathematics</h2>
-          <p>Years 12–13 &nbsp;·&nbsp; SL Analysis & Approaches and SL Applications & Interpretation</p>
+    </div>
+  </div>
+
+  <!-- IGCSE -->
+  <div class="panel" id="panel-igcse">
+    <div class="section-hd">
+      <h2>IGCSE</h2>
+      <p>Pearson Edexcel 4MA1 &nbsp;·&nbsp; Higher Tier</p>
+    </div>
+    <div class="card-grid">
+
+      <a class="card" href="igcse/exodus/index.html">
+        <div class="accent accent-igcse"></div>
+        <div class="card-top">
+          <div class="card-icon icon-igcse">🛸</div>
         </div>
-
-        <div class="ib-sub-hd">SL Analysis & Approaches (AA)</div>
-        <div class="card-grid">
-
-          <a class="card" href="ib/slaa/index.html">
-            <div class="accent accent-slaa"></div>
-            <div class="card-top">
-              <div class="card-icon icon-slaa">🔐</div>
-            </div>
-            <div class="card-label label-slaa">Year 12 · SL AA</div>
-            <div class="card-name">SLAA Escape Room</div>
-            <div class="card-desc">Probability and logarithms escape room. Break encrypted barriers using IB SL AA skills.</div>
-            <div class="card-foot">
-              <span class="card-type">Escape Room</span>
-              <span class="open-arrow arrow-slaa">›</span>
-            </div>
-          </a>
-
-          <div class="card card-soon">
-            <div class="accent accent-slaa"></div>
-            <div class="card-top">
-              <div class="card-icon icon-slaa">∫</div>
-              <span class="soon-pill">Soon</span>
-            </div>
-            <div class="card-label label-slaa">Year 13 · SL AA</div>
-            <div class="card-name">More coming</div>
-            <div class="card-desc">Further SL AA resources will be added here.</div>
-            <div class="card-foot">
-              <span class="card-type">—</span>
-            </div>
-          </div>
-
+        <div class="card-label label-igcse">Year 10 · Higher</div>
+        <div class="card-name">Operation: Exodus</div>
+        <div class="card-desc">Escape room from the hardest 4MA1/2H questions. Calculus, vectors, frustums, composite functions. 9 barriers, randomised every time.</div>
+        <div class="card-foot">
+          <span class="card-type">Escape Room</span>
+          <span class="open-arrow arrow-igcse">›</span>
         </div>
+      </a>
 
-        <div class="ib-sub-hd" style="margin-top:28px">SL Applications & Interpretation (AI)</div>
-        <div class="card-grid">
-
-          <div class="card card-soon">
-            <div class="accent accent-slai"></div>
-            <div class="card-top">
-              <div class="card-icon icon-slai">📈</div>
-              <span class="soon-pill">Soon</span>
-            </div>
-            <div class="card-label label-slai">Year 12–13 · SL AI</div>
-            <div class="card-name">More coming</div>
-            <div class="card-desc">SL AI resources will appear here.</div>
-            <div class="card-foot">
-              <span class="card-type">—</span>
-            </div>
-          </div>
-
+      <div class="card" style="cursor:default;">
+        <div class="accent accent-igcse"></div>
+        <div class="card-top">
+          <div class="card-icon icon-igcse">📡</div>
+        </div>
+        <div class="card-label label-igcse">IGCSE · Statistics</div>
+        <div class="card-name">StreamWave — Crack the Algorithm</div>
+        <div class="card-desc">Analyse streaming data to uncover statistical patterns. Averages, cumulative frequency, box plots and more.</div>
+        <div class="card-foot" style="flex-direction:column; align-items:stretch; gap:8px;">
+          <a href="igcse/streamwave/streamwave_student.html" style="display:block; text-align:center; background:#16A34A; color:#fff; font-weight:700; font-size:14px; padding:11px 0; border-radius:10px; text-decoration:none; letter-spacing:0.01em; transition:background 0.15s;" onmouseover="this.style.background='#15803d'" onmouseout="this.style.background='#16A34A'">⚡ Student Activity</a>
+          <a href="igcse/streamwave/streamwave_extension.html" style="display:block; text-align:center; background:rgba(124,58,237,0.12); color:#7C3AED; font-weight:700; font-size:12px; padding:8px 0; border-radius:9px; text-decoration:none; border:1.5px solid rgba(124,58,237,0.3); transition:background 0.15s;" onmouseover="this.style.background='rgba(124,58,237,0.2)'" onmouseout="this.style.background='rgba(124,58,237,0.12)'">🔒 Level 9 Extension</a>
+          <a href="igcse/streamwave/streamwave_teacher.html" style="display:block; text-align:center; background:rgba(22,163,74,0.1); color:#16A34A; font-weight:600; font-size:12px; padding:7px 0; border-radius:8px; text-decoration:none; border:1.5px solid rgba(22,163,74,0.35); transition:background 0.15s;" onmouseover="this.style.background='rgba(22,163,74,0.2)'" onmouseout="this.style.background='rgba(22,163,74,0.1)'">🔑 Teacher Mark Scheme</a>
+          <a href="igcse/streamwave/streamwave_intro.html" style="display:block; text-align:center; background:rgba(22,163,74,0.06); color:rgba(22,163,74,0.7); font-weight:600; font-size:11px; padding:6px 0; border-radius:8px; text-decoration:none; border:1px solid rgba(22,163,74,0.2); transition:background 0.15s;" onmouseover="this.style.background='rgba(22,163,74,0.12)'" onmouseout="this.style.background='rgba(22,163,74,0.06)'">🎬 Intro Slideshow (Teacher)</a>
         </div>
       </div>
 
-    </div><!-- /panels -->
+      <div class="card" style="cursor:default;">
+        <div class="accent accent-igcse"></div>
+        <div class="card-top">
+          <div class="card-icon icon-igcse">🎢</div>
+        </div>
+        <div class="card-label label-igcse">IGCSE · Calculus</div>
+        <div class="card-name">ThunderPeak</div>
+        <div class="card-desc">Analyse a roller coaster using tangent gradients and rates of change. Draw tangents, estimate gradients, then build your own track.</div>
+        <div class="card-foot" style="flex-direction:column; align-items:stretch; gap:8px;">
+          <a href="igcse/thunderpeak/index.html" style="display:block; text-align:center; background:#16A34A; color:#fff; font-weight:700; font-size:14px; padding:11px 0; border-radius:10px; text-decoration:none; letter-spacing:0.01em; transition:background 0.15s;" onmouseover="this.style.background='#15803d'" onmouseout="this.style.background='#16A34A'">⚡ Student Activity</a>
+          <a href="igcse/thunderpeak/slides.html" style="display:block; text-align:center; background:rgba(22,163,74,0.1); color:#16A34A; font-weight:600; font-size:12px; padding:7px 0; border-radius:8px; text-decoration:none; border:1.5px solid rgba(22,163,74,0.35); transition:background 0.15s;" onmouseover="this.style.background='rgba(22,163,74,0.2)'" onmouseout="this.style.background='rgba(22,163,74,0.1)'">🎬 Intro Slides (Teacher)</a>
+          <a href="igcse/thunderpeak/teacher.html" style="display:block; text-align:center; background:rgba(22,163,74,0.06); color:rgba(22,163,74,0.7); font-weight:600; font-size:11px; padding:6px 0; border-radius:8px; text-decoration:none; border:1px solid rgba(22,163,74,0.2); transition:background 0.15s;" onmouseover="this.style.background='rgba(22,163,74,0.12)'" onmouseout="this.style.background='rgba(22,163,74,0.06)'">📋 Teacher Instructions</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- IB -->
+  <div class="panel" id="panel-ib">
+    <div class="section-hd">
+      <h2>IB Mathematics</h2>
+      <p>Years 12–13 &nbsp;·&nbsp; SL Analysis & Approaches and SL Applications & Interpretation</p>
+    </div>
+
+    <div class="ib-sub-hd">SL Analysis & Approaches (AA)</div>
+    <div class="card-grid">
+
+      <a class="card" href="ib/slaa/index.html">
+        <div class="accent accent-slaa"></div>
+        <div class="card-top">
+          <div class="card-icon icon-slaa">🔐</div>
+        </div>
+        <div class="card-label label-slaa">Year 12 · SL AA</div>
+        <div class="card-name">SLAA Escape Room</div>
+        <div class="card-desc">Probability and logarithms escape room. Break encrypted barriers using IB SL AA skills.</div>
+        <div class="card-foot">
+          <span class="card-type">Escape Room</span>
+          <span class="open-arrow arrow-slaa">›</span>
+        </div>
+      </a>
+
+      <div class="card card-soon">
+        <div class="accent accent-slaa"></div>
+        <div class="card-top">
+          <div class="card-icon icon-slaa">∫</div>
+          <span class="soon-pill">Soon</span>
+        </div>
+        <div class="card-label label-slaa">Year 13 · SL AA</div>
+        <div class="card-name">More coming</div>
+        <div class="card-desc">Further SL AA resources will be added here.</div>
+        <div class="card-foot">
+          <span class="card-type">—</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="ib-sub-hd" style="margin-top:28px">SL Applications & Interpretation (AI)</div>
+    <div class="card-grid">
+
+      <div class="card card-soon">
+        <div class="accent accent-slai"></div>
+        <div class="card-top">
+          <div class="card-icon icon-slai">📈</div>
+          <span class="soon-pill">Soon</span>
+        </div>
+        <div class="card-label label-slai">Year 12–13 · SL AI</div>
+        <div class="card-name">More coming</div>
+        <div class="card-desc">SL AI resources will appear here.</div>
+        <div class="card-foot">
+          <span class="card-type">—</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- /panels -->
+```
+
   </div><!-- /folder-body -->
 
 </div><!-- /folder-wrap -->
