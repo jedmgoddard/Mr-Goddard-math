@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mr. Goddard's Expedition — Briefing Slides</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Share+Tech+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:      #0c0a06;
+  --panel:   #12100a;
+  --panel2:  #1a1610;
+  --border:  #2d2818;
+  --gold:    #c9943a;
+  --gold2:   #e8b84d;
+  --gold3:   #f5d070;
+  --bronze:  #cd7f32;
+  --silver:  #a8a9ad;
+  --goldtop: #ffd700;
+  --green:   #2d5a1b;
+  --green2:  #4a8f2a;
+  --text:    #d4c49a;
+  --dim:     #6b5e3a;
+  --red:     #c0392b;
+  --glow:    rgba(201,148,58,0.18);
+  --glow2:   rgba(201,148,58,0.45);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  width: 100%; height: 100%;
+  background: var(--bg);
+  font-family: 'Crimson Text', serif;
+  color: var(--text);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Noise texture */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 1;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none; opacity: 0.5;
+}
+
+/* Vignette */
+body::after {
+  content: '';
+  position: fixed; inset: 0; z-index: 1;
+  background: radial-gradient(ellipse at center, transparent 35%, rgba(0,0,0,0.75) 100%);
+  pointer-events: none;
+}
+
+/* ── DECK ── */
+.deck {
+  width: 100vw; height: 100vh;
+  position: relative; z-index: 10;
+}
+
+/* ── SLIDE ── */
+.slide {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  justify-content: center; align-items: center;
+  padding: 56px 80px 80px;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+.slide.active { opacity: 1; pointer-events: all; }
+
+/* Corner ornaments */
+.slide::before, .slide::after {
+  content: '◈';
+  position: absolute;
+  font-size: 1.2rem; color: var(--dim);
+  opacity: 0.5;
+}
+.slide::before { top: 22px; left: 28px; }
+.slide::after  { bottom: 22px; right: 28px; }
+
+/* Background variants */
+.bg-jungle {
+  background:
+    radial-gradient(ellipse 70% 60% at 50% 40%, rgba(45,90,27,0.12) 0%, transparent 70%),
+    var(--bg);
+}
+.bg-temple {
+  background:
+    radial-gradient(ellipse 60% 50% at 80% 20%, rgba(201,148,58,0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 60% at 10% 80%, rgba(45,90,27,0.08) 0%, transparent 60%),
+    var(--bg);
+}
+.bg-sanctum {
+  background:
+    radial-gradient(ellipse 80% 70% at 50% 50%, rgba(201,148,58,0.08) 0%, transparent 70%),
+    var(--bg);
+}
+
+/* ── SHARED ELEMENTS ── */
+.eyebrow {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem; letter-spacing: 0.45em;
+  color: var(--dim); text-transform: uppercase;
+  margin-bottom: 1.4rem;
+}
+
+.slide-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(2rem, 4.5vw, 3.6rem);
+  color: var(--gold2);
+  text-shadow: 0 0 60px rgba(201,148,58,0.5), 0 0 120px rgba(201,148,58,0.15);
+  line-height: 1.1; text-align: center;
+  margin-bottom: 0.4rem;
+}
+.slide-sub {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(0.85rem, 1.6vw, 1.15rem);
+  color: var(--gold); opacity: 0.6;
+  letter-spacing: 0.15em; text-align: center;
+  margin-bottom: 1.8rem;
+}
+
+.gold-line {
+  width: 280px; height: 1px;
+  background: linear-gradient(to right, transparent, var(--gold), transparent);
+  margin: 0 auto 2rem;
+}
+
+/* ── SCROLL PANEL ── */
+.scroll {
+  position: relative;
+  background: linear-gradient(160deg, #1a1508 0%, #120f07 100%);
+  border: 1px solid rgba(201,148,58,0.2);
+  border-top: 2px solid var(--gold);
+  padding: 2rem 2.4rem;
+  max-width: 760px; width: 100%;
+  box-shadow: 0 0 60px rgba(0,0,0,0.6), inset 0 0 40px rgba(0,0,0,0.3);
+}
+.scroll-label {
+  position: absolute; top: -0.65rem; left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.55rem; letter-spacing: 0.3em;
+  color: var(--gold); background: #120f07;
+  padding: 0 1rem; white-space: nowrap;
+}
+.scroll h3 {
+  font-family: 'Cinzel', serif;
+  font-size: 0.95rem; color: var(--gold2);
+  letter-spacing: 0.08em; margin-bottom: 1rem;
+}
+.scroll p {
+  font-size: 1.05rem; line-height: 1.85;
+  color: var(--text); margin-bottom: 0.8rem;
+}
+.scroll p:last-child { margin-bottom: 0; }
+.scroll strong { color: var(--gold2); font-weight: 600; }
+.scroll em { color: var(--dim); }
+
+/* ── TIER CARDS ── */
+.tier-row {
+  display: flex; gap: 20px;
+  width: 100%; max-width: 820px;
+  justify-content: center;
+}
+.tier-card {
+  flex: 1; max-width: 240px;
+  background: linear-gradient(160deg, #1a1508 0%, #120f07 100%);
+  border: 1px solid var(--border);
+  border-top-width: 3px;
+  padding: 1.6rem 1.4rem;
+  text-align: center;
+  box-shadow: 0 0 30px rgba(0,0,0,0.5);
+}
+.tier-card.bronze { border-top-color: var(--bronze); }
+.tier-card.silver { border-top-color: var(--silver); }
+.tier-card.gold   { border-top-color: var(--goldtop); box-shadow: 0 0 30px rgba(255,215,0,0.08); }
+
+.tier-icon { font-size: 2.5rem; margin-bottom: 0.7rem; }
+.tier-name {
+  font-family: 'Cinzel', serif;
+  font-size: 0.8rem; letter-spacing: 0.1em;
+  margin-bottom: 0.5rem;
+}
+.tier-card.bronze .tier-name { color: var(--bronze); }
+.tier-card.silver .tier-name { color: var(--silver); }
+.tier-card.gold   .tier-name { color: var(--goldtop); }
+
+.tier-roll {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem; letter-spacing: 0.2em;
+  color: var(--dim); margin-bottom: 0.8rem;
+}
+.tier-desc { font-size: 0.95rem; color: var(--text); line-height: 1.6; }
+
+/* ── STEP LIST ── */
+.steps {
+  width: 100%; max-width: 680px;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.step {
+  display: flex; gap: 18px; align-items: flex-start;
+  background: linear-gradient(160deg, #1a1508 0%, #120f07 100%);
+  border: 1px solid rgba(201,148,58,0.15);
+  border-left: 3px solid var(--gold);
+  padding: 1.1rem 1.4rem;
+}
+.step-num {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 1.1rem; color: var(--gold2);
+  min-width: 28px; line-height: 1;
+  margin-top: 2px;
+}
+.step-body { flex: 1; }
+.step-title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.88rem; letter-spacing: 0.05em;
+  color: var(--gold2); margin-bottom: 4px;
+}
+.step-desc { font-size: 0.97rem; line-height: 1.6; color: var(--text); }
+.step-desc strong { color: var(--gold2); }
+
+/* ── RULES GRID ── */
+.rules-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 16px; width: 100%; max-width: 780px;
+}
+.rule-block {
+  background: linear-gradient(160deg, #1a1508 0%, #120f07 100%);
+  border: 1px solid rgba(201,148,58,0.12);
+  padding: 1.3rem 1.5rem;
+  display: flex; gap: 14px; align-items: flex-start;
+}
+.rule-icon { font-size: 1.5rem; flex-shrink: 0; margin-top: 2px; }
+.rule-text { flex: 1; }
+.rule-title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.82rem; letter-spacing: 0.05em;
+  color: var(--gold2); margin-bottom: 5px;
+}
+.rule-desc { font-size: 0.93rem; line-height: 1.55; color: var(--text); }
+
+/* ── TEACHER BOX ── */
+.teacher-box {
+  width: 100%; max-width: 680px;
+  background: rgba(45,90,27,0.08);
+  border: 1px solid rgba(74,143,42,0.3);
+  border-left: 3px solid var(--green2);
+  padding: 1.4rem 1.8rem;
+}
+.teacher-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem; letter-spacing: 0.3em;
+  color: var(--green2); text-transform: uppercase;
+  margin-bottom: 0.7rem;
+}
+.teacher-box p {
+  font-size: 1rem; line-height: 1.7; color: var(--text);
+  margin-bottom: 0.5rem;
+}
+.teacher-box p:last-child { margin-bottom: 0; }
+.teacher-box strong { color: #8bc34a; }
+
+/* ── TOPIC PILLS ── */
+.topic-row {
+  display: flex; flex-wrap: wrap; gap: 10px;
+  justify-content: center; margin-top: 1.2rem;
+}
+.topic-pill {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.68rem; letter-spacing: 0.15em;
+  color: var(--gold); text-transform: uppercase;
+  background: rgba(201,148,58,0.08);
+  border: 1px solid rgba(201,148,58,0.25);
+  padding: 5px 14px; white-space: nowrap;
+}
+
+/* ── FINAL SLIDE ── */
+.final-main {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  color: var(--gold2);
+  text-shadow: 0 0 80px rgba(201,148,58,0.6), 0 0 160px rgba(201,148,58,0.2);
+  line-height: 1; text-align: center;
+  margin-bottom: 0.5rem;
+}
+.final-sub {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(1rem, 2vw, 1.5rem);
+  color: var(--gold); opacity: 0.55;
+  letter-spacing: 0.2em; text-align: center;
+}
+
+/* ── NAV BAR ── */
+.nav-bar {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: center;
+  gap: 18px; padding: 12px 24px;
+  background: rgba(12,10,6,0.9);
+  border-top: 1px solid var(--border);
+  backdrop-filter: blur(8px);
+}
+.nav-btn {
+  width: 38px; height: 38px; border-radius: 0;
+  background: rgba(201,148,58,0.08);
+  border: 1px solid var(--border);
+  color: var(--gold); font-size: 16px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: all 0.18s; font-family: 'Cinzel', serif;
+}
+.nav-btn:hover { background: rgba(201,148,58,0.18); border-color: var(--gold); }
+.nav-btn:disabled { opacity: 0.2; cursor: default; }
+.slide-counter {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.7rem; color: var(--dim);
+  letter-spacing: 0.2em; min-width: 60px; text-align: center;
+}
+.dot-row { display: flex; gap: 7px; align-items: center; }
+.nav-dot {
+  width: 6px; height: 6px;
+  background: var(--border); cursor: pointer;
+  transition: all 0.3s;
+}
+.nav-dot.active { background: var(--gold); width: 18px; }
+
+/* Fullscreen */
+.fs-btn {
+  position: fixed; top: 18px; right: 22px; z-index: 100;
+  background: rgba(201,148,58,0.08);
+  border: 1px solid var(--border);
+  color: var(--dim); padding: 6px 12px;
+  cursor: pointer; font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem; letter-spacing: 0.1em;
+  transition: all 0.18s;
+}
+.fs-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+.key-hint {
+  position: fixed; top: 20px; left: 22px; z-index: 100;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.58rem; letter-spacing: 0.08em;
+  color: var(--dim); opacity: 0.6;
+}
+
+@media (max-width: 700px) {
+  .slide { padding: 40px 20px 70px; }
+  .tier-row { flex-direction: column; align-items: center; }
+  .rules-grid { grid-template-columns: 1fr; }
+  .slide-title { font-size: 1.6rem; }
+  .scroll { padding: 1.5rem 1.4rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="key-hint">← → ARROWS · SPACE</div>
+<button class="fs-btn" onclick="toggleFS()">⛶ FULLSCREEN</button>
+
+<div class="deck" id="deck">
+
+  <!-- ══ SLIDE 1: TITLE ══ -->
+  <div class="slide bg-sanctum active">
+    <div class="eyebrow">◆ IB Mathematics AA/AI SL · Logs &amp; Exponentials ◆</div>
+    <div class="slide-title">Mr. Goddard's<br>Mathematical Expedition</div>
+    <div class="slide-sub">The Lost Temple of Logarithmus</div>
+    <div class="gold-line"></div>
+    <div class="scroll" style="max-width:580px;">
+      <div class="scroll-label">◈ EXPEDITION BRIEFING ◈</div>
+      <p>Deep in an uncharted jungle, the ruins of an ancient civilisation have been discovered — the <strong>Logarithmians</strong> — whose entire culture was built on the laws of logarithms and exponential growth.</p>
+      <p>The temple at the heart of the ruins is <strong>30 chambers deep</strong>. Each chamber is sealed by a mathematical cipher. Only a true mathematician can unlock them and reach the inner sanctum.</p>
+    </div>
+    <div class="topic-row">
+      <span class="topic-pill">Laws of Logarithms</span>
+      <span class="topic-pill">Change of Base</span>
+      <span class="topic-pill">Exponential Equations</span>
+      <span class="topic-pill">Modelling</span>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 2: THE MISSION ══ -->
+  <div class="slide bg-jungle">
+    <div class="eyebrow">◆ The Mission ◆</div>
+    <div class="slide-title" style="font-size:clamp(1.6rem,3.5vw,2.6rem); margin-bottom:1.4rem;">What Are You Doing?</div>
+    <div class="scroll" style="max-width:720px;">
+      <div class="scroll-label">◈ MISSION PARAMETERS ◈</div>
+      <p>You are the <strong>expedition leader</strong>. Your goal is to navigate the board — 30 spaces from the jungle's edge to the inner sanctum — by rolling the expedition dice and solving the mathematical ciphers that guard each chamber.</p>
+      <p>The expedition is a <strong>board game played individually</strong> (or in pairs). Each turn: roll the dice, face a question matched to your roll, answer correctly to advance. Incorrect answers leave you in place until your next turn.</p>
+      <p><em>First to reach the Sanctum — Space 30 — wins the expedition.</em></p>
+    </div>
+    <div class="teacher-box" style="margin-top:18px; max-width:720px;">
+      <div class="teacher-label">📋 Teacher Note</div>
+      <p>This works well as a <strong>lesson-long individual activity</strong>, or as pairs competing to reach the sanctum. The randomised dice means different students face different questions — minimising copying. Suggested time: <strong>45–60 minutes</strong>.</p>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 3: HOW TO PLAY ══ -->
+  <div class="slide bg-temple">
+    <div class="eyebrow">◆ How to Play ◆</div>
+    <div class="slide-title" style="font-size:clamp(1.4rem,3vw,2.2rem); margin-bottom:1.4rem;">Step by Step</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">I</div>
+        <div class="step-body">
+          <div class="step-title">Enter Your Name</div>
+          <div class="step-desc">Type your full name on the intro screen and click <strong>Begin the Expedition</strong>.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">II</div>
+        <div class="step-body">
+          <div class="step-title">Roll the Expedition Dice</div>
+          <div class="step-desc">Click <strong>Roll the Dice</strong> on your turn. The number determines which tier of question you face.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">III</div>
+        <div class="step-body">
+          <div class="step-title">Solve the Cipher</div>
+          <div class="step-desc">Read the question, show your working on paper, then type your answer. You can request a <strong>hint</strong> if you're stuck, or reveal the <strong>full solution</strong> after attempting.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">IV</div>
+        <div class="step-body">
+          <div class="step-title">Advance or Stay</div>
+          <div class="step-desc">Answer correctly → <strong>advance</strong> the number of spaces you rolled. Answer incorrectly → <strong>stay</strong> in place and roll again next turn.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">V</div>
+        <div class="step-body">
+          <div class="step-title">Reach the Sanctum</div>
+          <div class="step-desc">Land on or pass <strong>Space 30</strong> to complete the expedition. The game ends and your full question log is shown.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 4: DIFFICULTY TIERS ══ -->
+  <div class="slide bg-jungle">
+    <div class="eyebrow">◆ The Three Tiers ◆</div>
+    <div class="slide-title" style="font-size:clamp(1.4rem,3vw,2.2rem); margin-bottom:1.6rem;">Roll of the Dice</div>
+    <div class="tier-row">
+      <div class="tier-card bronze">
+        <div class="tier-icon">🥉</div>
+        <div class="tier-name">BRONZE</div>
+        <div class="tier-roll">OUTER RUINS · ROLL 1–2</div>
+        <div class="tier-desc">Foundation questions. Log laws, basic evaluation, writing expressions in terms of given values.</div>
+      </div>
+      <div class="tier-card silver">
+        <div class="tier-icon">🥈</div>
+        <div class="tier-name">SILVER</div>
+        <div class="tier-roll">TEMPLE CORRIDOR · ROLL 3–4</div>
+        <div class="tier-desc">Harder manipulation. Telescoping products, exponential equations, solving for unknowns using logs.</div>
+      </div>
+      <div class="tier-card gold">
+        <div class="tier-icon">🥇</div>
+        <div class="tier-name">GOLD</div>
+        <div class="tier-roll">INNER SANCTUM · ROLL 5–6</div>
+        <div class="tier-desc">Most challenging. Exponential modelling, population/growth problems, multi-step log equations.</div>
+      </div>
+    </div>
+    <div class="teacher-box" style="margin-top:20px; max-width:780px;">
+      <div class="teacher-label">📋 Teacher Note</div>
+      <p>The random dice means every student encounters a <strong>mix of all three tiers</strong> throughout the game — weaker students still meet Bronze regularly, while stronger students are challenged by Gold. No student gets stuck on one level only.</p>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 5: RULES ══ -->
+  <div class="slide bg-temple">
+    <div class="eyebrow">◆ Key Rules ◆</div>
+    <div class="slide-title" style="font-size:clamp(1.4rem,3vw,2.2rem); margin-bottom:1.6rem;">The Expedition Code</div>
+    <div class="rules-grid">
+      <div class="rule-block">
+        <div class="rule-icon">📝</div>
+        <div class="rule-text">
+          <div class="rule-title">Show Your Working</div>
+          <div class="rule-desc">All working must be written on paper. The cipher only accepts the final answer — but Mr. Goddard checks the working.</div>
+        </div>
+      </div>
+      <div class="rule-block">
+        <div class="rule-icon">🔍</div>
+        <div class="rule-text">
+          <div class="rule-title">Hints Available</div>
+          <div class="rule-desc">After a wrong answer, a hint button appears. Use it if you're stuck — but try to solve it yourself first.</div>
+        </div>
+      </div>
+      <div class="rule-block">
+        <div class="rule-icon">💡</div>
+        <div class="rule-text">
+          <div class="rule-title">Full Solution</div>
+          <div class="rule-desc">After a correct answer, reveal the full worked solution. Study it — even if you got it right, the method matters.</div>
+        </div>
+      </div>
+      <div class="rule-block">
+        <div class="rule-icon">🎲</div>
+        <div class="rule-text">
+          <div class="rule-title">One Roll Per Turn</div>
+          <div class="rule-desc">Roll → question → answer → advance or stay. Then it's your next turn. There's no penalty for wrong answers beyond staying put.</div>
+        </div>
+      </div>
+      <div class="rule-block">
+        <div class="rule-icon">📊</div>
+        <div class="rule-text">
+          <div class="rule-title">Live Stats</div>
+          <div class="rule-desc">Your position, total questions attempted and correct answers are shown at all times in the top bar.</div>
+        </div>
+      </div>
+      <div class="rule-block">
+        <div class="rule-icon">🏛️</div>
+        <div class="rule-text">
+          <div class="rule-title">Reach the Sanctum</div>
+          <div class="rule-desc">You need to reach Space 30. You don't need to land exactly — passing it counts. The expedition ends immediately.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 6: MATHS TOPICS ══ -->
+  <div class="slide bg-sanctum">
+    <div class="eyebrow">◆ What You'll Need ◆</div>
+    <div class="slide-title" style="font-size:clamp(1.4rem,3vw,2.2rem); margin-bottom:1.4rem;">The Mathematical Ciphers</div>
+    <div class="scroll" style="max-width:740px;">
+      <div class="scroll-label">◈ IB MATHEMATICS SL — LOGS &amp; EXPONENTIALS ◈</div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:0 2rem;">
+        <div>
+          <p style="margin-bottom:0.5rem"><strong>🥉 Bronze Ciphers</strong></p>
+          <p style="font-size:0.95rem; line-height:1.7; margin-bottom:1rem">Basic log evaluation · Product, quotient and power laws · Writing in terms of given values · Change of base formula · Natural logarithms (ln)</p>
+
+          <p style="margin-bottom:0.5rem"><strong>🥈 Silver Ciphers</strong></p>
+          <p style="font-size:0.95rem; line-height:1.7">Telescoping log products · Solving exponential equations using logs · Finding unknowns in log equations · More complex change of base</p>
+        </div>
+        <div>
+          <p style="margin-bottom:0.5rem"><strong>🥇 Gold Ciphers</strong></p>
+          <p style="font-size:0.95rem; line-height:1.7; margin-bottom:1rem">Exponential growth and decay models · Population and investment problems · Multi-step equations · Domain restrictions · IB-style contextual modelling</p>
+
+          <p style="margin-bottom:0.5rem"><strong>📋 IB Syllabus</strong></p>
+          <p style="font-size:0.95rem; line-height:1.7">Covers topics from <strong>SL Analysis &amp; Approaches</strong> and <strong>SL Applications &amp; Interpretation</strong> — suitable for both pathways.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 7: TEACHER TIPS ══ -->
+  <div class="slide bg-temple">
+    <div class="eyebrow">◆ For Teachers ◆</div>
+    <div class="slide-title" style="font-size:clamp(1.3rem,2.8vw,2rem); margin-bottom:1.6rem;">Running the Expedition</div>
+    <div class="steps" style="max-width:700px;">
+      <div class="step" style="border-left-color: var(--green2);">
+        <div class="step-num" style="color:var(--green2);">▸</div>
+        <div class="step-body">
+          <div class="step-title" style="color:#8bc34a;">Suggested Timing</div>
+          <div class="step-desc">Works best as a <strong>full lesson activity (45–60 min)</strong>. Students who reach the sanctum early can attempt their end-of-game question log review, or support peers.</div>
+        </div>
+      </div>
+      <div class="step" style="border-left-color: var(--green2);">
+        <div class="step-num" style="color:var(--green2);">▸</div>
+        <div class="step-body">
+          <div class="step-title" style="color:#8bc34a;">Assessment Opportunity</div>
+          <div class="step-desc">The end screen shows a <strong>full question log</strong> — every question attempted, the student's answer, and whether it was correct. Ask students to photograph or submit this for formative assessment.</div>
+        </div>
+      </div>
+      <div class="step" style="border-left-color: var(--green2);">
+        <div class="step-num" style="color:var(--green2);">▸</div>
+        <div class="step-body">
+          <div class="step-title" style="color:#8bc34a;">Paired Play</div>
+          <div class="step-desc">Pairs work well — one student rolls and answers, the partner checks the working on paper. They then <strong>swap roles</strong> each turn. Great for peer explanation.</div>
+        </div>
+      </div>
+      <div class="step" style="border-left-color: var(--green2);">
+        <div class="step-num" style="color:var(--green2);">▸</div>
+        <div class="step-body">
+          <div class="step-title" style="color:#8bc34a;">Works on Any Device</div>
+          <div class="step-desc">Runs in any browser — <strong>laptop, tablet, or iPad</strong>. No download or login needed. Students access it via the mrgoddardmaths.com site.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 8: GO ══ -->
+  <div class="slide bg-sanctum">
+    <div class="eyebrow">◆ The Temple Awaits ◆</div>
+    <div class="final-main">Good Luck,</div>
+    <div class="final-main" style="color:var(--gold); font-size:clamp(1.8rem,4vw,3.2rem); margin-top:0.2rem;">Expedition Leader.</div>
+    <div class="gold-line" style="margin-top:1.8rem; margin-bottom:1.8rem;"></div>
+    <div class="final-sub" style="opacity:0.5; letter-spacing:0.3em;">30 CHAMBERS · 3 TIERS · ONE SANCTUM</div>
+    <div class="topic-row" style="margin-top:1.6rem;">
+      <span class="topic-pill">mrgoddardmaths.com</span>
+      <span class="topic-pill">IB Mathematics SL</span>
+      <span class="topic-pill">Logs &amp; Exponentials</span>
+    </div>
+  </div>
+
+</div><!-- /deck -->
+
+<!-- ── NAV ── -->
+<div class="nav-bar">
+  <button class="nav-btn" id="prevBtn" onclick="go(-1)" disabled>←</button>
+  <div class="dot-row" id="dotRow"></div>
+  <span class="slide-counter" id="counter">1 / 8</span>
+  <button class="nav-btn" id="nextBtn" onclick="go(1)">→</button>
+</div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const total  = slides.length;
+let cur = 0;
+
+const dotRow = document.getElementById('dotRow');
+slides.forEach((_, i) => {
+  const d = document.createElement('div');
+  d.className = 'nav-dot' + (i === 0 ? ' active' : '');
+  d.onclick = () => goTo(i);
+  dotRow.appendChild(d);
+});
+
+function goTo(n) {
+  slides[cur].classList.remove('active');
+  dotRow.children[cur].classList.remove('active');
+  cur = Math.max(0, Math.min(n, total - 1));
+  slides[cur].classList.add('active');
+  dotRow.children[cur].classList.add('active');
+  document.getElementById('counter').textContent = `${cur + 1} / ${total}`;
+  document.getElementById('prevBtn').disabled = cur === 0;
+  document.getElementById('nextBtn').disabled = cur === total - 1;
+}
+
+function go(dir) { goTo(cur + dir); }
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); go(1); }
+  if (e.key === 'ArrowLeft') { e.preventDefault(); go(-1); }
+});
+
+function toggleFS() {
+  if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {});
+  else document.exitFullscreen();
+}
+</script>
+</body>
+</html>
