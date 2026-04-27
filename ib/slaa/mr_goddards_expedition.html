@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mr. Goddard's Expedition — Logs & Exponentials</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<style>
+:root {
+  --bg: #0c0a06;
+  --jungle: #0d1a0d;
+  --panel: #12100a;
+  --panel2: #1a1610;
+  --border: #2d2818;
+  --gold: #c9943a;
+  --gold2: #e8b84d;
+  --bronze-col: #cd7f32;
+  --silver-col: #a8a9ad;
+  --gold-col: #ffd700;
+  --green: #2d5a1b;
+  --green2: #4a8f2a;
+  --text: #d4c49a;
+  --text-dim: #6b5e3a;
+  --red: #8b2020;
+  --red2: #c0392b;
+  --glow: rgba(201,148,58,0.2);
+  --glow2: rgba(201,148,58,0.5);
+  --stone: #1e1b14;
+  --vine: #1a3a0d;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body { background:var(--bg); color:var(--text); font-family:'Crimson Text',serif; overflow-x:hidden; }
+
+/* ── NOISE + VIGNETTE ── */
+body::before { content:''; position:fixed; inset:0; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E"); pointer-events:none; z-index:9999; opacity:0.6; }
+body::after { content:''; position:fixed; inset:0; background:radial-gradient(ellipse at center,transparent 30%,rgba(0,0,0,0.85) 100%); pointer-events:none; z-index:9998; }
+
+/* ── SCREENS ── */
+.screen { display:none; position:relative; z-index:10; }
+.screen.active { display:flex; flex-direction:column; align-items:center; min-height:100vh; }
+
+/* ════════════════════════════════
+   INTRO SCREEN
+════════════════════════════════ */
+#intro {
+  justify-content:center; padding:2rem 1.5rem; text-align:center;
+  background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(45,90,27,0.15) 0%, transparent 70%), var(--bg);
+}
+.expedition-badge { font-family:'Share Tech Mono',monospace; font-size:0.65rem; letter-spacing:0.5em; color:var(--text-dim); text-transform:uppercase; margin-bottom:1.2rem; animation:fadeUp 1.5s ease 0.3s both; }
+.intro-title { font-family:'Cinzel Decorative',serif; font-size:clamp(1.8rem,4vw,3.2rem); color:var(--gold2); text-shadow:0 0 50px rgba(201,148,58,0.6),0 0 100px rgba(201,148,58,0.2); line-height:1.15; animation:fadeUp 1.5s ease 0.7s both; }
+.intro-subtitle { font-family:'Cinzel Decorative',serif; font-size:clamp(0.85rem,1.8vw,1.2rem); color:var(--gold); opacity:0.65; margin-top:0.4rem; letter-spacing:0.12em; animation:fadeUp 1.5s ease 1s both; }
+.divider { width:220px; height:1px; background:linear-gradient(to right,transparent,var(--gold),transparent); margin:1.5rem auto; animation:fadeUp 1.5s ease 1.3s both; }
+
+.scroll-panel {
+  max-width:580px; position:relative; animation:fadeUp 1.5s ease 1.6s both; margin-bottom:1.8rem;
+  background:linear-gradient(160deg, #1a1508 0%, #120f07 100%);
+  border:1px solid rgba(201,148,58,0.2); border-top:2px solid var(--gold);
+  padding:1.8rem 2.2rem;
+}
+.scroll-panel::before { content:'◈ EXPEDITION DOSSIER ◈'; position:absolute; top:-0.65rem; left:50%; transform:translateX(-50%); font-family:'Share Tech Mono',monospace; font-size:0.55rem; letter-spacing:0.25em; color:var(--gold); background:var(--bg); padding:0 0.8rem; white-space:nowrap; }
+.scroll-title { font-family:'Cinzel Decorative',serif; font-size:0.9rem; color:var(--gold2); margin-bottom:0.9rem; }
+.scroll-body { font-size:1rem; line-height:1.9; color:var(--text); text-align:left; }
+.scroll-body p { margin-bottom:0.75rem; }
+.scroll-body p:last-child { margin-bottom:0; }
+.scroll-body strong { color:var(--gold2); }
+.scroll-body em { color:var(--text-dim); }
+
+.name-wrap { animation:fadeUp 1.5s ease 2s both; display:flex; flex-direction:column; align-items:center; gap:0.5rem; margin-bottom:1.4rem; }
+.name-label { font-family:'Share Tech Mono',monospace; font-size:0.6rem; letter-spacing:0.35em; color:var(--gold); text-transform:uppercase; }
+.name-input { background:#0d0b06; border:1px solid var(--border); border-bottom:2px solid var(--gold); color:var(--gold2); font-family:'Crimson Text',serif; font-size:1.1rem; padding:0.65rem 1.2rem; outline:none; width:300px; transition:all 0.2s; }
+.name-input:focus { border-bottom-color:var(--gold2); box-shadow:0 0 20px var(--glow); }
+.name-input::placeholder { color:var(--text-dim); font-style:italic; }
+
+.btn-start { font-family:'Cinzel Decorative',serif; font-size:0.82rem; letter-spacing:0.15em; color:#0c0a06; background:linear-gradient(135deg,var(--gold) 0%,var(--gold2) 50%,var(--gold) 100%); background-size:200%; border:none; padding:0.9rem 2.5rem; cursor:pointer; clip-path:polygon(14px 0%,100% 0%,calc(100% - 14px) 100%,0% 100%); transition:all 0.3s; text-transform:uppercase; font-weight:700; animation:fadeUp 1.5s ease 2.2s both, shimmer 3s ease infinite; }
+.btn-start:hover { box-shadow:0 0 35px var(--glow2); transform:scale(1.05); }
+@keyframes shimmer { 0%,100%{background-position:left} 50%{background-position:right} }
+@keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+
+/* ════════════════════════════════
+   GAME SCREEN
+════════════════════════════════ */
+#game { justify-content:flex-start; padding:0; background:var(--bg); }
+
+.game-topbar { width:100%; background:var(--panel); border-bottom:1px solid var(--border); padding:0.7rem 1.5rem; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:200; gap:1rem; flex-wrap:wrap; }
+.topbar-title { font-family:'Cinzel Decorative',serif; font-size:0.7rem; color:var(--gold); letter-spacing:0.08em; white-space:nowrap; }
+.topbar-stats { display:flex; align-items:center; gap:1.2rem; }
+.stat-item { font-family:'Share Tech Mono',monospace; font-size:0.65rem; letter-spacing:0.1em; color:var(--text-dim); }
+.stat-item span { color:var(--gold2); }
+.music-btn { background:none; border:1px solid var(--border); color:var(--text-dim); font-family:'Share Tech Mono',monospace; font-size:0.58rem; letter-spacing:0.1em; padding:0.3rem 0.6rem; cursor:pointer; transition:all 0.2s; }
+.music-btn:hover,.music-btn.on { border-color:var(--gold); color:var(--gold); }
+
+.game-layout { width:100%; max-width:1100px; margin:0 auto; padding:1.5rem; display:grid; grid-template-columns:1fr 340px; gap:1.5rem; }
+
+/* BOARD */
+.board-wrap { position:relative; }
+.board-title { font-family:'Cinzel Decorative',serif; font-size:0.75rem; color:var(--gold); letter-spacing:0.1em; margin-bottom:0.8rem; }
+#boardSvg { width:100%; border:1px solid var(--border); border-top:2px solid var(--gold); background:linear-gradient(160deg,#0a120a 0%,#0c0a06 60%,#0a0c0a 100%); display:block; border-radius:2px; box-shadow:0 0 40px rgba(0,0,0,0.6), inset 0 0 80px rgba(45,90,27,0.08); }
+
+/* SIDE PANEL */
+.side-panel { display:flex; flex-direction:column; gap:1rem; }
+
+/* STORY BOX */
+.story-box { background:var(--panel); border:1px solid var(--border); border-left:3px solid var(--gold); padding:1rem 1.1rem; }
+.story-label { font-family:'Share Tech Mono',monospace; font-size:0.58rem; letter-spacing:0.3em; color:var(--gold); text-transform:uppercase; margin-bottom:0.5rem; }
+.story-text { font-style:italic; font-size:0.92rem; line-height:1.75; color:var(--text-dim); }
+
+/* DICE ZONE */
+.dice-zone { background:var(--panel); border:1px solid var(--border); border-top:2px solid var(--gold); padding:1.2rem; display:flex; flex-direction:column; align-items:center; gap:0.8rem; }
+.dice-zone-title { font-family:'Share Tech Mono',monospace; font-size:0.6rem; letter-spacing:0.3em; color:var(--gold); text-transform:uppercase; align-self:flex-start; }
+#diceDisplay { width:72px; height:72px; background:var(--stone); border:2px solid var(--gold); border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:2.5rem; box-shadow:0 0 20px var(--glow), inset 0 0 20px rgba(0,0,0,0.5); transition:transform 0.1s; cursor:default; user-select:none; }
+#diceDisplay.rolling { animation:diceRoll 0.6s ease; }
+@keyframes diceRoll { 0%{transform:rotate(0) scale(1)} 25%{transform:rotate(15deg) scale(1.1)} 50%{transform:rotate(-10deg) scale(0.95)} 75%{transform:rotate(8deg) scale(1.05)} 100%{transform:rotate(0) scale(1)} }
+
+.tier-badge { font-family:'Cinzel Decorative',serif; font-size:0.8rem; padding:0.3rem 1.2rem; clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%); display:none; }
+.tier-badge.bronze { background:rgba(205,127,50,0.15); color:var(--bronze-col); border:1px solid var(--bronze-col); display:block; }
+.tier-badge.silver { background:rgba(168,169,173,0.12); color:var(--silver-col); border:1px solid var(--silver-col); display:block; }
+.tier-badge.gold   { background:rgba(255,215,0,0.12); color:var(--gold-col); border:1px solid var(--gold-col); display:block; }
+
+.roll-btn { font-family:'Cinzel Decorative',serif; font-size:0.78rem; letter-spacing:0.12em; color:#0c0a06; background:linear-gradient(135deg,var(--gold) 0%,var(--gold2) 100%); border:none; padding:0.75rem 2rem; cursor:pointer; clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%); transition:all 0.2s; text-transform:uppercase; font-weight:700; width:100%; }
+.roll-btn:hover:not(:disabled) { box-shadow:0 0 25px var(--glow2); transform:scale(1.02); }
+.roll-btn:disabled { opacity:0.35; cursor:not-allowed; transform:none; }
+
+/* QUESTION CARD */
+.q-card { background:var(--panel); border:1px solid var(--border); display:none; flex-direction:column; gap:0.8rem; }
+.q-card.visible { display:flex; animation:fadeUp 0.4s ease both; }
+.q-card-header { padding:0.9rem 1.1rem 0; display:flex; align-items:center; justify-content:space-between; }
+.q-tier-label { font-family:'Cinzel Decorative',serif; font-size:0.72rem; letter-spacing:0.1em; }
+.q-tier-label.bronze { color:var(--bronze-col); border-bottom:2px solid var(--bronze-col); padding-bottom:2px; }
+.q-tier-label.silver { color:var(--silver-col); border-bottom:2px solid var(--silver-col); padding-bottom:2px; }
+.q-tier-label.gold   { color:var(--gold-col);   border-bottom:2px solid var(--gold-col);   padding-bottom:2px; }
+.q-num { font-family:'Share Tech Mono',monospace; font-size:0.6rem; color:var(--text-dim); }
+
+.q-body { padding:0 1.1rem; font-size:1rem; line-height:1.8; color:var(--text); }
+.q-body .math-inline { font-family:'Share Tech Mono',monospace; background:rgba(201,148,58,0.08); padding:0.05em 0.3em; border-radius:2px; font-size:0.9em; color:var(--gold2); }
+
+.q-input-row { padding:0 1.1rem; display:flex; gap:0.5rem; }
+.q-input { flex:1; background:var(--panel2); border:1px solid var(--border); border-bottom:2px solid var(--gold); color:var(--gold2); font-family:'Share Tech Mono',monospace; font-size:1.1rem; padding:0.6rem 0.9rem; outline:none; transition:all 0.2s; }
+.q-input:focus { border-bottom-color:var(--gold2); box-shadow:0 0 15px var(--glow); }
+.q-input.correct { border-color:var(--green2); color:var(--green2); }
+.q-input.wrong   { border-color:var(--red2); color:var(--red2); animation:shake 0.4s ease; }
+.q-submit { font-family:'Share Tech Mono',monospace; font-size:0.7rem; color:#0c0a06; background:var(--gold); border:none; padding:0 1.1rem; cursor:pointer; transition:all 0.2s; text-transform:uppercase; letter-spacing:0.1em; }
+.q-submit:hover { background:var(--gold2); }
+
+@keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-7px)} 40%{transform:translateX(7px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)} }
+
+.q-feedback { padding:0 1.1rem; font-size:0.88rem; font-style:italic; min-height:1.8rem; line-height:1.5; border-left:2px solid transparent; padding-left:0.8rem; margin-left:0.3rem; }
+.q-feedback.correct { border-color:var(--green2); color:var(--green2); }
+.q-feedback.wrong   { border-color:var(--red2); color:var(--red2); }
+
+.q-hint-btn { margin:0 1.1rem; background:none; border:1px solid var(--border); color:var(--text-dim); font-family:'Share Tech Mono',monospace; font-size:0.6rem; letter-spacing:0.12em; padding:0.4rem 0.8rem; cursor:pointer; transition:all 0.2s; text-transform:uppercase; align-self:flex-start; display:none; }
+.q-hint-btn:hover { border-color:var(--gold); color:var(--gold); }
+.q-hint-btn.show { display:block; }
+
+.q-hint-text { margin:0 1.1rem; padding:0.6rem 0.8rem; background:rgba(201,148,58,0.05); border-left:2px solid var(--gold); font-size:0.88rem; color:var(--text-dim); line-height:1.6; display:none; }
+.q-hint-text.visible { display:block; animation:fadeUp 0.3s ease both; }
+
+.q-solution-btn { margin:0 1.1rem; background:none; border:1px solid var(--red); color:var(--red); font-family:'Share Tech Mono',monospace; font-size:0.6rem; letter-spacing:0.12em; padding:0.4rem 0.8rem; cursor:pointer; transition:all 0.2s; text-transform:uppercase; align-self:flex-start; display:none; }
+.q-solution-btn:hover { border-color:var(--red2); color:var(--red2); }
+.q-solution-btn.show { display:block; }
+
+.q-solution { margin:0 1.1rem; padding:0.7rem 0.9rem; background:rgba(139,32,32,0.08); border-left:2px solid var(--red); font-size:0.88rem; color:var(--text); line-height:1.7; display:none; }
+.q-solution.visible { display:block; animation:fadeUp 0.3s ease both; }
+.q-solution .ans { color:var(--gold2); font-family:'Share Tech Mono',monospace; font-weight:600; }
+
+.q-actions { padding:0.8rem 1.1rem; display:flex; gap:0.6rem; flex-wrap:wrap; }
+.btn-correct-move { font-family:'Cinzel Decorative',serif; font-size:0.72rem; letter-spacing:0.1em; color:#0c0a06; background:linear-gradient(135deg,var(--green) 0%,var(--green2) 100%); border:none; padding:0.7rem 1.5rem; cursor:pointer; clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%); transition:all 0.2s; display:none; text-transform:uppercase; }
+.btn-correct-move:hover { box-shadow:0 0 20px rgba(74,143,42,0.5); }
+.btn-correct-move.show { display:block; animation:fadeUp 0.4s ease both; }
+.btn-stay { font-family:'Cinzel Decorative',serif; font-size:0.72rem; letter-spacing:0.1em; color:var(--text-dim); background:none; border:1px solid var(--border); padding:0.7rem 1.5rem; cursor:pointer; clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%); transition:all 0.2s; display:none; text-transform:uppercase; }
+.btn-stay:hover { border-color:var(--text-dim); }
+.btn-stay.show { display:block; }
+
+/* PROGRESS BAR */
+.progress-wrap { padding:0 0 0.3rem; }
+.progress-label { font-family:'Share Tech Mono',monospace; font-size:0.6rem; letter-spacing:0.15em; color:var(--text-dim); margin-bottom:0.4rem; }
+.progress-track { width:100%; height:6px; background:var(--border); border-radius:3px; }
+.progress-fill { height:100%; background:linear-gradient(to right,var(--gold),var(--gold2)); border-radius:3px; transition:width 0.6s ease; }
+
+/* ════════════════════════════════
+   COMPLETE SCREEN
+════════════════════════════════ */
+#complete { justify-content:flex-start; padding:2rem 1rem 4rem; background:radial-gradient(ellipse 70% 50% at 50% 20%,rgba(45,90,27,0.12) 0%,transparent 60%),var(--bg); }
+.complete-inner { width:100%; max-width:680px; margin:0 auto; display:flex; flex-direction:column; align-items:center; gap:1.2rem; }
+.complete-icon { font-size:3.5rem; animation:popIn 0.6s cubic-bezier(0.34,1.56,0.64,1) both; }
+@keyframes popIn { from{transform:scale(0) rotate(-15deg);opacity:0} to{transform:scale(1) rotate(0);opacity:1} }
+.complete-title { font-family:'Cinzel Decorative',serif; font-size:clamp(1.5rem,4vw,2.6rem); color:var(--gold2); text-shadow:0 0 40px rgba(201,148,58,0.5); text-align:center; animation:fadeUp 1s ease 0.4s both; }
+.complete-sub { font-style:italic; font-size:1.05rem; color:var(--text-dim); text-align:center; max-width:460px; line-height:1.8; animation:fadeUp 1s ease 0.8s both; }
+.score-row { display:flex; gap:1rem; flex-wrap:wrap; justify-content:center; animation:fadeUp 1s ease 1.2s both; }
+.score-box { text-align:center; padding:0.9rem 1.3rem; border:1px solid var(--border); background:var(--panel); }
+.score-val { font-family:'Cinzel Decorative',serif; font-size:1.7rem; color:var(--gold2); display:block; }
+.score-lbl { font-family:'Share Tech Mono',monospace; font-size:0.58rem; letter-spacing:0.15em; color:var(--text-dim); text-transform:uppercase; margin-top:0.2rem; display:block; }
+
+/* REPORT */
+.report-panel { width:100%; animation:fadeUp 1s ease 1.6s both; }
+.report-label { font-family:'Share Tech Mono',monospace; font-size:0.6rem; letter-spacing:0.3em; color:var(--gold); text-transform:uppercase; margin-bottom:0.5rem; }
+.report-title { font-family:'Cinzel Decorative',serif; font-size:0.9rem; color:var(--gold2); margin-bottom:0.7rem; }
+.gen-btn { font-family:'Cinzel Decorative',serif; font-size:0.75rem; letter-spacing:0.12em; color:#0c0a06; background:linear-gradient(135deg,var(--gold) 0%,var(--gold2) 100%); border:none; padding:0.8rem 2rem; cursor:pointer; clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%); transition:all 0.2s; text-transform:uppercase; font-weight:700; }
+.gen-btn:hover { box-shadow:0 0 22px var(--glow2); }
+.summary-wrap { margin-top:0.9rem; display:none; }
+.summary-wrap.visible { display:block; animation:fadeUp 0.4s ease both; }
+.summary-ta { width:100%; min-height:280px; background:var(--panel); color:#9fd4b0; border:1px solid var(--border); border-top:2px solid var(--green2); padding:1rem; font-family:'Share Tech Mono',monospace; font-size:0.7rem; line-height:1.65; resize:vertical; outline:none; }
+.copy-row { display:flex; align-items:center; gap:0.7rem; margin-top:0.7rem; flex-wrap:wrap; }
+.copy-btn { padding:0.6rem 1.4rem; background:var(--gold); color:#0c0a06; border:none; font-family:'Cinzel Decorative',serif; font-size:0.7rem; font-weight:700; cursor:pointer; clip-path:polygon(7px 0%,100% 0%,calc(100% - 7px) 100%,0% 100%); transition:all 0.2s; text-transform:uppercase; }
+.copy-btn:hover { background:var(--gold2); }
+.copy-ok { color:var(--green2); font-family:'Share Tech Mono',monospace; font-size:0.7rem; display:none; }
+.classroom-note { margin-top:0.8rem; background:rgba(201,148,58,0.04); border:1px solid rgba(201,148,58,0.12); padding:0.9rem 1.1rem; color:var(--text-dim); font-size:0.8rem; line-height:1.75; }
+.classroom-note strong { color:var(--gold); }
+.btn-restart { font-family:'Cinzel Decorative',serif; font-size:0.75rem; letter-spacing:0.12em; color:#0c0a06; background:linear-gradient(135deg,var(--gold) 0%,var(--gold2) 100%); border:none; padding:0.8rem 2rem; cursor:pointer; clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%); transition:all 0.2s; text-transform:uppercase; animation:fadeUp 1s ease 2s both; }
+.btn-restart:hover { box-shadow:0 0 22px var(--glow2); }
+
+/* MOBILE */
+@media(max-width:720px){
+  .game-layout { grid-template-columns:1fr; }
+  .side-panel { order:-1; }
+}
+</style>
+</head>
+<body>
+
+<audio id="bgMusic" loop preload="auto">
+  <source src="https://cdn.pixabay.com/audio/2024/05/10/audio_6d5e3e0694.mp3" type="audio/mpeg">
+</audio>
+
+<!-- ══════════════ INTRO ══════════════ -->
+<div class="screen active" id="intro">
+  <div class="expedition-badge">◆ IB Mathematics AA/AI SL · Logs &amp; Exponentials ◆</div>
+  <div class="intro-title">Mr. Goddard's<br>Mathematical Expedition</div>
+  <div class="intro-subtitle">The Lost Temple of Logarithmus</div>
+  <div class="divider"></div>
+
+  <div class="scroll-panel">
+    <div class="scroll-title">Expedition File · Classification: Active · Site: Unknown Jungle, 1931</div>
+    <div class="scroll-body">
+      <p>Deep in an uncharted jungle, aerial surveys have revealed the ruins of an ancient civilisation — the <strong>Logarithmians</strong> — whose entire architecture, language, and culture was built on the laws of logarithms and exponential growth.</p>
+      <p>The temple at the heart of the ruins is <strong>30 chambers deep</strong>. Each chamber is sealed by a mathematical cipher that only a true mathematician can unlock. Before each chamber, you roll the expedition dice — a Bronze roll reveals a basic cipher from the outer ruins, Silver from the temple corridors, and <strong>Gold from the inner sanctum</strong>.</p>
+      <p>Answer correctly and you advance. Answer incorrectly, and the chamber holds you in place until your next roll. <em>Reach the inner sanctum to claim the expedition's discovery.</em></p>
+    </div>
+  </div>
+
+  <div class="name-wrap">
+    <div class="name-label">Expedition Leader</div>
+    <input class="name-input" id="explorerName" type="text" placeholder="Enter your full name..." autocomplete="name">
+  </div>
+  <button class="btn-start" id="startBtn">Begin the Expedition</button>
+</div>
+
+<!-- ══════════════ GAME ══════════════ -->
+<div class="screen" id="game">
+  <div class="game-topbar">
+    <div class="topbar-title">⛩ Mr. Goddard's Expedition</div>
+    <div class="topbar-stats">
+      <div class="stat-item">Position: <span id="statPos">0</span>/30</div>
+      <div class="stat-item">Correct: <span id="statCorrect">0</span></div>
+      <div class="stat-item">Questions: <span id="statQ">0</span></div>
+    </div>
+    <button class="music-btn" id="musicBtn">♪ MUSIC</button>
+  </div>
+
+  <div class="game-layout">
+    <!-- BOARD -->
+    <div class="board-wrap">
+      <div class="board-title">◈ Expedition Map — Temple of Logarithmus</div>
+      <svg id="boardSvg" viewBox="0 0 560 480" xmlns="http://www.w3.org/2000/svg"></svg>
+      <div class="progress-wrap" style="margin-top:0.8rem">
+        <div class="progress-label">EXPEDITION PROGRESS</div>
+        <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+      </div>
+    </div>
+
+    <!-- SIDE -->
+    <div class="side-panel">
+      <div class="story-box">
+        <div class="story-label">Field Notes</div>
+        <div class="story-text" id="storyText">Your expedition begins at the jungle's edge. The temple looms ahead, its stone walls covered in ancient mathematical inscriptions.</div>
+      </div>
+
+      <div class="dice-zone">
+        <div class="dice-zone-title">Expedition Dice</div>
+        <div id="diceDisplay">🎲</div>
+        <div class="tier-badge" id="tierBadge" style="display:none"></div>
+        <button class="roll-btn" id="rollBtn">Roll the Dice</button>
+      </div>
+
+      <div class="q-card" id="qCard">
+        <div class="q-card-header">
+          <div class="q-tier-label" id="qTierLabel"></div>
+          <div class="q-num" id="qNum"></div>
+        </div>
+        <div class="q-body" id="qBody"></div>
+        <div class="q-input-row" id="qInputRow">
+          <input class="q-input" id="qInput" type="text" placeholder="Your answer..." autocomplete="off">
+          <button class="q-submit" id="qSubmit">Submit</button>
+        </div>
+        <div class="q-feedback" id="qFeedback"></div>
+        <button class="q-hint-btn" id="hintBtn">💡 Show Hint</button>
+        <div class="q-hint-text" id="hintText"></div>
+        <button class="q-solution-btn" id="solutionBtn">📖 Show Full Solution</button>
+        <div class="q-solution" id="solutionText"></div>
+        <div class="q-actions">
+          <button class="btn-correct-move" id="btnMove">Advance! →</button>
+          <button class="btn-stay" id="btnStay">Roll Again</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ COMPLETE ══════════════ -->
+<div class="screen" id="complete">
+  <div class="complete-inner">
+    <div class="complete-icon">🏛️</div>
+    <div class="complete-title">The Inner Sanctum Revealed</div>
+    <div class="divider"></div>
+    <p class="complete-sub" id="completeStory"></p>
+    <div class="score-row">
+      <div class="score-box"><span class="score-val" id="scCorrect">-</span><span class="score-lbl">Correct</span></div>
+      <div class="score-box"><span class="score-val" id="scTotal">-</span><span class="score-lbl">Questions</span></div>
+      <div class="score-box"><span class="score-val" id="scAccuracy">-</span><span class="score-lbl">Accuracy</span></div>
+    </div>
+
+    <div class="report-panel">
+      <div class="report-label">Submit Your Work</div>
+      <div class="report-title">Generate Expedition Report</div>
+      <button class="gen-btn" id="genBtn">Generate Report</button>
+      <div class="summary-wrap" id="summaryWrap">
+        <textarea class="summary-ta" id="summaryTa" readonly></textarea>
+        <div class="copy-row">
+          <button class="copy-btn" id="copyBtn">Copy to Clipboard</button>
+          <span class="copy-ok" id="copyOk">✓ Copied!</span>
+        </div>
+        <div class="classroom-note">
+          <strong>How to submit:</strong><br>
+          1. Click <strong>Copy to Clipboard</strong><br>
+          2. Open Google Classroom → find the Expedition assignment<br>
+          3. Add a private comment and paste (Ctrl+V / Cmd+V / long-press on iPad)<br>
+          4. Submit ✓
+        </div>
+      </div>
+    </div>
+    <button class="btn-restart" onclick="location.reload()">New Expedition</button>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+// QUESTION BANK
+// ═══════════════════════════════════════════
+const QUESTIONS = {
+  bronze: [
+    {
+      q: "Find the value of log₁₀ 100, giving your answer as an integer.",
+      answer: ["2"],
+      hint: "Write 100 as a power of 10. What power gives you 100?",
+      solution: "log₁₀ 100 = log₁₀(10²) = 2·log₁₀10 = <span class='ans'>2</span>"
+    },
+    {
+      q: "Find the value of log₁₀ 50 + log₁₀ 2, giving your answer as an integer.",
+      answer: ["2"],
+      hint: "Use the product law: log A + log B = log(A·B). What is 50 × 2?",
+      solution: "log₁₀50 + log₁₀2 = log₁₀(50×2) = log₁₀100 = <span class='ans'>2</span>"
+    },
+    {
+      q: "Find the value of log₁₀ 4 − log₁₀ 40, giving your answer as an integer.",
+      answer: ["-1"],
+      hint: "Use the quotient law: log A − log B = log(A/B). Simplify 4/40.",
+      solution: "log₁₀4 − log₁₀40 = log₁₀(4/40) = log₁₀(1/10) = log₁₀(10⁻¹) = <span class='ans'>−1</span>"
+    },
+    {
+      q: "Let log₂ a = p, log₂ b = q, log₂ c = r. Write log₂(ab/c) in terms of p, q and r.",
+      answer: ["p+q-r","p+q−r","p + q - r","p + q − r"],
+      hint: "Split using product and quotient laws: log(ab/c) = log a + log b − log c.",
+      solution: "log₂(ab/c) = log₂a + log₂b − log₂c = <span class='ans'>p + q − r</span>"
+    },
+    {
+      q: "Let log₂ a = p, log₂ b = q, log₂ c = r. Write log₂(a²c/b³) in terms of p, q and r.",
+      answer: ["2p+r-3q","2p+r−3q","2p + r - 3q","2p + r − 3q"],
+      hint: "Use the power law first: log(a²) = 2log a. Then apply product/quotient laws.",
+      solution: "log₂(a²c/b³) = 2log₂a + log₂c − 3log₂b = <span class='ans'>2p + r − 3q</span>"
+    },
+    {
+      q: "Let log₂ a = p, log₂ b = q. Write log_a b in terms of p and q.",
+      answer: ["q/p","q ÷ p"],
+      hint: "Use the change of base formula: log_a b = log₂b / log₂a.",
+      solution: "log_a b = log₂b / log₂a = q/p = <span class='ans'>q/p</span>"
+    },
+    {
+      q: "Let p = ln 2 and q = ln 6. Write ln 12 in terms of p and q.",
+      answer: ["p+q","p + q"],
+      hint: "Write 12 = 2 × 6, then use the product law.",
+      solution: "ln12 = ln(2×6) = ln2 + ln6 = <span class='ans'>p + q</span>"
+    },
+    {
+      q: "Let p = ln 2 and q = ln 6. Write ln 3 in terms of p and q.",
+      answer: ["q-p","q − p","q - p"],
+      hint: "Write 3 = 6/2, then use the quotient law.",
+      solution: "ln3 = ln(6/2) = ln6 − ln2 = <span class='ans'>q − p</span>"
+    },
+    {
+      q: "Let p = ln 2 and q = ln 6. Write ln 48 in terms of p and q.",
+      answer: ["3p+q","3p + q"],
+      hint: "Write 48 = 8 × 6 = 2³ × 6, then use product and power laws.",
+      solution: "ln48 = ln(2³·6) = 3ln2 + ln6 = <span class='ans'>3p + q</span>"
+    },
+    {
+      q: "Let a = log₅ b where b > 0. Write log₅ b⁴ in terms of a.",
+      answer: ["4a"],
+      hint: "Use the power law: log(b⁴) = 4·log b.",
+      solution: "log₅b⁴ = 4·log₅b = <span class='ans'>4a</span>"
+    },
+    {
+      q: "Let a = log₅ b where b > 0. Write log₅(25b) in terms of a.",
+      answer: ["2+a","a+2"],
+      hint: "Split: log₅(25b) = log₅25 + log₅b. What is log₅25?",
+      solution: "log₅(25b) = log₅(5²) + log₅b = 2 + a = <span class='ans'>2 + a</span>"
+    },
+    {
+      q: "Let a = log₅ b where b > 0. Write log₂₅ b in terms of a.",
+      answer: ["a/2","a÷2"],
+      hint: "Use change of base: log₂₅b = log₅b / log₅25. What is log₅25?",
+      solution: "log₂₅b = log₅b / log₅25 = log₅b / 2 = <span class='ans'>a/2</span>"
+    }
+  ],
+  silver: [
+    {
+      q: "Consider a = log₆₃64 × log₆₂63 × log₆₁62 × ⋯ × log₂3. Given a ∈ ℤ, find the value of a.",
+      answer: ["6"],
+      hint: "Convert each term using change of base. Notice how consecutive terms cancel (telescoping product).",
+      solution: "Converting to natural logs, all intermediate terms cancel: = log64/log2 = log(2⁶)/log2 = <span class='ans'>6</span>"
+    },
+    {
+      q: "Write the expression 4 ln 2 − ln 8 in the form ln k, where k ∈ ℤ.",
+      answer: ["ln 2","ln2"],
+      hint: "Use the power law: 4 ln 2 = ln(2⁴) = ln 16. Then apply the quotient law.",
+      solution: "4ln2 − ln8 = ln(2⁴) − ln8 = ln16 − ln8 = ln(16/8) = <span class='ans'>ln 2</span>"
+    },
+    {
+      q: "Hence, or otherwise, solve 4 ln 2 − ln 8 = −ln(2x).",
+      answer: ["1/4","0.25"],
+      hint: "From the previous result, ln 2 = −ln(2x). Use the rule −ln(a) = ln(1/a).",
+      solution: "ln2 = −ln(2x) → −ln2 = ln(2x) → ln(1/2) = ln(2x) → 2x = 1/2 → <span class='ans'>x = 1/4</span>"
+    },
+    {
+      q: "Solve the equation log₅ x − log₅ 4 = 2 + log₅ 3 for x.",
+      answer: ["300"],
+      hint: "Rearrange so all log terms are on one side, then combine using quotient/product laws.",
+      solution: "log₅(x/4) = log₅25 + log₅3 = log₅75 → x/4 = 75 → <span class='ans'>x = 300</span>"
+    },
+    {
+      q: "Find the value(s) of x when 27^(x+2) = (1/9)^(2x+4).",
+      answer: ["-2","−2"],
+      hint: "Write both sides as powers of 3. Recall 27 = 3³ and 1/9 = 3⁻².",
+      solution: "3^(3x+6) = 3^(−4x−8) → 3x+6 = −4x−8 → 7x = −14 → <span class='ans'>x = −2</span>"
+    },
+    {
+      q: "Solve the equation log₃ x − log₃ 5 = 1 + log₃ 4 for x.",
+      answer: ["60"],
+      hint: "Write 1 = log₃3, then collect log terms on each side and apply quotient/product law.",
+      solution: "log₃(x/5) = log₃3 + log₃4 = log₃12 → x/5 = 12 → <span class='ans'>x = 60</span>"
+    },
+    {
+      q: "Given log₂8 = 3, log₅(1/25) = −2, log₉3 = 1/2, solve: log₂8 + log₅(1/25) + log₉3 = log₁₆x.",
+      answer: ["64"],
+      hint: "Add the three values on the left. Then solve log₁₆x = that sum by converting to exponential form.",
+      solution: "3 + (−2) + 1/2 = 3/2. So log₁₆x = 3/2 → x = 16^(3/2) = (4²)^(3/2) = 4³ = <span class='ans'>64</span>"
+    },
+    {
+      q: "Given log_b 3 = 10, find log_b 81.",
+      answer: ["40"],
+      hint: "Write 81 = 3⁴ and use the power law.",
+      solution: "log_b81 = log_b(3⁴) = 4·log_b3 = 4×10 = <span class='ans'>40</span>"
+    },
+    {
+      q: "Given log_b 3 = 10, find log_(b²) 3.",
+      answer: ["5"],
+      hint: "Use change of base: log_(b²)3 = log_b3 / log_b(b²). Simplify log_b(b²).",
+      solution: "log_(b²)3 = log_b3 / log_b(b²) = 10/(2·log_b b) = 10/2 = <span class='ans'>5</span>"
+    },
+    {
+      q: "Find the values of x when 25^(x²−2x) = (1/125)^(4x+2).",
+      answer: ["x = -3, x = -1","x = -1, x = -3","-3 and -1","-1 and -3","-3,-1","-1,-3"],
+      hint: "Write both sides as powers of 5. Then equate the exponents and form a quadratic.",
+      solution: "5^(2x²−4x) = 5^(−12x−6) → 2x²−4x = −12x−6 → x²+4x+3 = 0 → (x+3)(x+1) = 0 → <span class='ans'>x = −3 or x = −1</span>"
+    },
+    {
+      q: "Solve the equation log₂(x²−2x+1) = 1 + log₂(x−1).",
+      answer: ["3"],
+      hint: "Write 1 = log₂2, then collect log terms. Factor the quadratic on the left.",
+      solution: "log₂(x−1)² = log₂(2(x−1)) → (x−1)² = 2(x−1) → x−1 = 2 (since x≠1) → <span class='ans'>x = 3</span>"
+    }
+  ],
+  gold: [
+    {
+      q: "Solve for a: Σ(k=a to a+35) log₁₃((k+1)/k) = 1.",
+      answer: ["3"],
+      hint: "Expand the sum — it telescopes! Use log(A/B) = logA − logB and notice adjacent terms cancel.",
+      solution: "Telescoping gives −log₁₃a + log₁₃(a+36) = 1 → log₁₃((a+36)/a) = 1 → (a+36)/a = 13 → 12a = 36 → <span class='ans'>a = 3</span>"
+    },
+    {
+      q: "Solve the equation 9ˣ + 2·3^(x+1) = 1.",
+      answer: ["log₃(-3+√10)","log_3(-3+√10)","log3(-3+sqrt10)"],
+      hint: "Let y = 3ˣ. Note 9ˣ = (3²)ˣ = y² and 2·3^(x+1) = 6y. You get a quadratic in y.",
+      solution: "y² + 6y − 1 = 0 → y = (−6 + √40)/2 = −3 + √10 (positive root only) → <span class='ans'>x = log₃(−3 + √10)</span>"
+    },
+    {
+      q: "Solve simultaneously: 1 + 2log₅x = log₅7y and log₇(6x−1) = 1 + log₇y.",
+      answer: ["x=1,y=5/7","x=1/5,y=1/35","x = 1, y = 5/7","x = 1/5, y = 1/35"],
+      hint: "Rewrite both equations to eliminate logs — you'll get 5x² = 7y and 6x−1 = 7y. Substitute.",
+      solution: "5x² = 7y and 6x−1 = 7y → 5x² = 6x−1 → 5x²−6x+1 = 0 → x = 1 or x = 1/5. Giving <span class='ans'>(x=1, y=5/7) or (x=1/5, y=1/35)</span>"
+    },
+    {
+      q: "The first two terms of a geometric sequence are 3log₃x and 2log₃x (x > 0). Find the common ratio r.",
+      answer: ["2/3"],
+      hint: "r = second term ÷ first term. Both terms involve log₃x — it will cancel.",
+      solution: "r = 2log₃x / 3log₃x = <span class='ans'>2/3</span>"
+    },
+    {
+      q: "Using the geometric sequence 3log₃x, 2log₃x, ... (r = 2/3), show/verify that S∞ = 9log₃x. What is S∞ in terms of log₃x?",
+      answer: ["9log₃x","9 log₃x","9log3x"],
+      hint: "Use S∞ = u₁/(1−r) = 3log₃x / (1 − 2/3). Simplify.",
+      solution: "S∞ = 3log₃x ÷ (1/3) = <span class='ans'>9log₃x</span>"
+    },
+    {
+      q: "The arithmetic sequence log₃x, log₃(x/3), log₃(x/9) has common difference d. Find d as an integer.",
+      answer: ["-1","−1"],
+      hint: "d = u₂ − u₁ = log₃(x/3) − log₃x. Use the quotient law.",
+      solution: "d = log₃(x/3) − log₃x = log₃(1/3) = log₃(3⁻¹) = <span class='ans'>−1</span>"
+    },
+    {
+      q: "For the arithmetic sequence with u₁ = log₃x and d = −1, given S₆ = (1/3)S∞ where S∞ = 9log₃x, find x in the form aᵖ.",
+      answer: ["3⁵","3^5","243"],
+      hint: "S₆ = (n/2)(2u₁ + 5d) = 3(2log₃x − 5) = 6log₃x − 15. Set equal to (1/3)(9log₃x) = 3log₃x.",
+      solution: "6log₃x − 15 = 3log₃x → 3log₃x = 15 → log₃x = 5 → <span class='ans'>x = 3⁵</span>"
+    },
+    {
+      q: "Consider f(x) = log_k(8x − 2x²) for 0 < x < 4, k > 0. The equation f(x) = 3 has exactly one solution. Find k.",
+      answer: ["2"],
+      hint: "f(x) = 3 means 8x − 2x² = k³. For exactly one solution, the quadratic 2x² − 8x + k³ = 0 has discriminant = 0.",
+      solution: "Discriminant: (−8)² − 4(2)(k³) = 0 → 64 = 8k³ → k³ = 8 → <span class='ans'>k = 2</span>"
+    },
+    {
+      q: "Solve 15^(4a) = 81^(a+2) for a. Express your answer in terms of ln 3 and ln 5.",
+      answer: ["2ln3/ln5","2 ln 3 / ln 5","2ln(3)/ln(5)"],
+      hint: "Write 15 = 3·5 and 81 = 3⁴. Expand and cancel powers of 3 from both sides.",
+      solution: "(3·5)^(4a) = 3^(4a+8) → 3^(4a)·5^(4a) = 3^(4a)·3^8 → 5^(4a) = 3^8 → 4a·ln5 = 8ln3 → <span class='ans'>a = 2ln3/ln5</span>"
+    }
+  ]
+};
+
+// ═══════════════════════════════════════════
+// STORY BEATS
+// ═══════════════════════════════════════════
+const STORIES = [
+  "You hack through the jungle undergrowth. Ancient stone markers bear logarithmic inscriptions.",
+  "The tree canopy thins. Ahead, carved stone steps rise from the jungle floor.",
+  "The first temple wall. Vines cover equations etched by the Logarithmians centuries ago.",
+  "A stone archway. The air smells of damp earth and old mathematics.",
+  "Bronze tier: the outer ruins. Familiar log laws guard these chambers.",
+  "The path narrows. Torch flames flicker along the corridor walls.",
+  "Silver tier reached. The temple corridors twist deeper underground.",
+  "Carved glyphs depict exponential curves — the Logarithmians obsessed over them.",
+  "A collapsed section of floor. You leap across — and find a hidden chamber.",
+  "The temperature drops. The inner walls are polished stone, equations inlaid in gold.",
+  "Gold tier. Only the hardest ciphers guard what lies ahead.",
+  "The mathematics grows more complex. The ancients were formidable.",
+  "A mural depicts a great mathematician — perhaps the founder of this civilisation.",
+  "The sound of running water. An underground spring flows through the sanctum.",
+  "The ciphers on the walls begin to glow as you solve them.",
+  "Deeper still. The expedition has taken you further than any before.",
+  "The equations seem almost alive in the torchlight.",
+  "You can feel the inner sanctum is close. The mathematics is reaching its peak.",
+  "One final corridor. The air is electric with ancient knowledge.",
+  "The inner sanctum door. It bears the most beautiful equation you have ever seen."
+];
+
+// ═══════════════════════════════════════════
+// BOARD
+// ═══════════════════════════════════════════
+const TOTAL_SPACES = 30;
+const COLS = 6;
+const ROWS = 5;
+const CW = 560, CH = 480;
+const SX = 44, SY = 44, SW = 78, SH = 72;
+
+function getSpacePos(idx) {
+  // idx 0 = start, 29 = finish
+  // snake pattern: row 0 left→right, row 1 right→left, etc.
+  const row = Math.floor(idx / COLS);
+  const col = idx % COLS;
+  const actualCol = (row % 2 === 0) ? col : (COLS - 1 - col);
+  const x = SX + actualCol * (SW + 8) + SW / 2;
+  const y = CH - SY - row * (SH + 10) - SH / 2;
+  return { x, y };
+}
+
+function buildBoard() {
+  const svg = document.getElementById('boardSvg');
+  svg.innerHTML = '';
+
+  // Background jungle texture
+  const defs = document.createElementNS('http://www.w3.org/2000/svg','defs');
+  defs.innerHTML = `
+    <filter id="glow"><feGaussianBlur stdDeviation="3" result="coloredBlur"/><feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <radialGradient id="startGrad" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#4a8f2a" stop-opacity="0.4"/><stop offset="100%" stop-color="#1a3a0d" stop-opacity="0.1"/></radialGradient>
+    <radialGradient id="endGrad" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#c9943a" stop-opacity="0.5"/><stop offset="100%" stop-color="#6b4a1a" stop-opacity="0.1"/></radialGradient>
+    <radialGradient id="bronzeGrad" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#3d2010" stop-opacity="0.8"/><stop offset="100%" stop-color="#1a0d06" stop-opacity="0.6"/></radialGradient>
+    <radialGradient id="silverGrad" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#1a1e28" stop-opacity="0.8"/><stop offset="100%" stop-color="#0d1018" stop-opacity="0.6"/></radialGradient>
+    <radialGradient id="goldGrad" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#2a2010" stop-opacity="0.8"/><stop offset="100%" stop-color="#1a1408" stop-opacity="0.6"/></radialGradient>
+  `;
+  svg.appendChild(defs);
+
+  // Draw path lines
+  for (let i = 0; i < TOTAL_SPACES - 1; i++) {
+    const p1 = getSpacePos(i);
+    const p2 = getSpacePos(i + 1);
+    const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('x1', p1.x); line.setAttribute('y1', p1.y);
+    line.setAttribute('x2', p2.x); line.setAttribute('y2', p2.y);
+    line.setAttribute('stroke', '#2d2818'); line.setAttribute('stroke-width', '3');
+    line.setAttribute('stroke-dasharray', '5,4');
+    svg.appendChild(line);
+  }
+
+  // Draw spaces
+  for (let i = 0; i < TOTAL_SPACES; i++) {
+    const pos = getSpacePos(i);
+    const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+    g.setAttribute('id', `space-${i}`);
+
+    // Zone coloring
+    let fillId, strokeCol, labelCol;
+    if (i === 0) { fillId='startGrad'; strokeCol='#4a8f2a'; labelCol='#4a8f2a'; }
+    else if (i === TOTAL_SPACES - 1) { fillId='endGrad'; strokeCol='#c9943a'; labelCol='#c9943a'; }
+    else if (i <= 10) { fillId='bronzeGrad'; strokeCol='#4a2510'; labelCol='#7a4525'; }
+    else if (i <= 20) { fillId='silverGrad'; strokeCol='#2a3040'; labelCol='#3a4555'; }
+    else { fillId='goldGrad'; strokeCol='#3a2d10'; labelCol='#5a4520'; }
+
+    const rect = document.createElementNS('http://www.w3.org/2000/svg','rect');
+    rect.setAttribute('x', pos.x - 30); rect.setAttribute('y', pos.y - 22);
+    rect.setAttribute('width', 60); rect.setAttribute('height', 44);
+    rect.setAttribute('rx', 4);
+    rect.setAttribute('fill', `url(#${fillId})`);
+    rect.setAttribute('stroke', strokeCol);
+    rect.setAttribute('stroke-width', i === 0 || i === TOTAL_SPACES-1 ? '2' : '1');
+    g.appendChild(rect);
+
+    // Label
+    const label = document.createElementNS('http://www.w3.org/2000/svg','text');
+    label.setAttribute('x', pos.x); label.setAttribute('y', pos.y + 5);
+    label.setAttribute('text-anchor', 'middle');
+    label.setAttribute('font-family', 'Share Tech Mono, monospace');
+    label.setAttribute('font-size', '11');
+    label.setAttribute('fill', labelCol);
+    if (i === 0) label.textContent = 'START';
+    else if (i === TOTAL_SPACES - 1) label.textContent = 'SANCTUM';
+    else label.textContent = i;
+    g.appendChild(label);
+
+    svg.appendChild(g);
+  }
+
+  // Player token
+  const token = document.createElementNS('http://www.w3.org/2000/svg','g');
+  token.setAttribute('id','playerToken');
+  const tc = document.createElementNS('http://www.w3.org/2000/svg','circle');
+  tc.setAttribute('r','14'); tc.setAttribute('fill','#c9943a'); tc.setAttribute('filter','url(#glow)');
+  const tt = document.createElementNS('http://www.w3.org/2000/svg','text');
+  tt.setAttribute('text-anchor','middle'); tt.setAttribute('dy','5');
+  tt.setAttribute('font-size','14'); tt.textContent='🧭';
+  token.appendChild(tc); token.appendChild(tt);
+  const p0 = getSpacePos(0);
+  token.setAttribute('transform',`translate(${p0.x},${p0.y})`);
+  svg.appendChild(token);
+}
+
+function moveToken(pos, cb) {
+  const p = getSpacePos(pos);
+  const token = document.getElementById('playerToken');
+  token.style.transition = 'transform 0.6s cubic-bezier(0.34,1.56,0.64,1)';
+  token.setAttribute('transform',`translate(${p.x},${p.y})`);
+  // Highlight current space
+  for (let i=0;i<TOTAL_SPACES;i++){
+    const r = document.querySelector(`#space-${i} rect`);
+    if (r) r.setAttribute('stroke-width', i===pos ? '2.5' : (i===0||i===TOTAL_SPACES-1?'2':'1'));
+  }
+  setTimeout(() => { if(cb) cb(); }, 700);
+}
+
+// ═══════════════════════════════════════════
+// GAME STATE
+// ═══════════════════════════════════════════
+let playerPos = 0;
+let explorerName = '';
+let totalQ = 0, totalCorrect = 0;
+let lastRoll = 0, lastTier = '';
+let lastCorrect = false;
+let usedQ = { bronze: [], silver: [], gold: [] };
+let questionLog = [];
+let musicOn = false;
+let currentQ = null;
+let hintShown = false;
+let solutionShown = false;
+let answered = false;
+
+const DICE_FACES = ['','⚀','⚁','⚂','⚃','⚄','⚅'];
+
+// ═══════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function getRandomQ(tier) {
+  const pool = QUESTIONS[tier];
+  const used = usedQ[tier];
+  const available = pool.map((_,i)=>i).filter(i=>!used.includes(i));
+  if (available.length === 0) { usedQ[tier] = []; return getRandomQ(tier); }
+  const idx = available[Math.floor(Math.random()*available.length)];
+  usedQ[tier].push(idx);
+  return pool[idx];
+}
+
+function getTier(roll) {
+  if (roll <= 2) return 'bronze';
+  if (roll <= 4) return 'silver';
+  return 'gold';
+}
+
+function tierLabel(t) {
+  if (t==='bronze') return '🥉 Bronze — Outer Ruins';
+  if (t==='silver') return '🥈 Silver — Temple Corridor';
+  return '🥇 Gold — Inner Sanctum';
+}
+
+function updateStats() {
+  document.getElementById('statPos').textContent = playerPos;
+  document.getElementById('statCorrect').textContent = totalCorrect;
+  document.getElementById('statQ').textContent = totalQ;
+  document.getElementById('progressFill').style.width = (playerPos/TOTAL_SPACES*100)+'%';
+}
+
+function normalise(s) {
+  return s.trim().toLowerCase().replace(/\s+/g,'').replace(/[−–]/g,'-').replace(/×/g,'*');
+}
+
+function checkAnswer(input, answers) {
+  const n = normalise(input);
+  return answers.some(a => {
+    const na = normalise(a);
+    if (na === n) return true;
+    try { return Math.abs(parseFloat(na)-parseFloat(n)) < 0.005; } catch { return false; }
+  });
+}
+
+function updateStory() {
+  const idx = Math.min(Math.floor(playerPos/1.5), STORIES.length-1);
+  document.getElementById('storyText').textContent = STORIES[idx];
+}
+
+// ═══════════════════════════════════════════
+// DICE ROLL
+// ═══════════════════════════════════════════
+function rollDice() {
+  document.getElementById('rollBtn').disabled = true;
+  const dice = document.getElementById('diceDisplay');
+  dice.classList.add('rolling');
+
+  let count = 0;
+  const interval = setInterval(() => {
+    const r = Math.ceil(Math.random()*6);
+    dice.textContent = DICE_FACES[r];
+    count++;
+    if (count >= 10) {
+      clearInterval(interval);
+      dice.classList.remove('rolling');
+      lastRoll = r;
+      lastTier = getTier(r);
+      showTier(lastRoll, lastTier);
+      setTimeout(() => showQuestion(), 500);
+    }
+  }, 60);
+}
+
+function showTier(roll, tier) {
+  const badge = document.getElementById('tierBadge');
+  badge.className = 'tier-badge ' + tier;
+  badge.textContent = tierLabel(tier);
+  badge.style.display = 'block';
+}
+
+// ═══════════════════════════════════════════
+// QUESTION
+// ═══════════════════════════════════════════
+function showQuestion() {
+  currentQ = getRandomQ(lastTier);
+  hintShown = false; solutionShown = false; answered = false;
+  totalQ++;
+
+  const card = document.getElementById('qCard');
+  card.classList.add('visible');
+
+  const label = document.getElementById('qTierLabel');
+  label.className = 'q-tier-label ' + lastTier;
+  label.textContent = lastTier.charAt(0).toUpperCase()+lastTier.slice(1);
+
+  document.getElementById('qNum').textContent = `Q${totalQ}`;
+  document.getElementById('qBody').textContent = currentQ.q;
+
+  // Reset inputs
+  const input = document.getElementById('qInput');
+  input.value = ''; input.className = 'q-input'; input.disabled = false;
+  document.getElementById('qSubmit').disabled = false;
+  document.getElementById('qInputRow').style.display = 'flex';
+  document.getElementById('qFeedback').textContent = '';
+  document.getElementById('qFeedback').className = 'q-feedback';
+  document.getElementById('hintBtn').className = 'q-hint-btn';
+  document.getElementById('hintText').className = 'q-hint-text';
+  document.getElementById('hintText').textContent = '';
+  document.getElementById('solutionBtn').className = 'q-solution-btn';
+  document.getElementById('solutionText').className = 'q-solution';
+  document.getElementById('solutionText').innerHTML = '';
+  document.getElementById('btnMove').className = 'btn-correct-move';
+  document.getElementById('btnStay').className = 'btn-stay';
+
+  setTimeout(() => { input.focus(); }, 100);
+
+  // Typeset maths if MathJax loaded
+  if (window.MathJax) MathJax.typesetPromise([document.getElementById('qBody')]).catch(()=>{});
+
+  updateStats();
+}
+
+function submitAnswer() {
+  if (answered) return;
+  const input = document.getElementById('qInput');
+  const val = input.value.trim();
+  if (!val) return;
+
+  const correct = checkAnswer(val, currentQ.answer);
+  answered = true;
+  totalQ; // already counted
+
+  if (correct) {
+    totalCorrect++;
+    lastCorrect = true;
+    input.classList.add('correct');
+    input.disabled = true;
+    document.getElementById('qSubmit').disabled = true;
+    const fb = document.getElementById('qFeedback');
+    fb.className = 'q-feedback correct';
+    fb.textContent = '✓ Cipher solved! The chamber yields to your logic.';
+    document.getElementById('btnMove').className = 'btn-correct-move show';
+    document.getElementById('hintBtn').className = 'q-hint-btn';
+    document.getElementById('solutionBtn').className = 'q-solution-btn show';
+    questionLog.push({ q: currentQ.q.substring(0,60), tier: lastTier, answer: val, correct: true, roll: lastRoll });
+  } else {
+    lastCorrect = false;
+    input.classList.add('wrong');
+    input.value = '';
+    setTimeout(() => { input.classList.remove('wrong'); if(!answered) return; }, 500);
+    answered = false; // allow retry
+    const fb = document.getElementById('qFeedback');
+    fb.className = 'q-feedback wrong';
+    fb.textContent = '✗ The cipher holds. Try again — or use a hint.';
+    document.getElementById('hintBtn').className = 'q-hint-btn show';
+    questionLog.push({ q: currentQ.q.substring(0,60), tier: lastTier, answer: val, correct: false, roll: lastRoll });
+    // re-focus
+    setTimeout(() => { document.getElementById('qInput').focus(); }, 200);
+  }
+  updateStats();
+}
+
+// ═══════════════════════════════════════════
+// MOVE / STAY
+// ═══════════════════════════════════════════
+function advance() {
+  playerPos = Math.min(playerPos + lastRoll, TOTAL_SPACES - 1);
+  moveToken(playerPos, () => {
+    updateStory();
+    updateStats();
+    hideCard();
+    if (playerPos >= TOTAL_SPACES - 1) {
+      setTimeout(showComplete, 800);
+    }
+  });
+}
+
+function stay() {
+  hideCard();
+}
+
+function hideCard() {
+  document.getElementById('qCard').classList.remove('visible');
+  document.getElementById('tierBadge').style.display = 'none';
+  document.getElementById('rollBtn').disabled = false;
+  if (playerPos < TOTAL_SPACES - 1) {
+    document.getElementById('diceDisplay').textContent = '🎲';
+  }
+}
+
+// ═══════════════════════════════════════════
+// COMPLETE
+// ═══════════════════════════════════════════
+function showComplete() {
+  showScreen('complete');
+  const acc = totalQ > 0 ? Math.round(totalCorrect/totalQ*100) : 0;
+  document.getElementById('scCorrect').textContent = totalCorrect;
+  document.getElementById('scTotal').textContent = totalQ;
+  document.getElementById('scAccuracy').textContent = acc+'%';
+  const endings = [
+    "The inner sanctum reveals its greatest secret — a theorem so elegant it takes your breath away. Dr. Goddard would be proud.",
+    "You stand in the heart of the Temple of Logarithmus. The Logarithmians' greatest work surrounds you. The expedition is complete.",
+    "The ancient mathematics yielded to your logic. The civilisation's final cipher is broken — and its knowledge is yours.",
+  ];
+  document.getElementById('completeStory').textContent = endings[Math.floor(Math.random()*endings.length)];
+  if (musicOn) document.getElementById('bgMusic').pause();
+}
+
+function generateReport() {
+  const name = explorerName || 'Unknown Explorer';
+  const now = new Date().toLocaleString('en-GB');
+  const acc = totalQ > 0 ? Math.round(totalCorrect/totalQ*100) : 0;
+  const lines = [];
+  lines.push('╔══════════════════════════════════════════════════════════════╗');
+  lines.push('║     MR. GODDARD\'S EXPEDITION — FIELD REPORT                ║');
+  lines.push('║     The Lost Temple of Logarithmus                          ║');
+  lines.push('╚══════════════════════════════════════════════════════════════╝');
+  lines.push('');
+  lines.push(`  Explorer     : ${name}`);
+  lines.push(`  Submitted    : ${now}`);
+  lines.push(`  Final Pos.   : ${playerPos} / ${TOTAL_SPACES - 1}`);
+  lines.push(`  Correct      : ${totalCorrect} / ${totalQ}  (${acc}% accuracy)`);
+  lines.push('');
+  lines.push('────────────────────────────────────────────────────────────────');
+  lines.push('  QUESTION LOG');
+  lines.push('────────────────────────────────────────────────────────────────');
+  // Group by attempt
+  const seen = new Map();
+  questionLog.forEach((e,i) => {
+    const key = e.q;
+    if (!seen.has(key)) seen.set(key, []);
+    seen.get(key).push(e);
+  });
+  let qNum = 0;
+  seen.forEach((attempts, q) => {
+    qNum++;
+    const last = attempts[attempts.length-1];
+    const icon = last.correct ? '✅' : '❌';
+    const tier = last.tier.charAt(0).toUpperCase()+last.tier.slice(1);
+    lines.push('');
+    lines.push(`  ${icon}  Q${String(qNum).padStart(2,'0')}  [${tier}]  (Dice: ${last.roll})`);
+    lines.push(`      ${q}${q.length>=60?'…':''}`);
+    lines.push(`      Answer given: ${last.answer}   (${attempts.length} attempt${attempts.length!==1?'s':''})`);
+  });
+  lines.push('');
+  lines.push('────────────────────────────────────────────────────────────────');
+  lines.push(`  Correct: ${totalCorrect} / ${totalQ}  ·  Accuracy: ${acc}%`);
+  lines.push('────────────────────────────────────────────────────────────────');
+  lines.push('  Generated by Mr. Goddard\'s Mathematical Expedition');
+  lines.push('  IB Mathematics AA / AI SL  ·  Logs & Exponentials');
+  lines.push('────────────────────────────────────────────────────────────────');
+  return lines.join('\n');
+}
+
+// ═══════════════════════════════════════════
+// MUSIC
+// ═══════════════════════════════════════════
+const bgMusic = document.getElementById('bgMusic');
+bgMusic.volume = 0.2;
+function toggleMusic() {
+  musicOn = !musicOn;
+  const btn = document.getElementById('musicBtn');
+  if (musicOn) { bgMusic.play().catch(()=>{}); btn.textContent='♪ ON'; btn.classList.add('on'); }
+  else { bgMusic.pause(); btn.textContent='♪ MUSIC'; btn.classList.remove('on'); }
+}
+
+// ═══════════════════════════════════════════
+// EVENTS
+// ═══════════════════════════════════════════
+document.getElementById('startBtn').addEventListener('click', () => {
+  explorerName = document.getElementById('explorerName').value.trim();
+  buildBoard();
+  showScreen('game');
+  updateStory();
+  updateStats();
+  bgMusic.play().then(() => {
+    musicOn = true;
+    document.getElementById('musicBtn').textContent = '♪ ON';
+    document.getElementById('musicBtn').classList.add('on');
+  }).catch(() => {});
+});
+
+document.getElementById('rollBtn').addEventListener('click', rollDice);
+document.getElementById('musicBtn').addEventListener('click', toggleMusic);
+
+document.getElementById('qSubmit').addEventListener('click', submitAnswer);
+document.getElementById('qInput').addEventListener('keydown', e => { if(e.key==='Enter') submitAnswer(); });
+
+document.getElementById('hintBtn').addEventListener('click', () => {
+  if (!hintShown) {
+    hintShown = true;
+    const ht = document.getElementById('hintText');
+    ht.textContent = currentQ.hint;
+    ht.classList.add('visible');
+    document.getElementById('solutionBtn').classList.add('show');
+  }
+});
+
+document.getElementById('solutionBtn').addEventListener('click', () => {
+  if (!solutionShown) {
+    solutionShown = true;
+    const st = document.getElementById('solutionText');
+    st.innerHTML = currentQ.solution;
+    st.classList.add('visible');
+    // Mark as wrong if not yet answered correctly
+    if (!lastCorrect) {
+      document.getElementById('btnStay').className = 'btn-stay show';
+      questionLog.push({ q: currentQ.q.substring(0,60), tier: lastTier, answer:'(revealed)', correct:false, roll:lastRoll });
+    }
+    if (window.MathJax) MathJax.typesetPromise([st]).catch(()=>{});
+  }
+});
+
+document.getElementById('btnMove').addEventListener('click', advance);
+document.getElementById('btnStay').addEventListener('click', stay);
+
+document.getElementById('genBtn').addEventListener('click', () => {
+  document.getElementById('summaryTa').value = generateReport();
+  const w = document.getElementById('summaryWrap');
+  w.classList.add('visible');
+  w.scrollIntoView({ behavior:'smooth', block:'start' });
+});
+
+document.getElementById('copyBtn').addEventListener('click', () => {
+  const ta = document.getElementById('summaryTa');
+  const ok = document.getElementById('copyOk');
+  const show = () => { ok.style.display='inline'; setTimeout(()=>ok.style.display='none',3000); };
+  if (navigator.clipboard) { navigator.clipboard.writeText(ta.value).then(show).catch(() => { ta.select(); document.execCommand('copy'); show(); }); }
+  else { ta.select(); document.execCommand('copy'); show(); }
+});
+</script>
+</body>
+</html>
