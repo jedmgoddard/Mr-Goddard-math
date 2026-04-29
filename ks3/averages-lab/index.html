@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mr. Goddard's Averages Lab — Year 7</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:      #0f1117;
+  --panel:   #1a1d27;
+  --panel2:  #22263a;
+  --border:  #2e3350;
+  --gold:    #fbbf24;
+  --teal:    #06b6d4;
+  --pink:    #f472b6;
+  --green:   #4ade80;
+  --purple:  #a78bfa;
+  --red:     #f87171;
+  --orange:  #fb923c;
+  --white:   #f1f5f9;
+  --dim:     #64748b;
+  --text:    #e2e8f0;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  background-image:
+    radial-gradient(ellipse 60% 40% at 20% 10%, rgba(6,182,212,0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 80% 90%, rgba(167,139,250,0.06) 0%, transparent 60%);
+}
+
+/* ── HEADER ── */
+.header {
+  background: var(--panel);
+  border-bottom: 3px solid var(--gold);
+  padding: 16px 28px;
+  display: flex; align-items: center; gap: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+  position: sticky; top: 0; z-index: 100;
+}
+.header-emoji { font-size: 2rem; }
+.header h1 {
+  font-family: 'Fredoka One', cursive;
+  font-size: 1.5rem; color: var(--gold);
+  letter-spacing: 0.5px; line-height: 1;
+}
+.header p { font-size: 0.8rem; color: var(--dim); margin-top: 2px; }
+
+/* ── QUESTION SELECTOR ── */
+.q-selector-wrap {
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 28px;
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+}
+.q-selector-label { font-size: 0.82rem; font-weight: 800; color: var(--teal); white-space: nowrap; }
+.q-select {
+  flex: 1; min-width: 240px; max-width: 480px;
+  background: var(--panel2); border: 2px solid var(--border);
+  border-radius: 10px; color: var(--text);
+  font-family: 'Nunito', sans-serif; font-size: 0.9rem; font-weight: 700;
+  padding: 8px 14px; outline: none; cursor: pointer;
+  transition: border-color 0.2s;
+}
+.q-select:focus { border-color: var(--teal); }
+.q-select option { background: var(--panel2); }
+.q-badge {
+  font-size: 0.72rem; font-weight: 800; letter-spacing: 1px;
+  padding: 3px 11px; border-radius: 20px; white-space: nowrap;
+}
+
+/* ── MAIN LAYOUT ── */
+.main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px 20px 60px;
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 24px;
+}
+
+/* ── LEFT PANEL ── */
+.left { display: flex; flex-direction: column; gap: 18px; }
+
+/* Data entry card */
+.card {
+  background: var(--panel);
+  border: 1.5px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+.card-header {
+  padding: 14px 18px;
+  font-family: 'Fredoka One', cursive;
+  font-size: 1rem; letter-spacing: 0.5px;
+  display: flex; align-items: center; gap: 8px;
+}
+.card-header.gold   { background: rgba(251,191,36,0.12);  color: var(--gold);   border-bottom: 1px solid rgba(251,191,36,0.2); }
+.card-header.teal   { background: rgba(6,182,212,0.1);    color: var(--teal);   border-bottom: 1px solid rgba(6,182,212,0.15); }
+.card-header.purple { background: rgba(167,139,250,0.1);  color: var(--purple); border-bottom: 1px solid rgba(167,139,250,0.15); }
+.card-header.pink   { background: rgba(244,114,182,0.1);  color: var(--pink);   border-bottom: 1px solid rgba(244,114,182,0.15); }
+.card-body { padding: 16px 18px; }
+
+/* Student input */
+.input-row {
+  display: flex; gap: 8px; align-items: center; margin-bottom: 10px;
+}
+.student-name-input {
+  flex: 1; background: var(--panel2); border: 2px solid var(--border);
+  border-radius: 8px; color: var(--text);
+  font-family: 'Nunito', sans-serif; font-size: 0.85rem; font-weight: 700;
+  padding: 7px 10px; outline: none; transition: border-color 0.2s;
+}
+.student-name-input:focus { border-color: var(--teal); }
+.student-name-input::placeholder { color: var(--dim); font-weight: 400; }
+
+.val-input {
+  width: 80px; background: var(--panel2); border: 2px solid var(--border);
+  border-radius: 8px; color: var(--gold);
+  font-family: 'Fredoka One', cursive; font-size: 1.1rem;
+  padding: 7px 8px; outline: none; transition: border-color 0.2s;
+  text-align: center;
+}
+.val-input:focus { border-color: var(--gold); }
+.val-input::placeholder { color: var(--dim); font-size: 0.8rem; font-family: 'Nunito', sans-serif; }
+
+.add-btn {
+  padding: 8px 14px; background: var(--teal); color: var(--bg);
+  border: none; border-radius: 8px; font-family: 'Fredoka One', cursive;
+  font-size: 0.95rem; cursor: pointer; transition: all 0.15s; white-space: nowrap;
+}
+.add-btn:hover { background: #22d3ee; transform: scale(1.05); }
+.add-btn:active { transform: scale(0.97); }
+
+/* Data list */
+.data-list { max-height: 200px; overflow-y: auto; }
+.data-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.04);
+  font-size: 0.88rem;
+}
+.data-item:last-child { border-bottom: none; }
+.di-name { flex: 1; color: var(--dim); font-weight: 600; }
+.di-val {
+  font-family: 'Fredoka One', cursive;
+  font-size: 1.05rem; color: var(--gold); min-width: 40px; text-align: right;
+}
+.di-del {
+  background: none; border: none; color: var(--red); cursor: pointer;
+  font-size: 0.9rem; padding: 2px 5px; border-radius: 4px;
+  transition: background 0.15s; opacity: 0.5;
+}
+.di-del:hover { background: rgba(248,113,113,0.15); opacity: 1; }
+.no-data { color: var(--dim); font-size: 0.85rem; text-align: center; padding: 12px 0; font-style: italic; }
+
+/* Characters */
+.char-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.char-btn {
+  padding: 8px 10px;
+  background: var(--panel2); border: 1.5px solid var(--border);
+  border-radius: 10px; text-align: left; cursor: pointer;
+  transition: all 0.18s; display: flex; align-items: center; gap: 7px;
+}
+.char-btn:hover { border-color: var(--purple); background: rgba(167,139,250,0.08); transform: translateY(-1px); }
+.char-btn.added { border-color: var(--green); background: rgba(74,222,128,0.08); }
+.char-emoji { font-size: 1.3rem; }
+.char-info { flex: 1; min-width: 0; }
+.char-name { font-size: 0.7rem; font-weight: 800; color: var(--purple); line-height: 1.2;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.char-val { font-family: 'Fredoka One', cursive; font-size: 0.95rem; color: var(--gold); }
+.char-btn.added .char-name { color: var(--green); }
+
+/* Remove all btn */
+.clear-btn {
+  width: 100%; padding: 7px; background: rgba(248,113,113,0.08);
+  border: 1px solid rgba(248,113,113,0.25); border-radius: 8px;
+  color: var(--red); font-family: 'Nunito', sans-serif;
+  font-size: 0.8rem; font-weight: 800; cursor: pointer; transition: all 0.15s;
+  margin-top: 8px;
+}
+.clear-btn:hover { background: rgba(248,113,113,0.18); }
+
+/* ── RIGHT PANEL ── */
+.right { display: flex; flex-direction: column; gap: 20px; }
+
+/* Question display */
+.question-box {
+  background: var(--panel);
+  border: 1.5px solid var(--border);
+  border-radius: 16px; padding: 22px 26px;
+  border-left: 5px solid var(--gold);
+}
+.qb-eyebrow { font-size: 0.7rem; font-weight: 800; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
+.qb-question { font-family: 'Fredoka One', cursive; font-size: 1.3rem;
+  color: var(--white); line-height: 1.3; margin-bottom: 8px; }
+.qb-hint { font-size: 0.88rem; color: var(--dim); font-style: italic; line-height: 1.5; }
+
+/* Number line / ordered display */
+.ordered-display {
+  background: var(--panel);
+  border: 1.5px solid var(--border);
+  border-radius: 16px; padding: 20px 22px;
+}
+.od-title { font-family: 'Fredoka One', cursive; font-size: 1rem;
+  color: var(--teal); margin-bottom: 14px; }
+.number-row {
+  display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px;
+}
+.num-chip {
+  padding: 6px 14px; border-radius: 30px;
+  font-family: 'Fredoka One', cursive; font-size: 1.05rem;
+  transition: all 0.3s;
+}
+.num-chip.student { background: rgba(6,182,212,0.15); color: var(--teal); border: 1.5px solid rgba(6,182,212,0.3); }
+.num-chip.character { background: rgba(167,139,250,0.15); color: var(--purple); border: 1.5px solid rgba(167,139,250,0.3); }
+.num-chip.median-chip { background: rgba(251,191,36,0.2); color: var(--gold); border: 2px solid var(--gold); transform: scale(1.12); }
+.num-chip.mode-chip { background: rgba(74,222,128,0.18); color: var(--green); border: 2px solid var(--green); }
+.chip-label { font-size: 0.65rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: var(--dim); margin-top: 4px; }
+
+/* Results panel */
+.results-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.result-block {
+  background: var(--panel2);
+  border: 1.5px solid var(--border);
+  border-radius: 14px; padding: 16px 18px;
+  text-align: center; position: relative; overflow: hidden;
+  transition: all 0.3s;
+}
+.result-block::before {
+  content: '';
+  position: absolute; inset: 0;
+  opacity: 0; transition: opacity 0.3s;
+}
+.result-block.has-data::before { opacity: 1; }
+
+.rb-mean::before   { background: linear-gradient(135deg, rgba(251,191,36,0.08) 0%, transparent 60%); }
+.rb-median::before { background: linear-gradient(135deg, rgba(6,182,212,0.08) 0%, transparent 60%); }
+.rb-mode::before   { background: linear-gradient(135deg, rgba(74,222,128,0.08) 0%, transparent 60%); }
+.rb-range::before  { background: linear-gradient(135deg, rgba(244,114,182,0.08) 0%, transparent 60%); }
+
+.rb-icon { font-size: 1.8rem; margin-bottom: 6px; }
+.rb-name {
+  font-family: 'Fredoka One', cursive; font-size: 0.85rem;
+  letter-spacing: 0.5px; margin-bottom: 4px;
+}
+.rb-mean .rb-name   { color: var(--gold); }
+.rb-median .rb-name { color: var(--teal); }
+.rb-mode .rb-name   { color: var(--green); }
+.rb-range .rb-name  { color: var(--pink); }
+
+.rb-value {
+  font-family: 'Fredoka One', cursive; font-size: 2.2rem;
+  color: var(--white); line-height: 1; margin-bottom: 4px;
+  transition: all 0.4s;
+}
+.rb-value.updating { transform: scale(1.15); }
+.rb-working { font-size: 0.72rem; color: var(--dim); line-height: 1.5; min-height: 36px; }
+
+/* Outlier warning */
+.outlier-box {
+  background: rgba(251,191,36,0.08);
+  border: 1.5px solid rgba(251,191,36,0.3);
+  border-radius: 14px; padding: 16px 20px;
+  display: none;
+}
+.outlier-box.visible { display: block; }
+.ob-title { font-family: 'Fredoka One', cursive; font-size: 1rem; color: var(--gold); margin-bottom: 6px; }
+.ob-body { font-size: 0.9rem; color: var(--text); line-height: 1.6; }
+.ob-body strong { color: var(--gold); }
+
+/* Discussion prompts */
+.discussion-card {
+  background: var(--panel);
+  border: 1.5px solid var(--border);
+  border-radius: 16px; padding: 20px 22px;
+}
+.dc-title { font-family: 'Fredoka One', cursive; font-size: 1rem; color: var(--pink); margin-bottom: 12px; }
+.dc-prompts { display: flex; flex-direction: column; gap: 8px; }
+.dc-prompt {
+  background: var(--panel2); border-left: 3px solid var(--pink);
+  border-radius: 0 8px 8px 0; padding: 9px 12px;
+  font-size: 0.88rem; color: var(--text); line-height: 1.5;
+}
+.dc-prompt strong { color: var(--pink); }
+
+/* Data count indicator */
+.count-bar { display: flex; align-items: center; gap: 10px; padding: 8px 0; }
+.count-badge {
+  font-family: 'Fredoka One', cursive; font-size: 1rem;
+  background: rgba(6,182,212,0.15); color: var(--teal);
+  border: 1px solid rgba(6,182,212,0.3); padding: 3px 12px; border-radius: 20px;
+}
+.count-note { font-size: 0.78rem; color: var(--dim); }
+
+/* Units display */
+.unit-note { font-size: 0.75rem; color: var(--dim); margin-top: 3px; font-style: italic; }
+
+/* Responsive */
+@media (max-width: 800px) {
+  .main { grid-template-columns: 1fr; }
+  .results-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 480px) {
+  .results-grid { grid-template-columns: 1fr; }
+  .char-grid { grid-template-columns: 1fr; }
+  .header h1 { font-size: 1.1rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-emoji">🔬</div>
+  <div>
+    <h1>Mr. Goddard's Averages Lab</h1>
+    <p>Year 7 · Mean, Median, Mode & Range · Discovery Lesson</p>
+  </div>
+</div>
+
+<!-- Question Selector -->
+<div class="q-selector-wrap">
+  <span class="q-selector-label">📋 Active Question:</span>
+  <select class="q-select" id="questionSelect" onchange="changeQuestion()">
+    <option value="0">🛌 Hours of sleep last night</option>
+    <option value="1">📱 Unread notifications right now</option>
+    <option value="2">🎮 Hours of gaming this week</option>
+    <option value="3">⏰ Minutes to get ready this morning</option>
+    <option value="4">🍕 Number of meals eaten today</option>
+    <option value="5">👟 Shoe size</option>
+    <option value="6">📺 Hours of TV/YouTube yesterday</option>
+    <option value="7">💸 Weekly pocket money (£)</option>
+    <option value="8">🎵 Songs in your most played playlist</option>
+    <option value="9">😴 What time did you go to bed last night? (hours, e.g. 10 for 10pm)</option>
+  </select>
+</div>
+
+<div class="main">
+
+  <!-- ── LEFT ── -->
+  <div class="left">
+
+    <!-- Student data entry -->
+    <div class="card">
+      <div class="card-header gold">👥 Add Student Data</div>
+      <div class="card-body">
+        <div class="input-row">
+          <input class="student-name-input" id="nameInput" placeholder="Student name (optional)" type="text">
+          <input class="val-input" id="valInput" placeholder="?" type="number" min="0" step="0.1">
+          <button class="add-btn" onclick="addStudent()">+ Add</button>
+        </div>
+        <div class="count-bar">
+          <span class="count-badge" id="countBadge">0 values</span>
+          <span class="count-note" id="countNote">Add at least 3 to start</span>
+        </div>
+        <div class="data-list" id="dataList">
+          <div class="no-data">No data yet — start adding students! 👆</div>
+        </div>
+        <button class="clear-btn" onclick="clearAll()">🗑️ Clear all student data</button>
+      </div>
+    </div>
+
+    <!-- Brainrot characters -->
+    <div class="card">
+      <div class="card-header purple">🤪 Add a Brainrot Character</div>
+      <div class="card-body">
+        <p style="font-size:0.78rem; color:var(--dim); margin-bottom:10px;">Click a character to add their value to the dataset. Watch what happens to the averages! 👀</p>
+        <div class="char-grid" id="charGrid"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── RIGHT ── -->
+  <div class="right">
+
+    <!-- Question display -->
+    <div class="question-box" id="questionBox">
+      <div class="qb-eyebrow">🔬 Today's Investigation</div>
+      <div class="qb-question" id="qbQuestion">Loading...</div>
+      <div class="qb-hint" id="qbHint"></div>
+    </div>
+
+    <!-- Ordered numbers -->
+    <div class="ordered-display">
+      <div class="od-title">📊 All values — sorted in order</div>
+      <div class="number-row" id="numberRow">
+        <span style="color:var(--dim); font-size:0.85rem; font-style:italic;">Values will appear here as you add them</span>
+      </div>
+      <div class="chip-label" id="chipLegend"></div>
+    </div>
+
+    <!-- Results -->
+    <div class="results-grid">
+      <div class="result-block rb-mean" id="blockMean">
+        <div class="rb-icon">➕</div>
+        <div class="rb-name">MEAN</div>
+        <div class="rb-value" id="valMean">—</div>
+        <div class="rb-working" id="workMean">Add values to see the calculation</div>
+        <div class="unit-note" id="unitMean"></div>
+      </div>
+      <div class="result-block rb-median" id="blockMedian">
+        <div class="rb-icon">↕️</div>
+        <div class="rb-name">MEDIAN</div>
+        <div class="rb-value" id="valMedian">—</div>
+        <div class="rb-working" id="workMedian">The middle value when sorted</div>
+        <div class="unit-note" id="unitMedian"></div>
+      </div>
+      <div class="result-block rb-mode" id="blockMode">
+        <div class="rb-icon">🔁</div>
+        <div class="rb-name">MODE</div>
+        <div class="rb-value" id="valMode">—</div>
+        <div class="rb-working" id="workMode">The most common value</div>
+        <div class="unit-note" id="unitMode"></div>
+      </div>
+      <div class="result-block rb-range" id="blockRange">
+        <div class="rb-icon">↔️</div>
+        <div class="rb-name">RANGE</div>
+        <div class="rb-value" id="valRange">—</div>
+        <div class="rb-working" id="workRange">Biggest − Smallest</div>
+        <div class="unit-note" id="unitRange"></div>
+      </div>
+    </div>
+
+    <!-- Outlier warning -->
+    <div class="outlier-box" id="outlierBox">
+      <div class="ob-title">🚨 Outlier Alert!</div>
+      <div class="ob-body" id="outlierBody"></div>
+    </div>
+
+    <!-- Discussion prompts -->
+    <div class="discussion-card" id="discussionCard">
+      <div class="dc-title">💬 Discussion Prompts</div>
+      <div class="dc-prompts" id="discussionPrompts"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────────────────────────
+// QUESTIONS
+// ─────────────────────────────────────────────────────────────────────────────
+const QUESTIONS = [
+  {
+    label: "🛌 Hours of sleep last night",
+    q: "How many hours of sleep did you get last night?",
+    hint: "Think about what time you went to bed and what time you woke up. Round to the nearest half hour.",
+    unit: "hours",
+    min: 2, max: 14,
+    discussion: [
+      "Which average — mean, median or mode — best describes a <strong>typical night's sleep</strong> for your class?",
+      "If someone got 2 hours sleep, how does it affect the mean? Is the mean still <strong>fair</strong>?",
+      "The NHS recommends 8–10 hours for Year 7s. How does your class compare to the <strong>recommended amount</strong>?",
+      "Which measure — mean, median or mode — would a <strong>sleep scientist</strong> use to report typical teen sleep? Why?"
+    ]
+  },
+  {
+    label: "📱 Unread notifications right now",
+    q: "How many unread notifications do you have on your phone right now?",
+    hint: "Check your phone! Count all apps — messages, social media, email, everything.",
+    unit: "notifications",
+    min: 0, max: 9999,
+    discussion: [
+      "Is the mean or median a better measure of <strong>'typical' notifications</strong>? Why?",
+      "If one person has 1,000+ unread notifications, how does this <strong>wreck the mean</strong>?",
+      "What does the range tell us about how <strong>different</strong> people in the class are?",
+      "Is there a mode? What would it mean if the mode is 0?"
+    ]
+  },
+  {
+    label: "🎮 Hours of gaming this week",
+    q: "How many hours have you spent gaming (video games, mobile games) this week?",
+    hint: "Be honest! Include all devices — console, PC, mobile. Zero is a valid answer.",
+    unit: "hours",
+    min: 0, max: 80,
+    discussion: [
+      "Does the mean feel like a <strong>fair description</strong> of a typical gamer in the class?",
+      "Some people said zero. How does this affect the <strong>mode</strong>?",
+      "If we added a character who games for 60 hours a week, what happens to each average?",
+      "Which average would a <strong>parent</strong> prefer to use? Which would a <strong>gamer</strong> prefer?"
+    ]
+  },
+  {
+    label: "⏰ Minutes to get ready this morning",
+    q: "How many minutes did it take you to get ready this morning?",
+    hint: "From waking up to leaving the house — include breakfast, getting dressed, everything.",
+    unit: "minutes",
+    min: 0, max: 180,
+    discussion: [
+      "What is the <strong>typical getting-ready time</strong> for your class?",
+      "Is there a big difference between the mean and median? What does that tell us?",
+      "What does the range tell us about how <strong>differently</strong> people approach their mornings?",
+      "If the mode is a single value, what does it mean that lots of people chose <strong>exactly the same</strong> time?"
+    ]
+  },
+  {
+    label: "🍕 Number of meals eaten today",
+    q: "How many meals (including snacks) have you eaten today so far?",
+    hint: "Count everything — breakfast, snacks, lunch. Be honest!",
+    unit: "meals",
+    min: 0, max: 10,
+    discussion: [
+      "Can you have a mean of 2.5 meals? What does a <strong>decimal mean</strong> actually mean?",
+      "Is there a clear mode? What does that tell us about meal habits?",
+      "How does the <strong>time of day</strong> affect this data? Would the results be different at 4pm vs 8am?",
+      "Is the range here meaningful, or are the values too <strong>similar</strong> to tell us much?"
+    ]
+  },
+  {
+    label: "👟 Shoe size",
+    q: "What is your shoe size? (UK size)",
+    hint: "UK shoe size — check the inside of your shoe if you're unsure!",
+    unit: "(UK)",
+    min: 1, max: 15,
+    discussion: [
+      "Would a shoe shop use the <strong>mean, median or mode</strong> to decide which sizes to stock the most of?",
+      "Does the mean shoe size make practical sense — could a shoe factory <strong>manufacture half sizes</strong>?",
+      "Is the median more useful than the mean here? Why or why not?",
+      "What does the range tell you about the <strong>spread of sizes</strong> in Year 7?"
+    ]
+  },
+  {
+    label: "📺 Hours of TV/YouTube yesterday",
+    q: "How many hours of TV or YouTube did you watch yesterday?",
+    hint: "Include Netflix, YouTube, TikTok videos — any screen watching. Zero counts!",
+    unit: "hours",
+    min: 0, max: 16,
+    discussion: [
+      "Does the mean feel <strong>representative</strong> of what most people watched?",
+      "How does having lots of zeros affect the <strong>mode and median</strong>?",
+      "Which character's data shifted the mean the most? Is that <strong>fair</strong>?",
+      "Would you trust the mean to tell a <strong>TV channel</strong> how much content to produce? Why?"
+    ]
+  },
+  {
+    label: "💸 Weekly pocket money (£)",
+    q: "How much pocket money do you get per week? (£)",
+    hint: "If you don't get regular pocket money, estimate what you get on average per week.",
+    unit: "£",
+    min: 0, max: 100,
+    discussion: [
+      "If one person gets £50 a week and everyone else gets £5, which average is most <strong>misleading</strong>?",
+      "Which measure would you want your parents to use to decide your pocket money — mean, median or mode?",
+      "Is the mean <strong>fair</strong> if one person is a massive outlier?",
+      "How does adding a <strong>Brainrot character</strong> with extreme pocket money change each average?"
+    ]
+  },
+  {
+    label: "🎵 Songs in your most played playlist",
+    q: "How many songs are in your most-played playlist?",
+    hint: "Check your phone's music app or Spotify. If you don't have one, estimate.",
+    unit: "songs",
+    min: 0, max: 1000,
+    discussion: [
+      "Why might the <strong>median</strong> be more useful than the mean for this data?",
+      "Is there a mode? What would it mean if there isn't one?",
+      "If someone has 500 songs and everyone else has under 30, what happens to the <strong>mean</strong>?",
+      "Would a music streaming company use the mean or median to understand <strong>typical user behaviour</strong>?"
+    ]
+  },
+  {
+    label: "😴 Bedtime last night (hour)",
+    q: "What hour did you go to bed last night? (e.g. 10 = 10pm, 11 = 11pm, 12 = midnight)",
+    hint: "Enter just the hour — 10 means 10pm, 11 means 11pm, 12 means midnight, 1 means 1am.",
+    unit: "o'clock",
+    min: 7, max: 4,
+    discussion: [
+      "What does the mean bedtime tell us? Does it seem <strong>early or late</strong> for Year 7?",
+      "Is the median more or less useful than the mean here? Why?",
+      "What does the range tell us about how <strong>different</strong> people's bedtimes are?",
+      "If the mode is 11pm, what does that say about the <strong>most common bedtime</strong>?"
+    ]
+  }
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// BRAINROT CHARACTERS — school-safe values, funny personalities
+// Each has data for every question (index matches QUESTIONS array)
+// ─────────────────────────────────────────────────────────────────────────────
+const CHARACTERS = [
+  {
+    name: "Tralalero Tralala",
+    emoji: "🦈",
+    desc: "Shark in Nike sneakers",
+    color: "var(--teal)",
+    values: [2, 847, 0, 3, 8, 15, 0, 0, 3, 3],
+    flavour: [
+      "only slept 2 hours (too busy dancing in his Nikes)",
+      "has 847 unread notifications (mostly from other sharks)",
+      "doesn't game at all (fins make it hard)",
+      "took 3 minutes to get ready (he only wears shoes)",
+      "ate 8 snacks (all fish-flavoured)",
+      "wears size 15 shoes (three-legged shark life)",
+      "watched 0 hours of TV (no thumbs for the remote)",
+      "gets £0 pocket money (sharks don't have pockets)",
+      "has 3 songs in his playlist (all on loop)",
+      "went to bed at 3am (nocturnal shark)"
+    ]
+  },
+  {
+    name: "Tung Tung Tung Sahur",
+    emoji: "🪵",
+    desc: "Wooden plank with a bat",
+    color: "var(--orange)",
+    values: [10, 0, 0, 120, 3, 4, 2, 5, 0, 10],
+    flavour: [
+      "slept 10 hours (logs sleep a lot)",
+      "has 0 notifications (no phone — he's a plank)",
+      "doesn't game (no hands, just a bat)",
+      "took 120 minutes to get ready (had to find his bat)",
+      "ate 3 meals (splinters for breakfast)",
+      "wears size 4 shoes (very small feet for a plank)",
+      "watched 2 hours of TV (watched cricket)",
+      "gets £5 pocket money (saves it all)",
+      "has 0 songs (planks don't listen to music)",
+      "went to bed at 10pm (early riser for sahur)"
+    ]
+  },
+  {
+    name: "Bombardiro Crocodilo",
+    emoji: "✈️",
+    desc: "Crocodile-bomber hybrid",
+    color: "var(--red)",
+    values: [4, 12, 14, 5, 4, 12, 8, 0, 50, 2],
+    flavour: [
+      "only slept 4 hours (always on patrol)",
+      "has 12 unread notifications (all from air traffic control)",
+      "games for 14 hours a week (flight simulators only)",
+      "took 5 minutes to get ready (jets have quick-release uniforms)",
+      "ate 4 meals (pilot rations)",
+      "wears size 12 shoes (big crocodile feet)",
+      "watched 8 hours of aviation documentaries",
+      "gets £0 pocket money (military salary instead)",
+      "has 50 songs on his playlist (all war anthems)",
+      "went to bed at 2am (night missions)"
+    ]
+  },
+  {
+    name: "Ballerina Cappuccina",
+    emoji: "☕",
+    desc: "Cappuccino cup in a tutu",
+    color: "var(--pink)",
+    values: [7, 3, 1, 45, 2, 5, 3, 8, 200, 11],
+    flavour: [
+      "slept exactly 7 hours (very organised dancer)",
+      "has 3 unread notifications (very on top of things)",
+      "games for 1 hour a week (Just Dance only)",
+      "took 45 minutes to get ready (ballet bun takes time)",
+      "ate 2 meals (light eater — she's mostly coffee)",
+      "wears size 5 shoes (elegant pointe shoes)",
+      "watched 3 hours of dance competitions on YouTube",
+      "gets £8 pocket money (spends it on coffee)",
+      "has 200 songs on her playlist (all classical remixes)",
+      "went to bed at 11pm (after evening rehearsal)"
+    ]
+  },
+  {
+    name: "Brr Brr Patapim",
+    emoji: "❄️",
+    desc: "Mysterious cold creature",
+    color: "var(--purple)",
+    values: [9, 50, 5, 30, 5, 7, 4, 3, 78, 9],
+    flavour: [
+      "slept 9 hours (hibernating)",
+      "has 50 unread notifications (mostly cold weather alerts)",
+      "games 5 hours a week (only survival games)",
+      "took 30 minutes to get ready (defrosting takes time)",
+      "ate 5 meals (burns calories staying warm)",
+      "wears size 7 shoes (average, surprisingly)",
+      "watched 4 hours of nature documentaries",
+      "gets £3 pocket money (lives in the wild)",
+      "has 78 songs on his playlist (all ambient and chilly)",
+      "went to bed at 9pm (cold creatures sleep early)"
+    ]
+  },
+  {
+    name: "Lirili Larila",
+    emoji: "🐘",
+    desc: "Elephant-cactus in sandals",
+    color: "var(--green)",
+    values: [6, 2, 0, 60, 3, 20, 5, 0, 12, 12],
+    flavour: [
+      "slept 6 hours (cacti don't need much sleep)",
+      "has 2 unread notifications (very calm presence)",
+      "doesn't game (too spiky for controllers)",
+      "took 60 minutes to get ready (choosing sandals is hard at that size)",
+      "ate 3 meals (photosynthesis counts as one)",
+      "wears size 20 sandals (elephant feet)",
+      "watched 5 hours of nature documentaries (self-research)",
+      "gets £0 pocket money (lives in the desert)",
+      "has 12 songs on his playlist (mostly rain sounds)",
+      "went to bed at midnight (desert nights are long)"
+    ]
+  },
+  {
+    name: "Chimpanzini Bananini",
+    emoji: "🍌",
+    desc: "Half monkey, half banana",
+    color: "var(--gold)",
+    values: [8, 200, 7, 15, 9, 8, 6, 2, 44, 8],
+    flavour: [
+      "slept 8 hours (monkeys sleep well in trees)",
+      "has 200 unread notifications (very popular primate)",
+      "games 7 hours a week (mobile games, obviously)",
+      "took 15 minutes to get ready (just needs to grab bananas)",
+      "ate 9 bananas (that counts as meals)",
+      "wears size 8 shoes (perfectly average)",
+      "watched 6 hours of monkey YouTube compilations",
+      "gets £2 pocket money (saves up for bananas)",
+      "has 44 songs on his playlist (jungle beats)",
+      "went to bed at 8pm (early — big day of swinging tomorrow)"
+    ]
+  },
+  {
+    name: "Cappuccino Assassino",
+    emoji: "🗡️",
+    desc: "A deadly espresso shot",
+    color: "var(--orange)",
+    values: [1, 999, 0, 2, 10, 3, 12, 100, 500, 1],
+    flavour: [
+      "only slept 1 hour (too much caffeine)",
+      "has 999 unread notifications (very busy assassin)",
+      "never games (too many real missions)",
+      "took 2 minutes to get ready (assassins are efficient)",
+      "ate 10 espresso shots (that counts)",
+      "wears size 3 shoes (tiny — it's a coffee cup)",
+      "watched 12 hours of spy films (research)",
+      "gets £100 pocket money (secret mission fees)",
+      "has 500 songs (all dramatic orchestral music)",
+      "went to bed at 1am (night missions)"
+    ]
+  }
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────────────────────────────────────
+let currentQ = 0;
+let students = []; // [{name, val}]
+let addedChars = new Set();
+
+// ─────────────────────────────────────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────────────────────────────────────
+function init() {
+  buildCharGrid();
+  renderQuestion();
+  updateAll();
+
+  // Enter key support
+  document.getElementById('valInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') addStudent();
+  });
+  document.getElementById('nameInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('valInput').focus();
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CHANGE QUESTION
+// ─────────────────────────────────────────────────────────────────────────────
+function changeQuestion() {
+  currentQ = parseInt(document.getElementById('questionSelect').value);
+  students = [];
+  addedChars = new Set();
+  renderQuestion();
+  buildCharGrid();
+  renderDataList();
+  updateAll();
+}
+
+function renderQuestion() {
+  const q = QUESTIONS[currentQ];
+  document.getElementById('qbQuestion').textContent = q.q;
+  document.getElementById('qbHint').textContent = '💡 ' + q.hint;
+  renderDiscussion(q);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ADD STUDENT
+// ─────────────────────────────────────────────────────────────────────────────
+function addStudent() {
+  const nameEl = document.getElementById('nameInput');
+  const valEl  = document.getElementById('valInput');
+  const val = parseFloat(valEl.value);
+  if (isNaN(val)) { valEl.focus(); return; }
+  const name = nameEl.value.trim() || `Student ${students.length + 1}`;
+  students.push({ name, val, isChar: false });
+  nameEl.value = ''; valEl.value = '';
+  nameEl.focus();
+  renderDataList();
+  updateAll();
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CHARACTERS
+// ─────────────────────────────────────────────────────────────────────────────
+function buildCharGrid() {
+  const grid = document.getElementById('charGrid');
+  grid.innerHTML = '';
+  CHARACTERS.forEach((c, ci) => {
+    const val = c.values[currentQ];
+    const btn = document.createElement('div');
+    btn.className = 'char-btn' + (addedChars.has(ci) ? ' added' : '');
+    btn.id = 'charBtn' + ci;
+    btn.innerHTML = `
+      <div class="char-emoji">${c.emoji}</div>
+      <div class="char-info">
+        <div class="char-name">${c.name}</div>
+        <div class="char-val">${formatVal(val)}</div>
+      </div>`;
+    btn.onclick = () => toggleChar(ci);
+    grid.appendChild(btn);
+  });
+}
+
+function toggleChar(ci) {
+  if (addedChars.has(ci)) {
+    addedChars.delete(ci);
+    students = students.filter(s => s.charIdx !== ci);
+  } else {
+    addedChars.add(ci);
+    const c = CHARACTERS[ci];
+    students.push({ name: c.name, val: c.values[currentQ], isChar: true, charIdx: ci, emoji: c.emoji });
+  }
+  buildCharGrid();
+  renderDataList();
+  updateAll();
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DATA LIST
+// ─────────────────────────────────────────────────────────────────────────────
+function renderDataList() {
+  const list = document.getElementById('dataList');
+  if (students.length === 0) {
+    list.innerHTML = '<div class="no-data">No data yet — start adding students! 👆</div>';
+    return;
+  }
+  list.innerHTML = students.map((s, i) => `
+    <div class="data-item">
+      <span class="di-name">${s.emoji ? s.emoji + ' ' : ''}${s.name}</span>
+      <span class="di-val">${formatVal(s.val)}</span>
+      <button class="di-del" onclick="removeEntry(${i})">✕</button>
+    </div>`).join('');
+}
+
+function removeEntry(i) {
+  const s = students[i];
+  if (s.isChar) addedChars.delete(s.charIdx);
+  students.splice(i, 1);
+  buildCharGrid();
+  renderDataList();
+  updateAll();
+}
+
+function clearAll() {
+  students = [];
+  addedChars = new Set();
+  buildCharGrid();
+  renderDataList();
+  updateAll();
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CALCULATIONS
+// ─────────────────────────────────────────────────────────────────────────────
+function calcMean(vals) {
+  return vals.reduce((a,b)=>a+b,0) / vals.length;
+}
+function calcMedian(sorted) {
+  const n = sorted.length;
+  if (n % 2 === 1) return sorted[Math.floor(n/2)];
+  return (sorted[n/2-1] + sorted[n/2]) / 2;
+}
+function calcMode(vals) {
+  const freq = {};
+  vals.forEach(v => freq[v] = (freq[v]||0)+1);
+  const max = Math.max(...Object.values(freq));
+  if (max === 1) return null; // no mode
+  return Object.keys(freq).filter(k=>freq[k]===max).map(Number).sort((a,b)=>a-b);
+}
+
+function formatVal(v) {
+  if (Number.isInteger(v)) return v.toString();
+  return v.toFixed(1);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// UPDATE ALL
+// ─────────────────────────────────────────────────────────────────────────────
+function updateAll() {
+  const vals = students.map(s=>s.val);
+  const n = vals.length;
+  const unit = QUESTIONS[currentQ].unit;
+
+  // Count badge
+  const badge = document.getElementById('countBadge');
+  const note  = document.getElementById('countNote');
+  badge.textContent = n + (n===1?' value':' values');
+  note.textContent  = n < 3 ? 'Add at least 3 to start' : n < 5 ? 'Looking good — add more for better results!' : '✅ Great dataset!';
+
+  if (n === 0) {
+    ['Mean','Median','Mode','Range'].forEach(m => {
+      document.getElementById('val'+m).textContent = '—';
+      document.getElementById('work'+m).textContent = m === 'Mean' ? 'Add values to see the calculation' : m === 'Median' ? 'The middle value when sorted' : m === 'Mode' ? 'The most common value' : 'Biggest − Smallest';
+      document.getElementById('unit'+m).textContent = '';
+      document.getElementById('block'+m).classList.remove('has-data');
+    });
+    document.getElementById('numberRow').innerHTML = '<span style="color:var(--dim); font-size:0.85rem; font-style:italic;">Values will appear here as you add them</span>';
+    document.getElementById('chipLegend').textContent = '';
+    document.getElementById('outlierBox').classList.remove('visible');
+    return;
+  }
+
+  const sorted = [...vals].sort((a,b)=>a-b);
+  const mean   = calcMean(vals);
+  const median = calcMedian(sorted);
+  const mode   = calcMode(vals);
+  const range  = sorted[sorted.length-1] - sorted[0];
+
+  // ── Number row ──
+  renderNumberRow(sorted, median, mode);
+
+  // ── Mean ──
+  const sum = vals.reduce((a,b)=>a+b,0);
+  animateVal('valMean', formatVal(mean));
+  document.getElementById('workMean').innerHTML =
+    `(${vals.map(v=>formatVal(v)).join(' + ')}) ÷ ${n} = ${formatVal(sum)} ÷ ${n}`;
+  document.getElementById('unitMean').textContent = unit;
+  document.getElementById('blockMean').classList.add('has-data');
+
+  // ── Median ──
+  animateVal('valMedian', formatVal(median));
+  const midDesc = n % 2 === 1
+    ? `Position ${Math.floor(n/2)+1} of ${n} = ${formatVal(median)}`
+    : `Mean of positions ${n/2} & ${n/2+1}: (${formatVal(sorted[n/2-1])} + ${formatVal(sorted[n/2])}) ÷ 2`;
+  document.getElementById('workMedian').innerHTML = midDesc;
+  document.getElementById('unitMedian').textContent = unit;
+  document.getElementById('blockMedian').classList.add('has-data');
+
+  // ── Mode ──
+  if (mode) {
+    animateVal('valMode', mode.map(formatVal).join(', '));
+    document.getElementById('workMode').textContent = `Appears most frequently`;
+  } else {
+    animateVal('valMode', 'None');
+    document.getElementById('workMode').textContent = 'Every value appears the same number of times';
+  }
+  document.getElementById('unitMode').textContent = mode ? unit : '';
+  document.getElementById('blockMode').classList.add('has-data');
+
+  // ── Range ──
+  animateVal('valRange', formatVal(range));
+  document.getElementById('workRange').innerHTML =
+    `${formatVal(sorted[sorted.length-1])} − ${formatVal(sorted[0])} = ${formatVal(range)}`;
+  document.getElementById('unitRange').textContent = unit;
+  document.getElementById('blockRange').classList.add('has-data');
+
+  // ── Outlier detection ──
+  checkOutliers(sorted, mean, median, unit);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// RENDER NUMBER ROW
+// ─────────────────────────────────────────────────────────────────────────────
+function renderNumberRow(sorted, median, mode) {
+  const row = document.getElementById('numberRow');
+  const hasChars = students.some(s=>s.isChar);
+  const modeSet = mode ? new Set(mode) : new Set();
+
+  // Map sorted values back to find if character or student
+  const sortedEntries = [...sorted].map(v => {
+    const match = students.find(s=>s.val===v);
+    return { val: v, isChar: match ? match.isChar : false };
+  });
+
+  row.innerHTML = sortedEntries.map((entry, i) => {
+    const isMedian = (
+      sorted.length % 2 === 1 && i === Math.floor(sorted.length/2)
+    ) || (
+      sorted.length % 2 === 0 && (i === sorted.length/2-1 || i === sorted.length/2)
+    );
+    const isMode = modeSet.has(entry.val);
+    let cls = 'num-chip';
+    if (isMedian) cls += ' median-chip';
+    else if (isMode) cls += ' mode-chip';
+    else cls += entry.isChar ? ' character' : ' student';
+    return `<span class="${cls}">${formatVal(entry.val)}</span>`;
+  }).join('');
+
+  // Legend
+  const legend = document.getElementById('chipLegend');
+  let parts = [];
+  if (students.some(s=>!s.isChar)) parts.push('🔵 = Student');
+  if (hasChars) parts.push('🟣 = Character');
+  parts.push('🟡 = Median');
+  if (mode) parts.push('🟢 = Mode');
+  legend.textContent = parts.join('   ');
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// OUTLIER DETECTION
+// ─────────────────────────────────────────────────────────────────────────────
+function checkOutliers(sorted, mean, median, unit) {
+  const box = document.getElementById('outlierBox');
+  const body = document.getElementById('outlierBody');
+  const n = sorted.length;
+  if (n < 3) { box.classList.remove('visible'); return; }
+
+  const diff = Math.abs(mean - median);
+  const range = sorted[n-1] - sorted[0];
+  const pctDiff = range > 0 ? diff / range : 0;
+
+  // Check for character outliers
+  const charEntries = students.filter(s=>s.isChar);
+
+  if (pctDiff > 0.15 && charEntries.length > 0) {
+    const extreme = charEntries.sort((a,b) => Math.abs(b.val-median) - Math.abs(a.val-median))[0];
+    const c = CHARACTERS[extreme.charIdx];
+    box.classList.add('visible');
+    body.innerHTML = `
+      <strong>${c.emoji} ${c.name}</strong> ${c.flavour[currentQ]}.<br><br>
+      This has pushed the <strong>mean</strong> to <strong>${formatVal(mean)} ${unit}</strong>, 
+      but the <strong>median</strong> is only <strong>${formatVal(median)} ${unit}</strong>.<br><br>
+      💬 <em>Which average is more honest about what's "typical" for your class?</em>`;
+  } else if (pctDiff > 0.12) {
+    box.classList.add('visible');
+    body.innerHTML = `The <strong>mean</strong> (${formatVal(mean)}) and <strong>median</strong> (${formatVal(median)}) are quite different from each other.<br><br>
+      This usually means there's an <strong>outlier</strong> — an extreme value that's pulling the mean away from the middle.<br><br>
+      💬 <em>Can you spot which value is causing this?</em>`;
+  } else {
+    box.classList.remove('visible');
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ANIMATE VALUE
+// ─────────────────────────────────────────────────────────────────────────────
+function animateVal(id, val) {
+  const el = document.getElementById(id);
+  if (el.textContent === val) return;
+  el.classList.add('updating');
+  el.textContent = val;
+  setTimeout(() => el.classList.remove('updating'), 400);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DISCUSSION PROMPTS
+// ─────────────────────────────────────────────────────────────────────────────
+function renderDiscussion(q) {
+  const wrap = document.getElementById('discussionPrompts');
+  wrap.innerHTML = q.discussion.map(d => `<div class="dc-prompt">${d}</div>`).join('');
+}
+
+init();
+</script>
+</body>
+</html>
