@@ -93,19 +93,17 @@ html, body {
   font-weight: 600;
   letter-spacing: 0.01em;
   color: rgba(90,60,0,0.6);
-  background: var(--folder-tab);
+  background:
+    linear-gradient(to bottom,
+      rgba(255,255,255,0.28) 0%,
+      rgba(255,255,255,0.08) 50%,
+      rgba(0,0,0,0.03) 100%
+    ),
+    var(--folder-tab);
   border-radius: 10px 10px 0 0;
   margin-right: 3px;
   transition: all 0.18s cubic-bezier(0.25,0.46,0.45,0.94);
   outline: none;
-  /* Top gloss */
-  background-image: linear-gradient(
-    to bottom,
-    rgba(255,255,255,0.38) 0%,
-    rgba(255,255,255,0.12) 50%,
-    rgba(0,0,0,0.04) 100%
-  );
-  background-color: #D49800;
   box-shadow: 0 -1px 0 rgba(255,255,255,0.25) inset,
               0 1px 0 rgba(0,0,0,0.1);
 }
@@ -148,20 +146,18 @@ html, body {
 
 /* ── FOLDER BODY ── */
 .folder-body {
-  background: var(--folder-body);
+  background:
+    linear-gradient(170deg,
+      rgba(255,255,255,0.35) 0%,
+      rgba(255,255,255,0.08) 18%,
+      rgba(255,255,255,0.0) 40%,
+      rgba(0,0,0,0.04) 100%
+    ),
+    var(--folder-body);
   border-radius: 0 16px 16px 16px;
   position: relative;
   z-index: 5;
   overflow: hidden;
-  /* Gloss layers */
-  background-image:
-    linear-gradient(170deg,
-      rgba(255,255,255,0.55) 0%,
-      rgba(255,255,255,0.15) 18%,
-      rgba(255,255,255,0.0) 40%,
-      rgba(0,0,0,0.06) 100%
-    );
-  background-color: var(--folder-body);
   box-shadow:
     0 30px 80px rgba(0,0,0,0.55),
     0 0 0 0.5px rgba(255,200,60,0.4),
@@ -470,6 +466,20 @@ html, body {
             <div class="card-desc">Unions, intersections, complements and more. Answer correctly then race the timer to score your goal — 4 randomised question sets!</div>
             <div class="card-foot">
               <span class="card-type">Penalty Shootout</span>
+              <span class="open-arrow arrow-ks3">›</span>
+            </div>
+          </a>
+
+          <a class="card" href="ks3/averages-lab/index.html">
+            <div class="accent accent-ks3"></div>
+            <div class="card-top">
+              <div class="card-icon icon-ks3">🔬</div>
+            </div>
+            <div class="card-label label-ks3">Year 7 · Averages</div>
+            <div class="card-name">Mr. Goddard's Averages Lab</div>
+            <div class="card-desc">Live class data discovery lesson. Students submit their answers, Brainrot characters crash the dataset, and averages update in real time.</div>
+            <div class="card-foot">
+              <span class="card-type">Live Lesson Tool</span>
               <span class="open-arrow arrow-ks3">›</span>
             </div>
           </a>
