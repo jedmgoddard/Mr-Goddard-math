@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mr. Goddard's Frequency Tables — Year 7</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:      #0f1117;
+  --panel:   #1a1d27;
+  --panel2:  #22263a;
+  --border:  #2e3350;
+  --gold:    #fbbf24;
+  --teal:    #06b6d4;
+  --pink:    #f472b6;
+  --green:   #4ade80;
+  --purple:  #a78bfa;
+  --red:     #f87171;
+  --orange:  #fb923c;
+  --white:   #f1f5f9;
+  --dim:     #64748b;
+  --text:    #e2e8f0;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Nunito', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* ── HEADER ── */
+.header {
+  background: var(--panel);
+  border-bottom: 3px solid var(--pink);
+  padding: 14px 24px;
+  display: flex; align-items: center; gap: 14px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+  position: sticky; top: 0; z-index: 100;
+  flex-wrap: wrap;
+}
+.header-emoji { font-size: 1.9rem; }
+.header h1 {
+  font-family: 'Fredoka One', cursive;
+  font-size: 1.4rem; color: var(--pink); line-height: 1;
+}
+.header p { font-size: 0.78rem; color: var(--dim); margin-top: 2px; }
+
+/* ── IMPORT BANNER ── */
+.import-banner {
+  background: rgba(6,182,212,0.07);
+  border-bottom: 1px solid rgba(6,182,212,0.2);
+  padding: 12px 24px;
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+}
+.import-label { font-size: 0.82rem; font-weight: 800; color: var(--teal); white-space: nowrap; }
+.import-input {
+  flex: 1; min-width: 200px;
+  background: var(--panel2); border: 2px solid var(--border);
+  border-radius: 8px; color: var(--text);
+  font-family: monospace; font-size: 0.78rem;
+  padding: 7px 12px; outline: none;
+  transition: border-color 0.2s;
+}
+.import-input:focus { border-color: var(--teal); }
+.import-input::placeholder { color: var(--dim); font-family: 'Nunito', sans-serif; font-size: 0.8rem; }
+.import-btn {
+  padding: 8px 18px;
+  background: var(--teal); color: var(--bg);
+  border: none; border-radius: 8px;
+  font-family: 'Fredoka One', cursive; font-size: 0.9rem;
+  cursor: pointer; transition: all 0.15s; white-space: nowrap;
+}
+.import-btn:hover { background: #22d3ee; transform: scale(1.04); }
+.import-status { font-size: 0.8rem; color: var(--dim); font-style: italic; }
+.import-status.ok  { color: var(--green); }
+.import-status.err { color: var(--red); }
+
+/* ── CONTEXT BANNER ── */
+.context-banner {
+  background: rgba(251,191,36,0.07);
+  border-bottom: 1px solid rgba(251,191,36,0.15);
+  padding: 10px 24px;
+  font-size: 0.84rem; color: var(--gold);
+  font-weight: 700; display: none;
+}
+.context-banner.visible { display: block; }
+
+/* ── TABS ── */
+.tabs {
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  display: flex; gap: 0;
+}
+.tab-btn {
+  padding: 12px 22px;
+  background: none; border: none;
+  color: var(--dim); font-family: 'Fredoka One', cursive;
+  font-size: 0.95rem; cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: all 0.18s; white-space: nowrap;
+}
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active { color: var(--pink); border-bottom-color: var(--pink); }
+
+/* ── MAIN ── */
+.main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px 20px 60px;
+}
+
+/* Tab panels */
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ── CARDS ── */
+.card {
+  background: var(--panel);
+  border: 1.5px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  margin-bottom: 20px;
+}
+.card-header {
+  padding: 14px 20px;
+  font-family: 'Fredoka One', cursive;
+  font-size: 1rem; letter-spacing: 0.3px;
+  display: flex; align-items: center; gap: 8px;
+}
+.card-header.pink   { background: rgba(244,114,182,0.1); color: var(--pink);   border-bottom: 1px solid rgba(244,114,182,0.15); }
+.card-header.teal   { background: rgba(6,182,212,0.1);   color: var(--teal);   border-bottom: 1px solid rgba(6,182,212,0.15); }
+.card-header.gold   { background: rgba(251,191,36,0.1);  color: var(--gold);   border-bottom: 1px solid rgba(251,191,36,0.15); }
+.card-header.purple { background: rgba(167,139,250,0.1); color: var(--purple); border-bottom: 1px solid rgba(167,139,250,0.15); }
+.card-header.green  { background: rgba(74,222,128,0.1);  color: var(--green);  border-bottom: 1px solid rgba(74,222,128,0.15); }
+.card-body { padding: 18px 20px; }
+
+/* ── TWO COL LAYOUT ── */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+
+/* ── FREQUENCY TABLE ── */
+.freq-table {
+  width: 100%; border-collapse: collapse;
+  font-size: 0.9rem;
+}
+.freq-table th {
+  padding: 10px 14px;
+  font-family: 'Fredoka One', cursive;
+  font-size: 0.85rem; letter-spacing: 0.3px;
+  text-align: center; border-bottom: 2px solid var(--border);
+}
+.freq-table th.val-col  { color: var(--teal); }
+.freq-table th.freq-col { color: var(--pink); }
+.freq-table th.fx-col   { color: var(--gold); }
+.freq-table th.mid-col  { color: var(--purple); }
+.freq-table th.cum-col  { color: var(--orange); }
+
+.freq-table td {
+  padding: 8px 12px;
+  text-align: center;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  transition: background 0.2s;
+}
+.freq-table tr:last-child td { border-bottom: none; }
+.freq-table tr:hover td { background: rgba(255,255,255,0.02); }
+.freq-table tr.total-row td {
+  background: rgba(251,191,36,0.06);
+  border-top: 2px solid rgba(251,191,36,0.2);
+  font-family: 'Fredoka One', cursive;
+  font-size: 0.95rem;
+}
+
+/* Editable freq cell */
+.freq-input {
+  width: 60px;
+  background: var(--panel2); border: 1.5px solid var(--border);
+  border-radius: 6px; color: var(--pink);
+  font-family: 'Fredoka One', cursive; font-size: 1rem;
+  padding: 4px 6px; text-align: center; outline: none;
+  transition: border-color 0.2s;
+}
+.freq-input:focus { border-color: var(--pink); }
+
+.fx-val { color: var(--gold); font-family: 'Fredoka One', cursive; font-size: 1rem; }
+.mid-val { color: var(--purple); font-family: 'Fredoka One', cursive; font-size: 0.95rem; }
+.cum-val { color: var(--orange); font-family: 'Fredoka One', cursive; font-size: 0.95rem; }
+.working-val { font-size: 0.75rem; color: var(--dim); }
+
+/* ── RESULT BLOCKS ── */
+.results-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 16px; }
+.result-block {
+  background: var(--panel2);
+  border: 1.5px solid var(--border);
+  border-radius: 12px; padding: 14px 16px;
+  text-align: center;
+}
+.rb-name { font-family: 'Fredoka One', cursive; font-size: 0.82rem; margin-bottom: 4px; }
+.rb-val  { font-family: 'Fredoka One', cursive; font-size: 2rem; color: var(--white); margin-bottom: 3px; transition: all 0.3s; }
+.rb-val.flash { transform: scale(1.15); }
+.rb-work { font-size: 0.72rem; color: var(--dim); line-height: 1.4; min-height: 32px; }
+.rb-unit { font-size: 0.7rem; color: var(--dim); margin-top: 2px; font-style: italic; }
+
+.rb-mean   .rb-name { color: var(--gold); }
+.rb-median .rb-name { color: var(--teal); }
+.rb-mode   .rb-name { color: var(--green); }
+.rb-range  .rb-name { color: var(--pink); }
+.rb-est    .rb-name { color: var(--purple); }
+.rb-modal  .rb-name { color: var(--orange); }
+.rb-medcl  .rb-name { color: var(--teal); }
+
+/* ── ADD ROW ── */
+.add-row-form {
+  display: flex; gap: 8px; flex-wrap: wrap;
+  align-items: center; margin-bottom: 12px;
+}
+.add-val-input {
+  width: 80px; background: var(--panel2);
+  border: 2px solid var(--border); border-radius: 8px;
+  color: var(--teal); font-family: 'Fredoka One', cursive; font-size: 1rem;
+  padding: 7px 8px; text-align: center; outline: none;
+  transition: border-color 0.2s;
+}
+.add-val-input:focus { border-color: var(--teal); }
+.add-val-input::placeholder { color: var(--dim); font-size: 0.75rem; font-family: 'Nunito', sans-serif; }
+.add-label { font-size: 0.82rem; color: var(--dim); font-weight: 700; }
+.add-row-btn {
+  padding: 8px 14px; background: var(--teal); color: var(--bg);
+  border: none; border-radius: 8px; font-family: 'Fredoka One', cursive;
+  font-size: 0.9rem; cursor: pointer; transition: all 0.15s;
+}
+.add-row-btn:hover { background: #22d3ee; transform: scale(1.04); }
+
+/* Grouped table controls */
+.group-controls {
+  display: flex; gap: 10px; flex-wrap: wrap;
+  align-items: center; margin-bottom: 14px;
+}
+.group-ctrl-label { font-size: 0.82rem; color: var(--dim); font-weight: 700; }
+.group-size-input {
+  width: 70px; background: var(--panel2);
+  border: 2px solid var(--border); border-radius: 8px;
+  color: var(--purple); font-family: 'Fredoka One', cursive; font-size: 1rem;
+  padding: 6px 8px; text-align: center; outline: none;
+  transition: border-color 0.2s;
+}
+.group-size-input:focus { border-color: var(--purple); }
+.regroup-btn {
+  padding: 8px 16px; background: var(--purple); color: var(--bg);
+  border: none; border-radius: 8px; font-family: 'Fredoka One', cursive;
+  font-size: 0.9rem; cursor: pointer; transition: all 0.15s;
+}
+.regroup-btn:hover { background: #c4b5fd; transform: scale(1.04); }
+
+/* ── CHARACTER ADDER ── */
+.char-strip {
+  display: flex; gap: 8px; flex-wrap: wrap;
+  padding: 12px 20px;
+  background: rgba(167,139,250,0.04);
+  border-top: 1px solid rgba(167,139,250,0.1);
+}
+.char-chip {
+  padding: 6px 12px;
+  background: var(--panel2); border: 1.5px solid var(--border);
+  border-radius: 20px; cursor: pointer;
+  font-size: 0.82rem; font-weight: 700;
+  transition: all 0.18s; display: flex; align-items: center; gap: 5px;
+}
+.char-chip:hover { border-color: var(--purple); background: rgba(167,139,250,0.1); }
+.char-chip.added { border-color: var(--green); color: var(--green); background: rgba(74,222,128,0.08); }
+.char-chip-val { font-family: 'Fredoka One', cursive; color: var(--gold); }
+.char-chip.added .char-chip-val { color: var(--green); }
+
+/* ── INSIGHT BOX ── */
+.insight-box {
+  background: rgba(251,191,36,0.06);
+  border: 1.5px solid rgba(251,191,36,0.2);
+  border-radius: 12px; padding: 14px 18px;
+  margin-top: 14px; display: none;
+}
+.insight-box.visible { display: block; }
+.ib-title { font-family: 'Fredoka One', cursive; font-size: 0.95rem; color: var(--gold); margin-bottom: 6px; }
+.ib-body  { font-size: 0.88rem; color: var(--text); line-height: 1.6; }
+.ib-body strong { color: var(--gold); }
+
+/* ── DISCUSSION ── */
+.discuss-card {
+  background: rgba(244,114,182,0.05);
+  border: 1.5px solid rgba(244,114,182,0.15);
+  border-radius: 12px; padding: 16px 18px;
+  margin-top: 14px;
+}
+.dc-title { font-family: 'Fredoka One', cursive; font-size: 0.95rem; color: var(--pink); margin-bottom: 10px; }
+.dc-item {
+  background: var(--panel2); border-left: 3px solid var(--pink);
+  border-radius: 0 8px 8px 0; padding: 8px 12px;
+  font-size: 0.86rem; color: var(--text); line-height: 1.5;
+  margin-bottom: 7px;
+}
+.dc-item:last-child { margin-bottom: 0; }
+.dc-item strong { color: var(--pink); }
+
+/* ── WALKTHROUGH ── */
+.walkthrough {
+  background: rgba(6,182,212,0.06);
+  border: 1.5px solid rgba(6,182,212,0.15);
+  border-radius: 12px; padding: 16px 18px;
+  margin-bottom: 18px;
+}
+.wt-title { font-family: 'Fredoka One', cursive; color: var(--teal); font-size: 0.95rem; margin-bottom: 8px; }
+.wt-body  { font-size: 0.88rem; color: var(--text); line-height: 1.65; }
+.wt-body strong { color: var(--teal); }
+.wt-body em { color: var(--dim); }
+
+/* Empty state */
+.empty-state {
+  text-align: center; padding: 32px;
+  color: var(--dim); font-size: 0.9rem; font-style: italic;
+}
+
+@media (max-width:780px) {
+  .two-col, .three-col { grid-template-columns: 1fr; }
+  .results-row { grid-template-columns: 1fr 1fr; }
+  .header h1 { font-size: 1.1rem; }
+}
+@media (max-width:480px) {
+  .results-row { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-emoji">📊</div>
+  <div>
+    <h1>Mr. Goddard's Frequency Tables</h1>
+    <p>Year 7 · Frequency Tables · Grouped Data · Estimated Mean</p>
+  </div>
+</div>
+
+<!-- Import banner -->
+<div class="import-banner">
+  <span class="import-label">🔗 Import from Lesson 1:</span>
+  <input class="import-input" id="importInput" placeholder="Paste your export code from Mr. Goddard's Averages Lab here…">
+  <button class="import-btn" onclick="importData()">↓ Load Data</button>
+  <span class="import-status" id="importStatus">No data loaded — or enter values manually below</span>
+</div>
+
+<!-- Context banner (shown after import) -->
+<div class="context-banner" id="contextBanner"></div>
+
+<!-- Tabs -->
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchTab('freq')">📋 Frequency Table</button>
+  <button class="tab-btn" onclick="switchTab('grouped')">📦 Grouped Frequency Table</button>
+</div>
+
+<div class="main">
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- TAB 1: FREQUENCY TABLE               -->
+  <!-- ══════════════════════════════════════ -->
+  <div class="tab-panel active" id="tab-freq">
+
+    <div class="walkthrough">
+      <div class="wt-title">💡 What is a Frequency Table?</div>
+      <div class="wt-body">
+        Instead of listing every single value, we <strong>count how many times</strong> each value appears — that's the <strong>frequency</strong>.<br>
+        Then we multiply: <strong>value × frequency = fx</strong>. Add up all the fx values, divide by total frequency → <strong>mean</strong>.<br>
+        <em>It's the same calculation as before, just organised more efficiently for large datasets.</em>
+      </div>
+    </div>
+
+    <div class="two-col">
+
+      <!-- Left: build the table -->
+      <div>
+        <div class="card">
+          <div class="card-header pink">📋 Build the Frequency Table</div>
+          <div class="card-body">
+            <p style="font-size:0.8rem;color:var(--dim);margin-bottom:12px;">Add values that appear in your dataset. Enter the frequency (how many students got each value).</p>
+            <div class="add-row-form">
+              <span class="add-label">Value:</span>
+              <input class="add-val-input" id="newVal" placeholder="e.g. 7" type="number" step="0.5">
+              <span class="add-label">Frequency:</span>
+              <input class="add-val-input" id="newFreq" placeholder="e.g. 5" type="number" min="1" style="border-color:rgba(244,114,182,0.4); color:var(--pink)">
+              <button class="add-row-btn" onclick="addFreqRow()">+ Add</button>
+            </div>
+            <div id="freqTableWrap">
+              <div class="empty-state" id="freqEmpty">No rows yet — add values above, or import from Lesson 1</div>
+              <table class="freq-table" id="freqTable" style="display:none">
+                <thead>
+                  <tr>
+                    <th class="val-col">Value (x)</th>
+                    <th class="freq-col">Frequency (f)</th>
+                    <th class="fx-col">f × x</th>
+                    <th style="color:var(--orange)">Cumulative f</th>
+                    <th style="width:40px;"></th>
+                  </tr>
+                </thead>
+                <tbody id="freqBody"></tbody>
+                <tfoot>
+                  <tr class="total-row">
+                    <td style="color:var(--dim)">Totals</td>
+                    <td style="color:var(--pink)" id="totalF">—</td>
+                    <td style="color:var(--gold)" id="totalFX">—</td>
+                    <td></td><td></td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+          <!-- Brainrot characters -->
+          <div class="char-strip" id="freqCharStrip"></div>
+        </div>
+      </div>
+
+      <!-- Right: results -->
+      <div>
+        <div class="card">
+          <div class="card-header gold">🔢 Averages from the Table</div>
+          <div class="card-body">
+            <div class="results-row" style="grid-template-columns:1fr 1fr;">
+              <div class="result-block rb-mean">
+                <div class="rb-name">MEAN</div>
+                <div class="rb-val" id="freq-mean">—</div>
+                <div class="rb-work" id="freq-mean-work">Σ(fx) ÷ Σf</div>
+                <div class="rb-unit" id="freq-mean-unit"></div>
+              </div>
+              <div class="result-block rb-median">
+                <div class="rb-name">MEDIAN</div>
+                <div class="rb-val" id="freq-median">—</div>
+                <div class="rb-work" id="freq-median-work">Middle position in cumulative f</div>
+                <div class="rb-unit" id="freq-median-unit"></div>
+              </div>
+              <div class="result-block rb-mode">
+                <div class="rb-name">MODE</div>
+                <div class="rb-val" id="freq-mode">—</div>
+                <div class="rb-work" id="freq-mode-work">Highest frequency</div>
+                <div class="rb-unit" id="freq-mode-unit"></div>
+              </div>
+              <div class="result-block rb-range">
+                <div class="rb-name">RANGE</div>
+                <div class="rb-val" id="freq-range">—</div>
+                <div class="rb-work" id="freq-range-work">Max − Min</div>
+                <div class="rb-unit" id="freq-range-unit"></div>
+              </div>
+            </div>
+
+            <div class="insight-box" id="freq-insight">
+              <div class="ib-title">🚨 Outlier Alert!</div>
+              <div class="ib-body" id="freq-insight-body"></div>
+            </div>
+
+            <div class="discuss-card">
+              <div class="dc-title">💬 Discussion Prompts</div>
+              <div class="dc-item">Why do we multiply value × frequency? What would go wrong if we just added up all the values in the x column?</div>
+              <div class="dc-item">The fx column total is <strong>Σ(fx)</strong> — why do we divide by <strong>Σf</strong> (total frequency) and not by the number of rows?</div>
+              <div class="dc-item">If you add a Brainrot character with an extreme value, which average changes the most — mean, median or mode?</div>
+              <div class="dc-item">Compare the mean here to your mean from Lesson 1. Are they the same? <strong>They should be — why?</strong></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════ -->
+  <!-- TAB 2: GROUPED FREQUENCY TABLE        -->
+  <!-- ══════════════════════════════════════ -->
+  <div class="tab-panel" id="tab-grouped">
+
+    <div class="walkthrough">
+      <div class="wt-title">💡 What is a Grouped Frequency Table?</div>
+      <div class="wt-body">
+        When data is spread across many values, we group them into <strong>class intervals</strong> (e.g. 6–8 hours).<br>
+        We can no longer find the exact mean — we <strong>estimate it</strong> using the <strong>midpoint</strong> of each group.<br>
+        We also talk about the <strong>modal class</strong> (most frequent group) and the <strong>median class</strong> (which group contains the middle value).<br>
+        <em>Grouping loses information — that's why the mean is only an estimate.</em>
+      </div>
+    </div>
+
+    <div class="two-col">
+
+      <!-- Left: grouped table -->
+      <div>
+        <div class="card">
+          <div class="card-header purple">📦 Grouped Frequency Table</div>
+          <div class="card-body">
+            <div class="group-controls">
+              <span class="group-ctrl-label">Group width:</span>
+              <input class="group-size-input" id="groupSize" value="2" type="number" min="1" max="20">
+              <button class="regroup-btn" onclick="buildGrouped()">↻ Regroup</button>
+              <span style="font-size:0.78rem;color:var(--dim);">Change width and click Regroup to see different groupings</span>
+            </div>
+
+            <div id="groupedWrap">
+              <div class="empty-state" id="groupedEmpty">Import data or build a frequency table first, then click Regroup</div>
+              <table class="freq-table" id="groupedTable" style="display:none">
+                <thead>
+                  <tr>
+                    <th style="color:var(--purple)">Class Interval</th>
+                    <th class="freq-col">Frequency (f)</th>
+                    <th class="mid-col">Midpoint (m)</th>
+                    <th class="fx-col">f × m</th>
+                    <th style="color:var(--orange)">Cumulative f</th>
+                  </tr>
+                </thead>
+                <tbody id="groupedBody"></tbody>
+                <tfoot>
+                  <tr class="total-row">
+                    <td style="color:var(--dim)">Totals</td>
+                    <td style="color:var(--pink)" id="g-totalF">—</td>
+                    <td></td>
+                    <td style="color:var(--gold)" id="g-totalFM">—</td>
+                    <td></td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+          <div class="char-strip" id="groupedCharStrip"></div>
+        </div>
+      </div>
+
+      <!-- Right: grouped results -->
+      <div>
+        <div class="card">
+          <div class="card-header purple">🔢 Estimated Averages</div>
+          <div class="card-body">
+            <div class="results-row" style="grid-template-columns:1fr 1fr;">
+              <div class="result-block rb-est">
+                <div class="rb-name">EST. MEAN</div>
+                <div class="rb-val" id="g-mean">—</div>
+                <div class="rb-work" id="g-mean-work">Σ(fm) ÷ Σf using midpoints</div>
+                <div class="rb-unit" id="g-mean-unit"></div>
+              </div>
+              <div class="result-block rb-modal">
+                <div class="rb-name">MODAL CLASS</div>
+                <div class="rb-val" id="g-modal" style="font-size:1rem;margin-top:8px;">—</div>
+                <div class="rb-work" id="g-modal-work">Group with highest frequency</div>
+              </div>
+              <div class="result-block rb-medcl">
+                <div class="rb-name">MEDIAN CLASS</div>
+                <div class="rb-val" id="g-medcl" style="font-size:1rem;margin-top:8px;">—</div>
+                <div class="rb-work" id="g-medcl-work">Group containing middle value</div>
+              </div>
+              <div class="result-block rb-range">
+                <div class="rb-name">EST. RANGE</div>
+                <div class="rb-val" id="g-range">—</div>
+                <div class="rb-work" id="g-range-work">Width of outer groups</div>
+              </div>
+            </div>
+
+            <!-- Comparison box -->
+            <div class="insight-box" id="comparison-box" style="border-color:rgba(167,139,250,0.3)">
+              <div class="ib-title" style="color:var(--purple)">🔍 Lesson 1 vs Estimated Mean</div>
+              <div class="ib-body" id="comparison-body"></div>
+            </div>
+
+            <div class="discuss-card">
+              <div class="dc-title">💬 Discussion Prompts</div>
+              <div class="dc-item">Why do we use the <strong>midpoint</strong> of each group? What assumption are we making?</div>
+              <div class="dc-item">Compare the estimated mean to the exact mean from the frequency table. How close are they? Why aren't they identical?</div>
+              <div class="dc-item">Change the group width. Does the estimated mean change? Why does grouping change the estimate?</div>
+              <div class="dc-item">Which is more useful to a scientist — the exact mean or the grouped estimated mean? <strong>When would you choose each?</strong></div>
+              <div class="dc-item">Can you find the exact mode from a grouped table? Why is it called "modal <strong>class</strong>" and not just "mode"?</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<script>
+// ─────────────────────────────────────────────────────────────────────────────
+// BRAINROT CHARACTERS — same as Averages Lab
+// ─────────────────────────────────────────────────────────────────────────────
+const CHARACTERS = [
+  { name:"Tralalero Tralala", emoji:"🦈", values:[2,847,0,3,8,15,0,0,3,3] },
+  { name:"Tung Tung Sahur",   emoji:"🪵", values:[10,0,0,120,3,4,2,5,0,10] },
+  { name:"Bombardiro",        emoji:"✈️", values:[4,12,14,5,4,12,8,0,50,2] },
+  { name:"Ballerina Cappuccina", emoji:"☕", values:[7,3,1,45,2,5,3,8,200,11] },
+  { name:"Brr Brr Patapim",   emoji:"❄️", values:[9,50,5,30,5,7,4,3,78,9] },
+  { name:"Lirili Larila",     emoji:"🐘", values:[6,2,0,60,3,20,5,0,12,12] },
+  { name:"Chimpanzini Bananini", emoji:"🍌", values:[8,200,7,15,9,8,6,2,44,8] },
+  { name:"Cappuccino Assassino", emoji:"🗡️", values:[1,999,0,2,10,3,12,100,500,1] },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────────────────────────────────────
+let currentQ = 0;
+let unit = '';
+let qLabel = '';
+let exactMeanFromLesson1 = null;
+
+// freqRows: [{val, freq, isChar, charIdx, emoji}]
+let freqRows = [];
+let addedChars = new Set();
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TABS
+// ─────────────────────────────────────────────────────────────────────────────
+function switchTab(name) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  event.target.classList.add('active');
+  if (name === 'grouped') buildGrouped();
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// IMPORT
+// ─────────────────────────────────────────────────────────────────────────────
+function importData() {
+  const code = document.getElementById('importInput').value.trim();
+  const status = document.getElementById('importStatus');
+  if (!code) { status.textContent = '❌ Paste a code first'; status.className = 'import-status err'; return; }
+
+  try {
+    const payload = JSON.parse(atob(code));
+    currentQ = payload.q || 0;
+    unit = payload.unit || '';
+    qLabel = payload.qLabel || '';
+
+    // Build frequency map from raw student data
+    const rawVals = payload.students.map(s => s.val);
+    exactMeanFromLesson1 = rawVals.reduce((a,b)=>a+b,0) / rawVals.length;
+
+    // Build freq rows from raw values
+    const freqMap = {};
+    payload.students.forEach(s => {
+      const key = s.val;
+      if (!freqMap[key]) freqMap[key] = { val: key, freq: 0, isChar: s.isChar, charIdx: s.charIdx, emoji: s.emoji || '' };
+      freqMap[key].freq++;
+    });
+    freqRows = Object.values(freqMap).sort((a,b) => a.val - b.val);
+    addedChars = new Set(payload.students.filter(s=>s.isChar).map(s=>s.charIdx));
+
+    status.textContent = `✅ Loaded ${payload.students.length} values from: ${qLabel}`;
+    status.className = 'import-status ok';
+
+    const banner = document.getElementById('contextBanner');
+    banner.textContent = `📊 Dataset: ${qLabel} · ${payload.students.length} values · Lesson 1 exact mean: ${exactMeanFromLesson1.toFixed(2)} ${unit}`;
+    banner.classList.add('visible');
+
+    renderFreqTable();
+    buildCharStrips();
+    updateComparison();
+
+  } catch(e) {
+    status.textContent = '❌ Invalid code — copy it again from the Averages Lab';
+    status.className = 'import-status err';
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ADD ROW MANUALLY
+// ─────────────────────────────────────────────────────────────────────────────
+function addFreqRow() {
+  const valEl  = document.getElementById('newVal');
+  const freqEl = document.getElementById('newFreq');
+  const val  = parseFloat(valEl.value);
+  const freq = parseInt(freqEl.value);
+  if (isNaN(val) || isNaN(freq) || freq < 1) { valEl.focus(); return; }
+
+  // Merge if same value exists
+  const existing = freqRows.find(r => r.val === val && !r.isChar);
+  if (existing) existing.freq += freq;
+  else freqRows.push({ val, freq, isChar: false });
+  freqRows.sort((a,b) => a.val - b.val);
+
+  valEl.value = ''; freqEl.value = '';
+  valEl.focus();
+  renderFreqTable();
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CHARACTER STRIPS
+// ─────────────────────────────────────────────────────────────────────────────
+function buildCharStrips() {
+  ['freqCharStrip', 'groupedCharStrip'].forEach(id => {
+    const strip = document.getElementById(id);
+    strip.innerHTML = '<span style="font-size:0.75rem;font-weight:800;color:var(--purple);margin-right:4px;">🤪 Add character:</span>';
+    CHARACTERS.forEach((c, ci) => {
+      const val = c.values[currentQ];
+      const chip = document.createElement('div');
+      chip.className = 'char-chip' + (addedChars.has(ci) ? ' added' : '');
+      chip.id = id + '-char-' + ci;
+      chip.innerHTML = `${c.emoji} ${c.name.split(' ')[0]} <span class="char-chip-val">(${val})</span>`;
+      chip.onclick = () => toggleChar(ci, id);
+      strip.appendChild(chip);
+    });
+  });
+}
+
+function toggleChar(ci, stripId) {
+  const c = CHARACTERS[ci];
+  const val = c.values[currentQ];
+  if (addedChars.has(ci)) {
+    addedChars.delete(ci);
+    freqRows = freqRows.filter(r => !(r.isChar && r.charIdx === ci));
+  } else {
+    addedChars.add(ci);
+    const existing = freqRows.find(r => r.val === val && r.isChar && r.charIdx === ci);
+    if (!existing) freqRows.push({ val, freq: 1, isChar: true, charIdx: ci, emoji: c.emoji, name: c.name });
+    freqRows.sort((a,b) => a.val - b.val);
+  }
+  buildCharStrips();
+  renderFreqTable();
+  buildGrouped();
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// RENDER FREQUENCY TABLE
+// ─────────────────────────────────────────────────────────────────────────────
+function renderFreqTable() {
+  const tbody = document.getElementById('freqBody');
+  const table = document.getElementById('freqTable');
+  const empty = document.getElementById('freqEmpty');
+
+  if (freqRows.length === 0) {
+    table.style.display = 'none';
+    empty.style.display = 'block';
+    resetFreqResults();
+    return;
+  }
+  table.style.display = 'table';
+  empty.style.display = 'none';
+
+  // Calculate cumulative freqs
+  let cumF = 0;
+  const rows = freqRows.map(r => {
+    cumF += r.freq;
+    return { ...r, fx: r.val * r.freq, cumF };
+  });
+
+  const totalF  = rows.reduce((a,r) => a + r.freq, 0);
+  const totalFX = rows.reduce((a,r) => a + r.fx, 0);
+
+  tbody.innerHTML = rows.map((r, i) => {
+    const isChar = r.isChar;
+    const valColor = isChar ? 'color:var(--purple)' : 'color:var(--teal)';
+    const maxFreq = Math.max(...rows.map(x=>x.freq));
+    const isMode = r.freq === maxFreq;
+    return `<tr>
+      <td style="${valColor};font-family:'Fredoka One',cursive;font-size:1rem">${isChar ? r.emoji+' ' : ''}${r.val}</td>
+      <td><input class="freq-input" value="${r.freq}" min="1" type="number"
+          onchange="updateFreq(${i}, this.value)"></td>
+      <td class="fx-val">${r.fx}<br><span class="working-val">${r.val} × ${r.freq}</span></td>
+      <td class="cum-val">${r.cumF}</td>
+      <td><button onclick="removeRow(${i})" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:0.85rem;opacity:0.5" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.5">✕</button></td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('totalF').textContent  = totalF;
+  document.getElementById('totalFX').textContent = totalFX;
+
+  calcFreqAverages(rows, totalF, totalFX);
+}
+
+function updateFreq(i, val) {
+  const v = parseInt(val);
+  if (isNaN(v) || v < 0) return;
+  freqRows[i].freq = v;
+  renderFreqTable();
+}
+
+function removeRow(i) {
+  const row = freqRows[i];
+  if (row.isChar) addedChars.delete(row.charIdx);
+  freqRows.splice(i, 1);
+  buildCharStrips();
+  renderFreqTable();
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// FREQUENCY TABLE AVERAGES
+// ─────────────────────────────────────────────────────────────────────────────
+function calcFreqAverages(rows, totalF, totalFX) {
+  if (totalF === 0) { resetFreqResults(); return; }
+
+  const mean = totalFX / totalF;
+  const maxFreq = Math.max(...rows.map(r=>r.freq));
+  const modes = rows.filter(r=>r.freq===maxFreq).map(r=>r.val);
+  const modeUnique = maxFreq === 1;
+  const vals = rows.flatMap(r => Array(r.freq).fill(r.val)).sort((a,b)=>a-b);
+  const median = vals.length%2===1 ? vals[Math.floor(vals.length/2)] : (vals[vals.length/2-1]+vals[vals.length/2])/2;
+  const medPos = totalF % 2 === 1 ? Math.ceil(totalF/2) : totalF/2;
+  let cumSoFar = 0;
+  let medianRow = null;
+  for (const r of rows) {
+    cumSoFar += r.freq;
+    if (cumSoFar >= medPos && !medianRow) medianRow = r;
+  }
+  const range = rows[rows.length-1].val - rows[0].val;
+
+  flashVal('freq-mean',   fmt(mean));
+  flashVal('freq-median', fmt(median));
+  flashVal('freq-mode',   modeUnique ? 'None' : modes.map(fmt).join(', '));
+  flashVal('freq-range',  fmt(range));
+
+  document.getElementById('freq-mean-work').textContent   = `${totalFX} ÷ ${totalF} = ${fmt(mean)}`;
+  document.getElementById('freq-median-work').textContent = `Middle position: ${medPos}. Cumulative f reaches it at x = ${fmt(median)}`;
+  document.getElementById('freq-mode-work').textContent   = modeUnique ? 'No repeated values' : `Highest f = ${maxFreq}`;
+  document.getElementById('freq-range-work').textContent  = `${rows[rows.length-1].val} − ${rows[0].val} = ${fmt(range)}`;
+
+  ['freq-mean-unit','freq-median-unit','freq-mode-unit','freq-range-unit'].forEach(id => {
+    document.getElementById(id).textContent = unit;
+  });
+
+  // Outlier detection
+  const diff = Math.abs(mean - median);
+  const insight = document.getElementById('freq-insight');
+  const charRows = rows.filter(r=>r.isChar);
+  if (diff > range * 0.15 && charRows.length > 0) {
+    const extreme = charRows.sort((a,b)=>Math.abs(b.val-median)-Math.abs(a.val-median))[0];
+    insight.classList.add('visible');
+    document.getElementById('freq-insight-body').innerHTML = `
+      <strong>${extreme.emoji||''} ${extreme.name||'Character'}</strong> is pulling the mean.<br>
+      Mean = <strong>${fmt(mean)} ${unit}</strong> but Median = <strong>${fmt(median)} ${unit}</strong>.<br>
+      Which is a fairer summary of the class data?`;
+  } else if (diff > range * 0.12) {
+    insight.classList.add('visible');
+    document.getElementById('freq-insight-body').innerHTML = `The mean (${fmt(mean)}) and median (${fmt(median)}) differ quite a bit — there may be an outlier value pulling the mean.`;
+  } else {
+    insight.classList.remove('visible');
+  }
+
+  updateComparison();
+}
+
+function resetFreqResults() {
+  ['freq-mean','freq-median','freq-mode','freq-range'].forEach(id => {
+    document.getElementById(id).textContent = '—';
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// BUILD GROUPED TABLE
+// ─────────────────────────────────────────────────────────────────────────────
+function buildGrouped() {
+  const tbody  = document.getElementById('groupedBody');
+  const table  = document.getElementById('groupedTable');
+  const empty  = document.getElementById('groupedEmpty');
+  const gSizeEl = document.getElementById('groupSize');
+  const gSize  = parseFloat(gSizeEl.value) || 2;
+
+  if (freqRows.length === 0) {
+    table.style.display = 'none';
+    empty.style.display = 'block';
+    resetGroupedResults();
+    return;
+  }
+
+  // Flatten to all individual values
+  const allVals = freqRows.flatMap(r => Array(r.freq).fill(r.val));
+  const minVal = Math.min(...allVals);
+  const maxVal = Math.max(...allVals);
+
+  // Build groups
+  const groupStart = Math.floor(minVal / gSize) * gSize;
+  const groups = [];
+  for (let s = groupStart; s <= maxVal; s += gSize) {
+    const e = s + gSize;
+    const freq = allVals.filter(v => v >= s && v < e).length;
+    const mid  = s + gSize / 2;
+    groups.push({ label: `${s} – ${e - (gSize%1===0?1:0.5)}`, start:s, end:e, freq, mid, fm: freq * mid });
+  }
+
+  // Remove empty trailing groups
+  while (groups.length > 0 && groups[groups.length-1].freq === 0) groups.pop();
+
+  const totalF  = groups.reduce((a,g)=>a+g.freq,0);
+  const totalFM = groups.reduce((a,g)=>a+g.fm,0);
+
+  let cumF = 0;
+  tbody.innerHTML = groups.map((g, i) => {
+    cumF += g.freq;
+    const maxFreq = Math.max(...groups.map(x=>x.freq));
+    const isModal = g.freq === maxFreq && g.freq > 0;
+    const bgStyle = isModal ? 'background:rgba(251,191,36,0.06)' : '';
+    return `<tr style="${bgStyle}">
+      <td style="color:var(--purple);font-weight:700">${g.label}${isModal ? ' ⭐' : ''}</td>
+      <td style="color:var(--pink);font-family:'Fredoka One',cursive">${g.freq}</td>
+      <td class="mid-val">${fmt(g.mid)}</td>
+      <td class="fx-val">${fmt(g.fm)}<br><span class="working-val">${g.freq} × ${fmt(g.mid)}</span></td>
+      <td class="cum-val">${cumF}</td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('g-totalF').textContent  = totalF;
+  document.getElementById('g-totalFM').textContent = fmt(totalFM);
+
+  table.style.display = 'table';
+  empty.style.display = 'none';
+
+  // Calc grouped averages
+  const estMean = totalF > 0 ? totalFM / totalF : 0;
+  const maxFreq2 = Math.max(...groups.map(g=>g.freq));
+  const modalGroup = groups.find(g=>g.freq===maxFreq2);
+  const medPos = Math.ceil(totalF / 2);
+  let cf2 = 0;
+  let medGroup = null;
+  for (const g of groups) {
+    cf2 += g.freq;
+    if (cf2 >= medPos && !medGroup) medGroup = g;
+  }
+
+  flashVal('g-mean',  fmt(estMean));
+  flashVal('g-modal', modalGroup ? modalGroup.label : '—');
+  flashVal('g-medcl', medGroup   ? medGroup.label   : '—');
+  const estRange = groups[groups.length-1].end - groups[0].start;
+  flashVal('g-range', fmt(estRange));
+
+  document.getElementById('g-mean-work').textContent  = `${fmt(totalFM)} ÷ ${totalF} = ${fmt(estMean)}`;
+  document.getElementById('g-modal-work').textContent = modalGroup ? `Frequency = ${maxFreq2}` : '';
+  document.getElementById('g-medcl-work').textContent = medGroup ? `Position ${medPos} of ${totalF} falls in this class` : '';
+  document.getElementById('g-range-work').textContent = `${groups[groups.length-1].end} − ${groups[0].start} = ${fmt(estRange)}`;
+  document.getElementById('g-mean-unit').textContent  = unit;
+
+  // Comparison
+  const compBox = document.getElementById('comparison-box');
+  const compBody = document.getElementById('comparison-body');
+  if (exactMeanFromLesson1 !== null) {
+    compBox.classList.add('visible');
+    const diff = Math.abs(estMean - exactMeanFromLesson1).toFixed(2);
+    compBody.innerHTML = `
+      <strong>Lesson 1 exact mean:</strong> ${fmt(exactMeanFromLesson1)} ${unit}<br>
+      <strong>Estimated mean (grouped):</strong> ${fmt(estMean)} ${unit}<br>
+      <strong>Difference:</strong> ${diff} ${unit}<br><br>
+      ${parseFloat(diff) < 0.5
+        ? '✅ Very close! The grouped estimate is a good approximation.'
+        : `⚠️ A difference of ${diff} — grouping has lost information. Try changing the group width to see how it affects the estimate.`}`;
+  } else {
+    const exactFreqMean = document.getElementById('freq-mean').textContent;
+    if (exactFreqMean !== '—') {
+      compBox.classList.add('visible');
+      const diff2 = Math.abs(estMean - parseFloat(exactFreqMean)).toFixed(2);
+      compBody.innerHTML = `
+        <strong>Exact mean (frequency table):</strong> ${exactFreqMean} ${unit}<br>
+        <strong>Estimated mean (grouped):</strong> ${fmt(estMean)} ${unit}<br>
+        <strong>Difference:</strong> ${diff2} ${unit} — this is the cost of grouping.`;
+    } else {
+      compBox.classList.remove('visible');
+    }
+  }
+}
+
+function resetGroupedResults() {
+  ['g-mean','g-modal','g-medcl','g-range'].forEach(id => {
+    document.getElementById(id).textContent = '—';
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// HELPERS
+// ─────────────────────────────────────────────────────────────────────────────
+function fmt(n) {
+  if (typeof n !== 'number' || isNaN(n)) return '—';
+  return Number.isInteger(n) ? n.toString() : n.toFixed(2);
+}
+
+function flashVal(id, val) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (el.textContent === val) return;
+  el.classList.add('flash');
+  el.textContent = val;
+  setTimeout(() => el.classList.remove('flash'), 350);
+}
+
+function updateComparison() {
+  // Called after freq table calc — update grouped comparison if visible
+  if (document.getElementById('tab-grouped').classList.contains('active')) buildGrouped();
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────────────────────────────────────
+function init() {
+  buildCharStrips();
+  // Enter key on add row
+  document.getElementById('newFreq').addEventListener('keydown', e => { if(e.key==='Enter') addFreqRow(); });
+  document.getElementById('newVal').addEventListener('keydown',  e => { if(e.key==='Enter') document.getElementById('newFreq').focus(); });
+}
+
+init();
+</script>
+</body>
+</html>
