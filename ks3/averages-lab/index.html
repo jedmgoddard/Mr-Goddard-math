@@ -36,8 +36,66 @@ body {
     radial-gradient(ellipse 50% 40% at 80% 90%, rgba(167,139,250,0.06) 0%, transparent 60%);
 }
 
-/* ── HEADER ── */
-.header {
+.export-btn {
+  margin-left: auto;
+  padding: 8px 18px;
+  background: rgba(251,191,36,0.15);
+  border: 1.5px solid var(--gold);
+  border-radius: 10px;
+  color: var(--gold);
+  font-family: 'Fredoka One', cursive;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.18s;
+  white-space: nowrap;
+}
+.export-btn:hover { background: rgba(251,191,36,0.28); transform: scale(1.04); }
+
+.export-modal {
+  display: none;
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(0,0,0,0.7);
+  align-items: center; justify-content: center;
+}
+.export-modal.open { display: flex; }
+.export-inner {
+  background: var(--panel2);
+  border: 2px solid var(--gold);
+  border-radius: 16px;
+  padding: 28px;
+  max-width: 480px; width: 90%;
+  text-align: center;
+}
+.export-inner h3 { font-family: 'Fredoka One', cursive; font-size: 1.2rem; color: var(--gold); margin-bottom: 8px; }
+.export-inner p  { font-size: 0.85rem; color: var(--dim); margin-bottom: 16px; line-height: 1.5; }
+.export-code {
+  background: var(--panel);
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  font-family: monospace; font-size: 0.75rem;
+  color: var(--teal);
+  word-break: break-all;
+  margin-bottom: 14px;
+  text-align: left;
+  max-height: 80px; overflow-y: auto;
+}
+.export-copy-btn {
+  padding: 9px 22px;
+  background: var(--teal); color: var(--bg);
+  border: none; border-radius: 8px;
+  font-family: 'Fredoka One', cursive; font-size: 1rem;
+  cursor: pointer; transition: all 0.15s; margin-right: 8px;
+}
+.export-copy-btn:hover { background: #22d3ee; }
+.export-close-btn {
+  padding: 9px 16px;
+  background: transparent; color: var(--dim);
+  border: 1.5px solid var(--border); border-radius: 8px;
+  font-family: 'Nunito', sans-serif; font-size: 0.9rem; font-weight: 700;
+  cursor: pointer; transition: all 0.15s;
+}
+.export-close-btn:hover { border-color: var(--dim); color: var(--text); }
   background: var(--panel);
   border-bottom: 3px solid var(--gold);
   padding: 16px 28px;
@@ -323,6 +381,18 @@ body {
   <div>
     <h1>Mr. Goddard's Averages Lab</h1>
     <p>Year 7 · Mean, Median, Mode & Range · Discovery Lesson</p>
+  </div>
+  <button class="export-btn" onclick="openExport()">📤 Export for Lesson 2</button>
+</div>
+
+<!-- Export modal -->
+<div class="export-modal" id="exportModal">
+  <div class="export-inner">
+    <h3>📤 Export Class Data</h3>
+    <p>Copy this code and paste it into <strong>Mr. Goddard's Frequency Tables</strong> at the start of Lesson 2 to instantly reload your class dataset.</p>
+    <div class="export-code" id="exportCode"></div>
+    <button class="export-copy-btn" onclick="copyExport()">📋 Copy Code</button>
+    <button class="export-close-btn" onclick="closeExport()">Close</button>
   </div>
 </div>
 
@@ -1060,6 +1130,42 @@ function animateVal(id, val) {
 function renderDiscussion(q) {
   const wrap = document.getElementById('discussionPrompts');
   wrap.innerHTML = q.discussion.map(d => `<div class="dc-prompt">${d}</div>`).join('');
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// EXPORT
+// ─────────────────────────────────────────────────────────────────────────────
+function openExport() {
+  if (students.length === 0) {
+    alert('No data to export yet — add some students first!');
+    return;
+  }
+  const payload = {
+    q: currentQ,
+    qLabel: QUESTIONS[currentQ].label,
+    unit: QUESTIONS[currentQ].unit,
+    students: students.map(s => ({ name: s.name, val: s.val, isChar: s.isChar || false, charIdx: s.charIdx ?? null, emoji: s.emoji || '' }))
+  };
+  const code = btoa(JSON.stringify(payload));
+  document.getElementById('exportCode').textContent = code;
+  document.getElementById('exportModal').classList.add('open');
+}
+
+function closeExport() {
+  document.getElementById('exportModal').classList.remove('open');
+}
+
+function copyExport() {
+  const code = document.getElementById('exportCode').textContent;
+  navigator.clipboard.writeText(code).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = code; document.body.appendChild(ta);
+    ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta);
+  });
+  const btn = document.querySelector('.export-copy-btn');
+  btn.textContent = '✅ Copied!';
+  setTimeout(() => { btn.textContent = '📋 Copy Code'; }, 2500);
 }
 
 init();
