@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mr. Goddard's 3D Workshop — Surface Area</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:      #0a0e1a;
+  --panel:   #111827;
+  --panel2:  #1a2235;
+  --border:  #1e3a5f;
+  --blue:    #3b82f6;
+  --cyan:    #06b6d4;
+  --gold:    #f59e0b;
+  --green:   #22c55e;
+  --red:     #ef4444;
+  --purple:  #8b5cf6;
+  --orange:  #f97316;
+  --white:   #f0f4ff;
+  --dim:     #64748b;
+  --text:    #cbd5e1;
+  --correct: rgba(34,197,94,0.12);
+  --wrong:   rgba(239,68,68,0.1);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Nunito', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  background-image:
+    radial-gradient(ellipse 70% 50% at 10% 0%, rgba(59,130,246,0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 90% 100%, rgba(139,92,246,0.06) 0%, transparent 60%);
+}
+
+/* ── HEADER ── */
+.header {
+  background: var(--panel);
+  border-bottom: 3px solid var(--cyan);
+  padding: 16px 28px;
+  display: flex; align-items: center; gap: 16px;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.5);
+  position: sticky; top: 0; z-index: 100;
+}
+.header-icon { font-size: 2rem; }
+.header h1 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.1rem; color: var(--cyan);
+  letter-spacing: 1px; line-height: 1.2;
+}
+.header p { font-size: 0.75rem; color: var(--dim); margin-top: 2px; }
+.score-wrap { margin-left: auto; display: flex; gap: 10px; align-items: center; }
+.score-pill {
+  background: rgba(245,158,11,0.15); border: 1.5px solid var(--gold);
+  color: var(--gold); font-family: 'Orbitron', sans-serif;
+  font-size: 0.8rem; padding: 6px 14px; border-radius: 20px; white-space: nowrap;
+}
+
+/* ── NAME BANNER ── */
+.name-banner {
+  background: rgba(17,24,39,0.96);
+  border-bottom: 1px solid rgba(59,130,246,0.2);
+  padding: 10px 28px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+}
+.name-banner label { font-weight: 800; font-size: 0.85rem; color: var(--cyan); }
+.name-input {
+  border: 2px solid rgba(59,130,246,0.3); border-radius: 8px;
+  padding: 7px 12px; font-size: 0.9rem; font-family: inherit;
+  background: rgba(255,255,255,0.05); color: var(--white);
+  outline: none; width: 200px; transition: border-color 0.2s;
+}
+.name-input:focus { border-color: var(--cyan); }
+.name-input::placeholder { color: var(--dim); }
+
+/* ── PROGRESS ── */
+.progress-wrap {
+  background: rgba(10,14,26,0.9);
+  border-bottom: 1px solid var(--border);
+  padding: 8px 28px; display: flex; align-items: center; gap: 12px;
+}
+.progress-label { font-size: 0.72rem; color: var(--dim); font-weight: 700; letter-spacing: 0.5px; }
+.progress-bar { flex: 1; height: 6px; background: var(--border); border-radius: 6px; overflow: hidden; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, var(--cyan), var(--blue)); border-radius: 6px; transition: width 0.4s ease; width: 0%; }
+.progress-text { font-size: 0.72rem; color: var(--dim); white-space: nowrap; }
+
+/* ── FORMULA BAR ── */
+.formula-bar {
+  background: rgba(6,182,212,0.06);
+  border-bottom: 1px solid rgba(6,182,212,0.15);
+  padding: 10px 28px;
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+}
+.formula-label { font-size: 0.72rem; font-weight: 800; color: var(--cyan); letter-spacing: 1px; text-transform: uppercase; }
+.formula {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.85rem; color: var(--white);
+  background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+  padding: 5px 14px; border-radius: 6px;
+}
+.formula span { color: var(--cyan); }
+
+/* ── MAIN ── */
+.main { max-width: 860px; margin: 28px auto 60px; padding: 0 18px; }
+
+/* ── QUESTION CARD ── */
+.q-card {
+  background: var(--panel);
+  border: 1.5px solid var(--border);
+  border-radius: 18px;
+  overflow: hidden;
+  margin-bottom: 22px;
+  box-shadow: 0 6px 28px rgba(0,0,0,0.35);
+  transition: border-color 0.3s;
+}
+.q-card.answered-correct { border-color: var(--green); }
+.q-card.answered-wrong   { border-color: var(--red); }
+
+.q-header {
+  padding: 14px 20px;
+  display: flex; align-items: center; gap: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.q-num {
+  font-family: 'Orbitron', sans-serif;
+  background: var(--cyan); color: var(--bg);
+  padding: 4px 12px; border-radius: 20px;
+  font-size: 0.8rem; white-space: nowrap;
+}
+.q-context-tag {
+  font-size: 0.72rem; font-weight: 800; letter-spacing: 0.8px;
+  text-transform: uppercase; color: var(--dim);
+}
+.diff-badge {
+  margin-left: auto; font-size: 0.68rem; font-weight: 800;
+  padding: 2px 10px; border-radius: 20px; letter-spacing: 0.5px;
+}
+.diff-easy   { background: rgba(34,197,94,0.12);  color: var(--green); }
+.diff-medium { background: rgba(245,158,11,0.12); color: var(--gold); }
+.diff-hard   { background: rgba(239,68,68,0.12);  color: var(--red); }
+.diff-bonus  { background: rgba(139,92,246,0.15); color: var(--purple); }
+
+.q-body { padding: 20px; }
+
+.q-scenario {
+  font-size: 1rem; font-weight: 700; color: var(--white);
+  line-height: 1.5; margin-bottom: 16px;
+}
+.q-scenario em { color: var(--cyan); font-style: normal; }
+
+/* SVG diagram */
+.diagram-wrap {
+  display: flex; justify-content: center; margin-bottom: 18px;
+}
+.diagram-wrap svg { overflow: visible; }
+
+/* Hint box */
+.hint-box {
+  background: rgba(245,158,11,0.07);
+  border: 1px solid rgba(245,158,11,0.2);
+  border-radius: 10px; padding: 10px 14px;
+  margin-bottom: 14px; font-size: 0.85rem;
+  color: var(--text); line-height: 1.6; display: none;
+}
+.hint-box.visible { display: block; }
+.hint-box strong { color: var(--gold); }
+
+/* Working area */
+.working-area {
+  background: rgba(255,255,255,0.03);
+  border: 1.5px dashed rgba(255,255,255,0.1);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+}
+.working-label { font-size: 0.7rem; font-weight: 800; letter-spacing: 1px;
+  text-transform: uppercase; color: var(--dim); margin-bottom: 8px; }
+.working-steps { display: flex; flex-direction: column; gap: 5px; }
+.step-row { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; }
+.step-label { color: var(--dim); font-size: 0.78rem; min-width: 140px; }
+.step-ans {
+  flex: 1; background: var(--panel2); border: 1.5px solid var(--border);
+  border-radius: 7px; color: var(--cyan);
+  font-family: 'Orbitron', sans-serif; font-size: 0.8rem;
+  padding: 5px 10px; outline: none; width: 110px;
+  text-align: center; transition: border-color 0.2s;
+}
+.step-ans:focus { border-color: var(--cyan); }
+.step-check { font-size: 0.9rem; min-width: 20px; }
+
+/* Answer row */
+.answer-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.answer-input {
+  flex: 1; min-width: 130px; max-width: 220px;
+  border: 2px solid var(--border); border-radius: 10px;
+  padding: 10px 14px; font-size: 1rem; font-family: inherit;
+  background: rgba(255,255,255,0.05); color: var(--white);
+  outline: none; transition: border-color 0.2s;
+  font-family: 'Orbitron', sans-serif;
+}
+.answer-input:focus { border-color: var(--cyan); }
+.answer-input.correct { border-color: var(--green); background: var(--correct); color: var(--green); }
+.answer-input.wrong   { border-color: var(--red);   background: var(--wrong);   color: var(--red); }
+
+.check-btn {
+  padding: 10px 22px; background: var(--cyan); color: var(--bg);
+  border: none; border-radius: 10px; font-family: 'Orbitron', sans-serif;
+  font-size: 0.82rem; font-weight: 900; cursor: pointer;
+  transition: all 0.15s; white-space: nowrap; letter-spacing: 0.5px;
+}
+.check-btn:hover { background: #22d3ee; transform: scale(1.04); }
+.check-btn:active { transform: scale(0.96); }
+.check-btn:disabled { background: var(--dim); cursor: default; transform: none; }
+
+.hint-btn {
+  padding: 10px 16px; background: transparent;
+  border: 1.5px solid rgba(245,158,11,0.4); border-radius: 10px;
+  color: var(--gold); font-family: inherit; font-size: 0.85rem; font-weight: 700;
+  cursor: pointer; transition: all 0.15s; white-space: nowrap;
+}
+.hint-btn:hover { background: rgba(245,158,11,0.1); }
+
+/* Feedback */
+.feedback {
+  margin-top: 10px; font-size: 0.88rem; font-weight: 700;
+  display: none; padding: 8px 14px; border-radius: 8px; line-height: 1.5;
+}
+.feedback.correct { display: block; background: var(--correct); color: var(--green); border: 1px solid rgba(34,197,94,0.2); }
+.feedback.wrong   { display: block; background: var(--wrong);   color: var(--red);   border: 1px solid rgba(239,68,68,0.2); }
+
+/* Reveal */
+.reveal-btn {
+  margin-top: 6px; padding: 5px 12px;
+  background: transparent; border: 1px solid var(--border);
+  border-radius: 7px; color: var(--dim); font-family: inherit;
+  font-size: 0.78rem; cursor: pointer; transition: all 0.15s; display: none;
+}
+.reveal-btn.visible { display: inline-block; }
+.reveal-btn:hover { border-color: var(--dim); color: var(--text); }
+.solution-box {
+  margin-top: 8px; padding: 10px 14px;
+  background: rgba(59,130,246,0.06); border: 1px solid rgba(59,130,246,0.2);
+  border-radius: 8px; font-size: 0.83rem; color: var(--text);
+  line-height: 1.7; display: none;
+  font-family: 'Orbitron', sans-serif; font-size: 0.75rem;
+}
+.solution-box.visible { display: block; }
+
+/* ── SUBMISSION ── */
+.submission-card {
+  background: var(--panel);
+  border: 1.5px solid var(--border);
+  border-radius: 18px;
+  padding: 28px;
+  margin-top: 30px;
+  box-shadow: 0 6px 28px rgba(0,0,0,0.35);
+}
+.sub-header {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1rem; color: var(--cyan); margin-bottom: 6px;
+}
+.sub-note { font-size: 0.83rem; color: var(--dim); margin-bottom: 18px; line-height: 1.5; }
+.gen-btn {
+  padding: 12px 26px; background: var(--green); color: var(--bg);
+  border: none; border-radius: 10px; font-family: 'Orbitron', sans-serif;
+  font-size: 0.85rem; font-weight: 900; cursor: pointer;
+  transition: all 0.15s; letter-spacing: 0.5px;
+}
+.gen-btn:hover { background: #4ade80; transform: scale(1.04); }
+.summary-wrap { margin-top: 16px; display: none; }
+.summary-textarea {
+  width: 100%; min-height: 260px;
+  background: rgba(0,0,0,0.4); color: #7fffbc;
+  border: 2px solid rgba(34,197,94,0.3); border-radius: 10px;
+  padding: 14px; font-family: 'Courier New', monospace;
+  font-size: 0.77rem; line-height: 1.65; resize: vertical; outline: none;
+}
+.copy-row { display: flex; align-items: center; gap: 12px; margin-top: 10px; flex-wrap: wrap; }
+.copy-btn {
+  padding: 9px 22px; background: var(--gold); color: var(--bg);
+  border: none; border-radius: 8px; font-family: 'Orbitron', sans-serif;
+  font-size: 0.78rem; cursor: pointer; transition: transform 0.12s; letter-spacing: 0.5px;
+}
+.copy-btn:hover { background: #fbbf24; transform: scale(1.03); }
+.copy-confirm { color: var(--green); font-weight: 800; font-size: 0.85rem; display: none; }
+.classroom-steps {
+  margin-top: 12px; background: rgba(0,0,0,0.25);
+  border-radius: 8px; padding: 12px 14px;
+  color: var(--dim); font-size: 0.78rem; line-height: 1.75;
+}
+.classroom-steps strong { color: var(--gold); }
+
+@media (max-width: 560px) {
+  .header h1 { font-size: 0.85rem; }
+  .answer-input { max-width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-icon">📦</div>
+  <div>
+    <h1>MR. GODDARD'S 3D WORKSHOP</h1>
+    <p>Year 7 · Surface Area of Cuboids · Show all working</p>
+  </div>
+  <div class="score-wrap">
+    <div class="score-pill" id="scoreDisplay">0 / 7</div>
+  </div>
+</div>
+
+<div class="name-banner">
+  <label for="studentName">👷 Your Name:</label>
+  <input class="name-input" id="studentName" placeholder="Type your full name" autocomplete="name">
+</div>
+
+<div class="progress-wrap">
+  <span class="progress-label">PROGRESS</span>
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  <span class="progress-text" id="progressText">0 of 7 answered</span>
+</div>
+
+<div class="formula-bar">
+  <span class="formula-label">📐 Formula:</span>
+  <div class="formula">SA = 2<span>lw</span> + 2<span>lh</span> + 2<span>wh</span></div>
+  <span style="font-size:0.78rem;color:var(--dim);">where l = length, w = width, h = height</span>
+</div>
+
+<div class="main" id="questionsContainer"></div>
+
+<script>
+// ─────────────────────────────────────────────────────────────────────────────
+// RANDOMISER — seeded by date so same question set for whole class each day
+// ─────────────────────────────────────────────────────────────────────────────
+function seededRand(seed) {
+  let s = seed;
+  return function() {
+    s = (s * 1664525 + 1013904223) & 0xffffffff;
+    return ((s >>> 0) / 0xffffffff);
+  };
+}
+const today = new Date();
+const seed  = today.getFullYear() * 10000 + (today.getMonth()+1) * 100 + today.getDate();
+const rng   = seededRand(seed);
+
+function ri(min, max) { return Math.floor(rng() * (max - min + 1)) + min; }
+function pick(arr)    { return arr[Math.floor(rng() * arr.length)]; }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GENERATE QUESTIONS
+// ─────────────────────────────────────────────────────────────────────────────
+function sa(l, w, h) { return 2*(l*w + l*h + w*h); }
+function fmt(n)       { return Number.isInteger(n) ? n.toString() : n.toFixed(2); }
+
+// Q1 — cube (easy) — gift wrapping
+const q1l = ri(3,9), q1 = q1l;
+const q1ans = sa(q1l, q1l, q1l);
+
+// Q2 — cube (easy) — dice factory
+const q2l = ri(4,10), q2 = q2l;
+const q2ans = sa(q2l, q2l, q2l);
+
+// Q3 — cuboid (easy) — fish tank
+const q3l = ri(8,20), q3w = ri(5,10), q3h = ri(5,10);
+const q3ans = sa(q3l, q3w, q3h);
+
+// Q4 — cuboid (medium) — shipping box
+const q4l = ri(10,20), q4w = ri(4,9), q4h = ri(3,7);
+const q4ans = sa(q4l, q4w, q4h);
+
+// Q5 — cuboid (medium) — phone case
+const q5l = ri(12,18), q5w = ri(6,10), q5h = ri(1,3);
+const q5ans = sa(q5l, q5w, q5h);
+
+// Q6 — cuboid (medium) — paint a room (open top — no ceiling!)
+const q6l = ri(4,7), q6w = ri(3,5), q6h = ri(2,4);
+// Open-top box: SA minus top face
+const q6ans = 2*q6l*q6w + 2*q6l*q6h + 2*q6w*q6h - q6l*q6w;
+
+// Q7 — bonus: two cuboids stacked (L-shape bench)
+// or a cost problem with percentage waste
+const q7l1 = ri(6,10), q7w1 = ri(4,8), q7h1 = ri(3,6);
+const q7l2 = ri(3,5),  q7w2 = ri(2,4), q7h2 = ri(2,4);
+// Total external SA of two separate boxes minus shared internal face (overlap)
+// For simplicity: treat as two separate cuboids and add — real-world: total wrapping paper needed
+const q7sa1 = sa(q7l1, q7w1, q7h1);
+const q7sa2 = sa(q7l2, q7w2, q7h2);
+// The two boxes are wrapped separately but the customer gets a 15% discount on total paper cost
+// Paper costs 50p per cm²
+const q7totalSA   = q7sa1 + q7sa2;
+const q7rawCost   = q7totalSA * 0.50;   // pence
+const q7discount  = 15;
+const q7finalCost = q7rawCost * (1 - q7discount/100);
+const q7ans       = parseFloat(fmt(q7finalCost)); // pence
+
+const QUESTIONS = [
+  {
+    id: 'q1',
+    difficulty: 'easy',
+    context: 'Gift Wrapping',
+    scenario: `🎁 A company wraps <em>cubic gift boxes</em> for birthdays. Each box has sides of <em>${q1l} cm</em>. How much wrapping paper (in cm²) is needed to cover one box completely?`,
+    dims: { l: q1l, w: q1l, h: q1l }, unit: 'cm²',
+    answer: q1ans,
+    hint: `A cube has 6 identical square faces. Each face has area = ${q1l} × ${q1l} = ${q1l*q1l} cm². Multiply by 6!`,
+    solution: `6 faces × (${q1l} × ${q1l}) = 6 × ${q1l*q1l} = ${q1ans} cm²`,
+    steps: [
+      { label: 'Area of one face (cm²)', ans: q1l*q1l },
+      { label: '× 6 faces =', ans: q1ans }
+    ]
+  },
+  {
+    id: 'q2',
+    difficulty: 'easy',
+    context: 'Factory Design',
+    scenario: `🎲 A factory makes <em>cubic dice</em> with sides of <em>${q2l} mm</em>. Each die needs to be painted on every face. What is the total surface area of one die in mm²?`,
+    dims: { l: q2l, w: q2l, h: q2l }, unit: 'mm²',
+    answer: q2ans,
+    hint: `Same as before — 6 identical faces. Each is ${q2l} × ${q2l} = ${q2l*q2l} mm².`,
+    solution: `6 × (${q2l} × ${q2l}) = 6 × ${q2l*q2l} = ${q2ans} mm²`,
+    steps: [
+      { label: 'Area of one face (mm²)', ans: q2l*q2l },
+      { label: '× 6 faces =', ans: q2ans }
+    ]
+  },
+  {
+    id: 'q3',
+    difficulty: 'easy',
+    context: 'Fish Tank',
+    scenario: `🐠 A pet shop sells a <em>glass fish tank</em> measuring <em>${q3l} cm × ${q3w} cm × ${q3h} cm</em>. The tank is <em>open at the top</em>. How many cm² of glass is used to make it?\n💡 Hint: open top means you don't include the top face.`,
+    dims: { l: q3l, w: q3w, h: q3h }, unit: 'cm²',
+    answer: q3ans - q3l*q3w,
+    hint: `Calculate the full SA first: 2(${q3l}×${q3w}) + 2(${q3l}×${q3h}) + 2(${q3w}×${q3h}). Then subtract the top face (${q3l} × ${q3w} = ${q3l*q3w} cm²).`,
+    solution: `Full SA = ${q3ans} cm². Minus top (${q3l}×${q3w} = ${q3l*q3w}) = ${q3ans - q3l*q3w} cm²`,
+    steps: [
+      { label: 'Top/Bottom (l×w) ×2 =', ans: 2*q3l*q3w },
+      { label: 'Front/Back (l×h) ×2 =', ans: 2*q3l*q3h },
+      { label: 'Sides (w×h) ×2 =', ans: 2*q3w*q3h },
+      { label: 'Full SA =', ans: q3ans },
+      { label: '− top face =', ans: q3ans - q3l*q3w }
+    ]
+  },
+  {
+    id: 'q4',
+    difficulty: 'medium',
+    context: 'Shipping & Packaging',
+    scenario: `📦 A delivery company ships <em>rectangular boxes</em> measuring <em>${q4l} cm × ${q4w} cm × ${q4h} cm</em>. The boxes are sealed with brown tape on every face. Find the total surface area in cm².`,
+    dims: { l: q4l, w: q4w, h: q4h }, unit: 'cm²',
+    answer: q4ans,
+    hint: `Three pairs of faces: top/bottom (${q4l}×${q4w}), front/back (${q4l}×${q4h}), left/right (${q4w}×${q4h}). Multiply each pair by 2 then add.`,
+    solution: `2(${q4l}×${q4w}) + 2(${q4l}×${q4h}) + 2(${q4w}×${q4h}) = ${2*q4l*q4w} + ${2*q4l*q4h} + ${2*q4w*q4h} = ${q4ans} cm²`,
+    steps: [
+      { label: '2 × (l×w) =', ans: 2*q4l*q4w },
+      { label: '2 × (l×h) =', ans: 2*q4l*q4h },
+      { label: '2 × (w×h) =', ans: 2*q4w*q4h },
+      { label: 'Total SA =', ans: q4ans }
+    ]
+  },
+  {
+    id: 'q5',
+    difficulty: 'medium',
+    context: 'Phone Case Design',
+    scenario: `📱 A designer creates a <em>slim phone case</em> measuring <em>${q5l} cm × ${q5w} cm × ${q5h} cm</em>. The entire outside is covered in a special rubber coating. Find the total surface area in cm².`,
+    dims: { l: q5l, w: q5w, h: q5h }, unit: 'cm²',
+    answer: q5ans,
+    hint: `Don't forget the thin sides! Even though h = ${q5h} cm, you still need 2(l×h) and 2(w×h).`,
+    solution: `2(${q5l}×${q5w}) + 2(${q5l}×${q5h}) + 2(${q5w}×${q5h}) = ${2*q5l*q5w} + ${2*q5l*q5h} + ${2*q5w*q5h} = ${q5ans} cm²`,
+    steps: [
+      { label: '2 × (l×w) =', ans: 2*q5l*q5w },
+      { label: '2 × (l×h) =', ans: 2*q5l*q5h },
+      { label: '2 × (w×h) =', ans: 2*q5w*q5h },
+      { label: 'Total SA =', ans: q5ans }
+    ]
+  },
+  {
+    id: 'q6',
+    difficulty: 'medium',
+    context: 'Room Painting',
+    scenario: `🎨 A room measures <em>${q6l} m × ${q6w} m × ${q6h} m</em>. A decorator needs to paint the <em>4 walls and the floor</em> — but NOT the ceiling. Find the total area to be painted in m².`,
+    dims: { l: q6l, w: q6w, h: q6h }, unit: 'm²',
+    answer: q6ans,
+    hint: `4 walls: 2(l×h) + 2(w×h). Floor: l×w. Add them together. Don't include the ceiling!`,
+    solution: `4 walls = 2(${q6l}×${q6h}) + 2(${q6w}×${q6h}) = ${2*q6l*q6h} + ${2*q6w*q6h} = ${2*q6l*q6h + 2*q6w*q6h} m². Floor = ${q6l}×${q6w} = ${q6l*q6w} m². Total = ${q6ans} m²`,
+    steps: [
+      { label: '2 × (l×h) walls =', ans: 2*q6l*q6h },
+      { label: '2 × (w×h) walls =', ans: 2*q6w*q6h },
+      { label: 'Floor (l×w) =', ans: q6l*q6w },
+      { label: 'Total =', ans: q6ans }
+    ]
+  },
+  {
+    id: 'q7',
+    difficulty: 'bonus',
+    context: 'Real-World Challenge',
+    scenario: `🧩 A furniture shop wraps two <em>separate</em> wooden crates for delivery:\n• Crate A: <em>${q7l1} cm × ${q7w1} cm × ${q7h1} cm</em>\n• Crate B: <em>${q7l2} cm × ${q7w2} cm × ${q7h2} cm</em>\n\nWrapping paper costs <em>50p per cm²</em>.\nThe customer gets a <em>${q7discount}% discount</em> on the total wrapping paper cost.\n\nHow much does the customer pay in pence (p)? Round to 2 decimal places.`,
+    dims: null, unit: 'p',
+    answer: q7ans,
+    hint: `Step 1: Find SA of Crate A. Step 2: Find SA of Crate B. Step 3: Add them → total cm². Step 4: × 50p. Step 5: Apply ${q7discount}% discount (multiply by ${(1 - q7discount/100)}).`,
+    solution: `SA of A = ${q7sa1} cm². SA of B = ${q7sa2} cm². Total = ${q7totalSA} cm². Cost = ${q7totalSA} × 50p = ${q7rawCost}p. After ${q7discount}% off: ${q7rawCost} × 0.${100-q7discount} = ${fmt(q7finalCost)}p`,
+    steps: [
+      { label: 'SA of Crate A (cm²)', ans: q7sa1 },
+      { label: 'SA of Crate B (cm²)', ans: q7sa2 },
+      { label: 'Total SA (cm²)', ans: q7totalSA },
+      { label: 'Cost before discount (p)', ans: q7rawCost },
+      { label: `After ${q7discount}% discount (p)`, ans: parseFloat(fmt(q7finalCost)) }
+    ]
+  }
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CUBOID SVG
+// ─────────────────────────────────────────────────────────────────────────────
+function drawCuboid(l, w, h, unit, compact) {
+  const scale = compact ? 3.5 : 4.5;
+  const pw = Math.min(w * scale, 90), ph = Math.min(h * scale, 80);
+  const pl = Math.min(l * scale, 130);
+  const sk = 22; // skew depth
+  const ox = 50, oy = 30;
+  const cols = { front: '#1e3a5f', top: '#1a4a6b', side: '#162d4a' };
+  const stroke = '#06b6d4';
+
+  return `<svg width="${pl+sk+ox+20}" height="${ph+sk+oy+20}" viewBox="0 0 ${pl+sk+ox+20} ${ph+sk+oy+20}">
+    <!-- Front face -->
+    <polygon points="${ox},${oy+sk} ${ox+pl},${oy+sk} ${ox+pl},${oy+sk+ph} ${ox},${oy+sk+ph}"
+      fill="${cols.front}" stroke="${stroke}" stroke-width="1.5"/>
+    <!-- Top face -->
+    <polygon points="${ox},${oy+sk} ${ox+sk},${oy} ${ox+sk+pl},${oy} ${ox+pl},${oy+sk}"
+      fill="${cols.top}" stroke="${stroke}" stroke-width="1.5"/>
+    <!-- Right face -->
+    <polygon points="${ox+pl},${oy+sk} ${ox+pl+sk},${oy} ${ox+pl+sk},${oy+ph} ${ox+pl},${oy+sk+ph}"
+      fill="${cols.side}" stroke="${stroke}" stroke-width="1.5"/>
+
+    <!-- Width label (front bottom) -->
+    <text x="${ox + pl/2}" y="${oy+sk+ph+18}" text-anchor="middle"
+      font-family="Orbitron,sans-serif" font-size="11" fill="#06b6d4">${w}${unit}</text>
+
+    <!-- Height label (front left) -->
+    <text x="${ox-14}" y="${oy+sk+ph/2+4}" text-anchor="middle"
+      font-family="Orbitron,sans-serif" font-size="11" fill="#f59e0b">${h}${unit}</text>
+
+    <!-- Length label (top) -->
+    <text x="${ox+sk/2+pl/2}" y="${oy-6}" text-anchor="middle"
+      font-family="Orbitron,sans-serif" font-size="11" fill="#a78bfa">${l}${unit}</text>
+  </svg>`;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────────────────────────────────────
+const results = {}; // qid → {correct, studentAns}
+let score = 0;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// RENDER QUESTIONS
+// ─────────────────────────────────────────────────────────────────────────────
+function buildQuestions() {
+  const container = document.getElementById('questionsContainer');
+  container.innerHTML = '';
+
+  QUESTIONS.forEach((q, qi) => {
+    const card = document.createElement('div');
+    card.className = 'q-card';
+    card.id = 'card-' + q.id;
+
+    const diffLabels = { easy:'🟢 EASY', medium:'🟡 MEDIUM', hard:'🔴 HARD', bonus:'🟣 BONUS CHALLENGE' };
+    const diffClass  = { easy:'diff-easy', medium:'diff-medium', hard:'diff-hard', bonus:'diff-bonus' };
+
+    // Unit from dims
+    const dimUnit = q.dims ? (q.dims.l < 20 && q.unit.includes('m') ? (q.unit.includes('mm') ? 'mm' : (q.unit.includes('cm') ? 'cm' : 'm')) : '') : '';
+
+    // Steps HTML
+    const stepsHtml = q.steps.map((s, si) => `
+      <div class="step-row">
+        <span class="step-label">${s.label}</span>
+        <input class="step-ans" type="number" step="0.01" placeholder="?" id="${q.id}-step-${si}" data-ans="${s.ans}">
+        <span class="step-check" id="${q.id}-step-check-${si}"></span>
+      </div>`).join('');
+
+    // Diagram
+    const diagramHtml = q.dims
+      ? `<div class="diagram-wrap">${drawCuboid(q.dims.l, q.dims.w, q.dims.h, dimUnit, false)}</div>`
+      : `<div class="diagram-wrap">${drawCuboid(q7l1, q7w1, q7h1, 'cm', true)}&nbsp;&nbsp;${drawCuboid(q7l2, q7w2, q7h2, 'cm', true)}</div>`;
+
+    card.innerHTML = `
+      <div class="q-header">
+        <span class="q-num">Q${qi+1}</span>
+        <span class="q-context-tag">${q.context}</span>
+        <span class="diff-badge ${diffClass[q.difficulty]}">${diffLabels[q.difficulty]}</span>
+      </div>
+      <div class="q-body">
+        <div class="q-scenario">${q.scenario.replace(/\n/g,'<br>')}</div>
+        ${diagramHtml}
+        <div class="hint-box" id="${q.id}-hint"><strong>💡 Hint:</strong> ${q.hint}</div>
+        <div class="working-area">
+          <div class="working-label">📝 Show your working — fill in each step</div>
+          <div class="working-steps">${stepsHtml}</div>
+        </div>
+        <div class="answer-row">
+          <input class="answer-input" id="${q.id}-ans" type="number" step="0.01"
+            placeholder="Final answer (${q.unit})">
+          <button class="check-btn" id="${q.id}-check" onclick="checkAnswer('${q.id}', ${q.answer})">✓ CHECK</button>
+          <button class="hint-btn" onclick="toggleHint('${q.id}')">💡 Hint</button>
+        </div>
+        <div class="feedback" id="${q.id}-fb"></div>
+        <button class="reveal-btn" id="${q.id}-reveal" onclick="toggleSolution('${q.id}')">Show full solution</button>
+        <div class="solution-box" id="${q.id}-sol">📐 ${q.solution}</div>
+      </div>`;
+
+    container.appendChild(card);
+
+    // Step checking
+    q.steps.forEach((s, si) => {
+      const inp = document.getElementById(`${q.id}-step-${si}`);
+      if (inp) inp.addEventListener('change', () => checkStep(q.id, si, s.ans));
+    });
+  });
+
+  // Add submission section
+  const sub = document.createElement('div');
+  sub.className = 'submission-card';
+  sub.innerHTML = `
+    <div class="sub-header">📤 Submit to Google Classroom</div>
+    <p class="sub-note">When you've finished, click generate to create your submission summary. Copy and paste it into the Google Classroom assignment comment box.</p>
+    <button class="gen-btn" onclick="generateSummary()">📋 Generate My Submission</button>
+    <div class="summary-wrap" id="summaryWrap">
+      <textarea class="summary-textarea" id="summaryText" readonly></textarea>
+      <div class="copy-row">
+        <button class="copy-btn" onclick="copySummary()">📋 Copy to Clipboard</button>
+        <span class="copy-confirm" id="copyConfirm">✅ Copied!</span>
+      </div>
+      <div class="classroom-steps">
+        <strong>How to submit:</strong><br>
+        1. Click <strong>Copy to Clipboard</strong><br>
+        2. Open Google Classroom → find the 3D Workshop assignment<br>
+        3. Click <strong>Add private comment</strong><br>
+        4. Paste with <strong>Ctrl+V</strong> (or Cmd+V / long-press on iPad)<br>
+        5. Click <strong>Submit</strong> ✅
+      </div>
+    </div>`;
+  container.appendChild(sub);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// STEP CHECK
+// ─────────────────────────────────────────────────────────────────────────────
+function checkStep(qid, si, correctAns) {
+  const inp   = document.getElementById(`${qid}-step-${si}`);
+  const check = document.getElementById(`${qid}-step-check-${si}`);
+  const val   = parseFloat(inp.value);
+  if (isNaN(val)) return;
+  const ok = Math.abs(val - correctAns) < 0.05;
+  check.textContent = ok ? '✅' : '❌';
+  inp.style.borderColor = ok ? 'var(--green)' : 'var(--red)';
+  inp.style.color = ok ? 'var(--green)' : 'var(--red)';
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ANSWER CHECK
+// ─────────────────────────────────────────────────────────────────────────────
+function checkAnswer(qid, correct) {
+  const inp = document.getElementById(qid + '-ans');
+  const fb  = document.getElementById(qid + '-fb');
+  const btn = document.getElementById(qid + '-check');
+  const rev = document.getElementById(qid + '-reveal');
+  const card = document.getElementById('card-' + qid);
+  const val = parseFloat(inp.value);
+  if (isNaN(val)) { inp.focus(); return; }
+
+  const ok = Math.abs(val - correct) < 0.05;
+  inp.disabled = true; btn.disabled = true;
+  inp.classList.add(ok ? 'correct' : 'wrong');
+  fb.className = 'feedback ' + (ok ? 'correct' : 'wrong');
+  fb.textContent = ok
+    ? `✅ Correct! Great work — ${correct} is right.`
+    : `❌ Not quite. The answer is ${fmt(correct)}. Check the hint and solution below.`;
+  rev.classList.add('visible');
+  card.classList.add(ok ? 'answered-correct' : 'answered-wrong');
+
+  if (!results[qid]) {
+    results[qid] = { correct: ok, studentAns: val };
+    if (ok) score++;
+    updateProgress();
+  }
+}
+
+function toggleHint(qid) {
+  document.getElementById(qid + '-hint').classList.toggle('visible');
+}
+
+function toggleSolution(qid) {
+  const sol = document.getElementById(qid + '-sol');
+  const btn = document.getElementById(qid + '-reveal');
+  const visible = sol.classList.toggle('visible');
+  btn.textContent = visible ? 'Hide solution' : 'Show full solution';
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PROGRESS
+// ─────────────────────────────────────────────────────────────────────────────
+function updateProgress() {
+  const done = Object.keys(results).length;
+  const total = QUESTIONS.length;
+  const pct = Math.round((done / total) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressText').textContent = `${done} of ${total} answered`;
+  document.getElementById('scoreDisplay').textContent = `${score} / ${total}`;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GENERATE SUBMISSION
+// ─────────────────────────────────────────────────────────────────────────────
+function generateSummary() {
+  const name = document.getElementById('studentName').value.trim() || '(Name not entered)';
+  const now  = new Date().toLocaleString('en-GB', { dateStyle:'short', timeStyle:'short' });
+  const total = QUESTIONS.length;
+
+  const contextMap = {
+    q1:'Q1 — Gift Wrapping (cube, '+q1l+'cm)',
+    q2:'Q2 — Dice Factory (cube, '+q2l+'mm)',
+    q3:'Q3 — Fish Tank ('+q3l+'×'+q3w+'×'+q3h+' cm, open top)',
+    q4:'Q4 — Shipping Box ('+q4l+'×'+q4w+'×'+q4h+' cm)',
+    q5:'Q5 — Phone Case ('+q5l+'×'+q5w+'×'+q5h+' cm)',
+    q6:'Q6 — Room Painting ('+q6l+'×'+q6w+'×'+q6h+' m, no ceiling)',
+    q7:'Q7 — Bonus: Two Crates + 15% Discount'
+  };
+
+  let L = [];
+  L.push('╔══════════════════════════════════════════════════════╗');
+  L.push('║   MR. GODDARD\'S 3D WORKSHOP — SUBMISSION            ║');
+  L.push('║   Topic: Surface Area of Cuboids · Year 7           ║');
+  L.push('╚══════════════════════════════════════════════════════╝');
+  L.push('');
+  L.push(`Student   : ${name}`);
+  L.push(`Submitted : ${now}`);
+  L.push(`Score     : ${score} / ${total}`);
+  L.push('');
+  L.push('──────────────────────────────────────────────────────');
+  L.push('  QUESTION BREAKDOWN');
+  L.push('──────────────────────────────────────────────────────');
+
+  QUESTIONS.forEach(q => {
+    const r = results[q.id];
+    const icon = !r ? '○ ' : r.correct ? '✅' : '❌';
+    L.push(`  ${icon} ${contextMap[q.id]}`);
+    if (r) {
+      L.push(`     Your answer : ${r.studentAns}`);
+      L.push(`     Correct     : ${fmt(q.answer)} ${q.unit}`);
+    } else {
+      L.push(`     Not attempted`);
+    }
+    L.push('');
+  });
+
+  L.push('──────────────────────────────────────────────────────');
+  const pct = Math.round((score/total)*100);
+  L.push(`  FINAL SCORE: ${score} / ${total}  (${pct}%)`);
+  L.push('══════════════════════════════════════════════════════');
+
+  document.getElementById('summaryText').value = L.join('\n');
+  document.getElementById('summaryWrap').style.display = 'block';
+  setTimeout(() => document.getElementById('summaryText').scrollIntoView({behavior:'smooth',block:'nearest'}), 100);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// COPY
+// ─────────────────────────────────────────────────────────────────────────────
+function copySummary() {
+  const ta = document.getElementById('summaryText');
+  ta.select(); ta.setSelectionRange(0, 99999);
+  try { navigator.clipboard.writeText(ta.value).catch(() => document.execCommand('copy')); }
+  catch(e) { document.execCommand('copy'); }
+  const c = document.getElementById('copyConfirm');
+  c.style.display = 'inline';
+  setTimeout(() => { c.style.display = 'none'; }, 3000);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+buildQuestions();
+</script>
+</body>
+</html>
