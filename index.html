@@ -686,5 +686,87 @@ function openTab(tab) {
 }
 </script>
 
+<style>
+.donate-footer {
+  width: 100%;
+  max-width: 780px;
+  margin: 28px auto 0;
+  padding: 0 20px 48px;
+  text-align: center;
+}
+.donate-inner {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 22px 28px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.donate-text {
+  text-align: left;
+  flex: 1;
+  min-width: 180px;
+}
+.donate-text h3 {
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: rgba(255,255,255,0.6);
+  margin-bottom: 4px;
+  letter-spacing: 0.02em;
+}
+.donate-text p {
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.3);
+  line-height: 1.5;
+}
+.donate-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #0070ba;
+  color: white;
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 800;
+  padding: 11px 24px;
+  border-radius: 30px;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.18s;
+  white-space: nowrap;
+  box-shadow: 0 4px 16px rgba(0,112,186,0.35);
+}
+.donate-btn:hover {
+  background: #005ea6;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 22px rgba(0,112,186,0.5);
+}
+.donate-btn svg {
+  width: 18px;
+  height: 18px;
+  fill: white;
+  flex-shrink: 0;
+}
+</style>
+
+<div class="donate-footer">
+  <div class="donate-inner">
+    <div class="donate-text">
+      <h3>☕ Support Mr. Goddard's Maths</h3>
+      <p>All resources on this site are free. If they've helped your students, a small donation keeps new activities coming.</p>
+    </div>
+    <a class="donate-btn" href="https://www.paypal.com/ncp/payment/5G2VTKRP3D6QN" target="_blank" rel="noopener noreferrer">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M7.144 19.532l1.049-5.751c.11-.606.691-1.06 1.326-1.06h6.386c2.386 0 4.047-1.404 4.47-3.744.019-.106.035-.21.049-.312C20.384 8.04 18.94 7 17.044 7H8.456C7.82 7 7.238 7.454 7.128 8.06L4.5 22h3.573l-.929 5H3.5L6.128 8.06C6.567 5.626 8.748 4 11.07 4h8.41c2.547 0 4.256 1.392 4.52 3.508.038.3.038.606 0 .914-.526 3.296-2.88 5.391-6.153 5.565H11.43l-1.049 5.545H7.144z"/>
+      </svg>
+      Donate via PayPal
+    </a>
+  </div>
+</div>
+
 </body>
 </html>
