@@ -93,19 +93,12 @@ html, body {
   font-weight: 600;
   letter-spacing: 0.01em;
   color: rgba(90,60,0,0.6);
-  background:
-    linear-gradient(to bottom,
-      rgba(255,255,255,0.28) 0%,
-      rgba(255,255,255,0.08) 50%,
-      rgba(0,0,0,0.03) 100%
-    ),
-    var(--folder-tab);
+  background: var(--folder-tab);
   border-radius: 10px 10px 0 0;
   margin-right: 3px;
   transition: all 0.18s cubic-bezier(0.25,0.46,0.45,0.94);
   outline: none;
-  box-shadow: 0 -1px 0 rgba(255,255,255,0.25) inset,
-              0 1px 0 rgba(0,0,0,0.1);
+  box-shadow: 0 -1px 0 rgba(255,255,255,0.2) inset;
 }
 
 .tab-btn::before {
@@ -118,12 +111,12 @@ html, body {
 }
 
 .tab-btn:hover:not(.active) {
-  background-color: #E0A600;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.18) 0%, rgba(0,0,0,0.04) 100%), #E0A600;
   color: rgba(70,44,0,0.75);
 }
 
 .tab-btn.active {
-  background-color: var(--folder-body);
+  background: var(--folder-body);
   color: rgba(60,38,0,0.85);
   height: 43px;
   z-index: 10;
@@ -146,14 +139,7 @@ html, body {
 
 /* ── FOLDER BODY ── */
 .folder-body {
-  background:
-    linear-gradient(170deg,
-      rgba(255,255,255,0.35) 0%,
-      rgba(255,255,255,0.08) 18%,
-      rgba(255,255,255,0.0) 40%,
-      rgba(0,0,0,0.04) 100%
-    ),
-    var(--folder-body);
+  background: var(--folder-body);
   border-radius: 0 16px 16px 16px;
   position: relative;
   z-index: 5;
@@ -161,19 +147,14 @@ html, body {
   box-shadow:
     0 30px 80px rgba(0,0,0,0.55),
     0 0 0 0.5px rgba(255,200,60,0.4),
-    inset 0 1px 0 rgba(255,255,255,0.6),
+    inset 0 1px 0 rgba(255,255,255,0.3),
     inset 0 -1px 0 rgba(180,110,0,0.3);
   padding: 28px 28px 36px;
 }
 
 /* subtle inner vignette */
 .folder-body::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(ellipse at 50% 100%, rgba(160,100,0,0.18) 0%, transparent 70%);
-  pointer-events: none;
-  z-index: 0;
+  display: none;
 }
 
 /* ── PANEL SWITCHER ── */
@@ -595,6 +576,20 @@ html, body {
               <a href="igcse/thunderpeak/teacher.html" style="display:block; text-align:center; background:rgba(22,163,74,0.06); color:rgba(22,163,74,0.7); font-weight:600; font-size:11px; padding:6px 0; border-radius:8px; text-decoration:none; border:1px solid rgba(22,163,74,0.2); transition:background 0.15s;" onmouseover="this.style.background='rgba(22,163,74,0.12)'" onmouseout="this.style.background='rgba(22,163,74,0.06)'">📋 Teacher Instructions</a>
             </div>
           </div>
+
+          <a class="card" href="igcse/dubai-escape/index.html">
+            <div class="accent accent-igcse"></div>
+            <div class="card-top">
+              <div class="card-icon icon-igcse">🌆</div>
+            </div>
+            <div class="card-label label-igcse">IGCSE · Mixed Topics</div>
+            <div class="card-name">Dubai Maths Escape Challenge</div>
+            <div class="card-desc">Escape the vault beneath the Burj Khalifa. Polygons, area, perimeter, circles and angles — shuffled questions, points and trophies.</div>
+            <div class="card-foot">
+              <span class="card-type">Escape Challenge</span>
+              <span class="open-arrow arrow-igcse">›</span>
+            </div>
+          </a>
 
         </div>
       </div>
