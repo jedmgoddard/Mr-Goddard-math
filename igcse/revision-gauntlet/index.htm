@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mr. Goddard's Revision Gauntlet — Year 9</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: rgba(255,255,255,0.05);
+    --surface-hover: rgba(255,255,255,0.09);
+    --border: rgba(255,255,255,0.1);
+    --yellow: #f5c518;
+    --yellow-dim: rgba(245,197,24,0.15);
+    --yellow-glow: rgba(245,197,24,0.3);
+    --text: #e8e8e8;
+    --muted: #888;
+    --bronze: #cd7f32;
+    --silver: #a8a9ad;
+    --gold: #f5c518;
+    --correct: #4caf7d;
+    --wrong: #e05252;
+    --radius: 14px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Subtle grid texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(245,197,24,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(245,197,24,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .screen { position: relative; z-index: 1; }
+
+  /* ========== SPLASH ========== */
+  #splash {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 40px 20px;
+    text-align: center;
+  }
+
+  .logo-mark {
+    width: 80px; height: 80px;
+    background: var(--yellow);
+    border-radius: 18px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.8rem;
+    color: #000;
+    margin-bottom: 28px;
+    box-shadow: 0 0 40px var(--yellow-glow);
+    animation: pulse 3s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%,100% { box-shadow: 0 0 40px var(--yellow-glow); }
+    50% { box-shadow: 0 0 70px rgba(245,197,24,0.5); }
+  }
+
+  .splash-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.4rem, 7vw, 5rem);
+    letter-spacing: 0.05em;
+    color: var(--yellow);
+    line-height: 1;
+    margin-bottom: 12px;
+  }
+
+  .splash-sub {
+    font-size: 1rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 40px;
+  }
+
+  .name-input-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    max-width: 380px;
+    margin-bottom: 28px;
+  }
+
+  .name-input-wrap label {
+    font-size: 0.8rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-align: left;
+  }
+
+  input[type="text"] {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 18px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  input[type="text"]:focus {
+    border-color: var(--yellow);
+    box-shadow: 0 0 0 3px var(--yellow-dim);
+  }
+
+  .btn-primary {
+    background: var(--yellow);
+    color: #000;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.3rem;
+    letter-spacing: 0.1em;
+    padding: 16px 48px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px var(--yellow-glow);
+  }
+
+  .btn-primary:active { transform: translateY(0); }
+
+  .tier-legend {
+    display: flex;
+    gap: 20px;
+    margin-top: 32px;
+  }
+
+  .tier-badge {
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-weight: 600;
+  }
+
+  .tier-bronze { background: rgba(205,127,50,0.15); color: var(--bronze); border: 1px solid rgba(205,127,50,0.3); }
+  .tier-silver { background: rgba(168,169,173,0.15); color: var(--silver); border: 1px solid rgba(168,169,173,0.3); }
+  .tier-gold   { background: rgba(245,197,24,0.15); color: var(--gold); border: 1px solid rgba(245,197,24,0.3); }
+
+  /* ========== MAP ========== */
+  #map-screen {
+    display: none;
+    padding: 40px 20px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .map-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 36px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .map-header h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    color: var(--yellow);
+    letter-spacing: 0.06em;
+  }
+
+  .score-display {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.9rem;
+    color: var(--yellow);
+  }
+
+  .zones-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+  }
+
+  .zone-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .zone-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--yellow);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s;
+  }
+
+  .zone-card:hover::before { transform: scaleX(1); }
+  .zone-card:hover { background: var(--surface-hover); transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,0.4); }
+
+  .zone-card.locked { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
+  .zone-card.completed { border-color: rgba(76,175,125,0.4); }
+  .zone-card.completed::before { transform: scaleX(1); background: var(--correct); }
+
+  .zone-emoji { font-size: 2rem; margin-bottom: 10px; }
+  .zone-name { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; letter-spacing: 0.05em; color: var(--yellow); margin-bottom: 6px; }
+  .zone-desc { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+  .zone-stars { margin-top: 14px; font-size: 1rem; letter-spacing: 2px; }
+
+  /* ========== QUESTION SCREEN ========== */
+  #question-screen {
+    display: none;
+    padding: 40px 20px;
+    max-width: 760px;
+    margin: 0 auto;
+  }
+
+  .q-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .back-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: background 0.2s;
+  }
+  .back-btn:hover { background: var(--surface-hover); }
+
+  .q-zone-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    color: var(--yellow);
+    letter-spacing: 0.05em;
+  }
+
+  .q-progress {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+
+  .q-pip {
+    flex: 1;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--border);
+    transition: background 0.3s;
+  }
+  .q-pip.active { background: var(--yellow); }
+  .q-pip.done { background: var(--correct); }
+
+  .question-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px;
+    margin-bottom: 20px;
+    animation: fadeUp 0.3s ease;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .q-tier-badge {
+    display: inline-block;
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+    margin-bottom: 16px;
+  }
+
+  .q-text {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    margin-bottom: 8px;
+  }
+
+  .q-text .math {
+    font-family: 'DM Mono', monospace;
+    background: rgba(255,255,255,0.07);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.95em;
+  }
+
+  .q-sub {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-bottom: 20px;
+    line-height: 1.6;
+  }
+
+  .answer-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .answer-input {
+    flex: 1;
+    min-width: 160px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .answer-input:focus {
+    border-color: var(--yellow);
+    box-shadow: 0 0 0 3px var(--yellow-dim);
+  }
+  .answer-input.correct { border-color: var(--correct); background: rgba(76,175,125,0.08); }
+  .answer-input.wrong   { border-color: var(--wrong); background: rgba(224,82,82,0.08); animation: shake 0.3s; }
+
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    75% { transform: translateX(6px); }
+  }
+
+  .btn-check {
+    background: var(--yellow);
+    color: #000;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 0.08em;
+    padding: 12px 28px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .btn-check:hover { transform: translateY(-1px); box-shadow: 0 6px 20px var(--yellow-glow); }
+
+  .feedback-bar {
+    border-radius: 10px;
+    padding: 14px 18px;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    display: none;
+    margin-top: 14px;
+    animation: fadeUp 0.2s ease;
+  }
+  .feedback-bar.correct { background: rgba(76,175,125,0.12); border: 1px solid rgba(76,175,125,0.3); color: var(--correct); }
+  .feedback-bar.wrong   { background: rgba(224,82,82,0.1); border: 1px solid rgba(224,82,82,0.25); color: #e07070; }
+  .feedback-bar.reveal  { background: rgba(245,197,24,0.08); border: 1px solid rgba(245,197,24,0.25); color: var(--yellow); }
+
+  .hint-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+
+  .btn-hint {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 0.8rem;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-hint:hover { border-color: var(--yellow); color: var(--yellow); }
+
+  .btn-next {
+    background: transparent;
+    border: 1px solid var(--yellow);
+    color: var(--yellow);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 0.08em;
+    padding: 12px 28px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: none;
+  }
+  .btn-next:hover { background: var(--yellow); color: #000; }
+
+  /* ========== RESULTS ========== */
+  #results-screen {
+    display: none;
+    padding: 60px 20px;
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .results-logo { font-family: 'Bebas Neue', sans-serif; font-size: 5rem; color: var(--yellow); line-height: 1; }
+  .results-sub  { font-size: 0.9rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 40px; }
+  .results-score { font-family: 'Bebas Neue', sans-serif; font-size: 3.5rem; color: var(--text); margin-bottom: 8px; }
+  .results-label { color: var(--muted); font-size: 0.85rem; margin-bottom: 36px; }
+
+  .submission-block {
+    background: rgba(245,197,24,0.06);
+    border: 1px solid rgba(245,197,24,0.2);
+    border-radius: var(--radius);
+    padding: 20px;
+    text-align: left;
+    margin-bottom: 20px;
+  }
+
+  .submission-block pre {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--text);
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .btn-copy {
+    background: var(--yellow);
+    color: #000;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 0.08em;
+    padding: 14px 36px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 10px;
+  }
+  .btn-copy:hover { box-shadow: 0 8px 30px var(--yellow-glow); transform: translateY(-2px); }
+
+  .btn-restart {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 0.85rem;
+    padding: 10px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 12px;
+    transition: all 0.2s;
+  }
+  .btn-restart:hover { border-color: var(--text); color: var(--text); }
+
+  .zone-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 28px;
+    text-align: left;
+  }
+
+  .zone-summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--surface);
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 0.85rem;
+  }
+
+  .zone-summary-row .zs-name { color: var(--text); }
+  .zone-summary-row .zs-pts  { font-family: 'DM Mono', monospace; color: var(--yellow); }
+</style>
+</head>
+<body>
+
+<!-- ========== SPLASH ========== -->
+<div id="splash" class="screen">
+  <div class="logo-mark">√G</div>
+  <div class="splash-title">Revision Gauntlet</div>
+  <div class="splash-sub">Year 9 · Edexcel IGCSE · Sections 2 &amp; 3/4</div>
+  <div class="name-input-wrap">
+    <label for="student-name">Your name</label>
+    <input type="text" id="student-name" placeholder="e.g. Alex Johnson" autocomplete="off">
+  </div>
+  <button class="btn-primary" onclick="startGame()">Start Gauntlet</button>
+  <div class="tier-legend">
+    <span class="tier-badge tier-bronze">Bronze</span>
+    <span class="tier-badge tier-silver">Silver</span>
+    <span class="tier-badge tier-gold">Gold</span>
+  </div>
+</div>
+
+<!-- ========== MAP ========== -->
+<div id="map-screen" class="screen">
+  <div class="map-header">
+    <h1>Choose Your Zone</h1>
+    <div class="score-display" id="map-score">⭐ 0 pts</div>
+  </div>
+  <div class="zones-grid" id="zones-grid"></div>
+</div>
+
+<!-- ========== QUESTION ========== -->
+<div id="question-screen" class="screen">
+  <div class="q-header">
+    <button class="back-btn" onclick="goToMap()">← Map</button>
+    <div class="q-zone-title" id="q-zone-title"></div>
+  </div>
+  <div class="q-progress" id="q-progress"></div>
+  <div class="question-card" id="question-card">
+    <div class="q-tier-badge" id="q-tier-badge"></div>
+    <div class="q-text" id="q-text"></div>
+    <div class="q-sub" id="q-sub"></div>
+    <div class="answer-row">
+      <input type="text" class="answer-input" id="answer-input" placeholder="Your answer…" autocomplete="off" onkeydown="if(event.key==='Enter') checkAnswer()">
+      <button class="btn-check" onclick="checkAnswer()">Check</button>
+      <button class="btn-next" id="btn-next" onclick="nextQuestion()">Next →</button>
+    </div>
+    <div class="feedback-bar" id="feedback-bar"></div>
+    <div class="hint-row">
+      <button class="btn-hint" id="btn-hint" onclick="showHint()">💡 Hint</button>
+      <button class="btn-hint" id="btn-reveal" onclick="revealAnswer()" style="display:none">👁 Reveal Answer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== RESULTS ========== -->
+<div id="results-screen" class="screen">
+  <div class="results-logo">√G</div>
+  <div class="results-sub">Gauntlet Complete</div>
+  <div class="results-score" id="results-score"></div>
+  <div class="results-label">total points</div>
+  <div class="zone-summary" id="zone-summary"></div>
+  <div class="submission-block">
+    <pre id="submission-text"></pre>
+  </div>
+  <button class="btn-copy" onclick="copySubmission()">📋 Copy for Google Classroom</button><br>
+  <button class="btn-restart" onclick="location.reload()">Play Again</button>
+</div>
+
+<script>
+// =====================================================
+// DATA — all questions text-only, no diagrams
+// =====================================================
+const ZONES = [
+  {
+    id: 'standard-form',
+    emoji: '🔢',
+    name: 'Standard Form',
+    desc: 'Writing, calculating and comparing numbers in standard form.',
+    questions: [
+      {
+        tier: 'bronze',
+        text: 'Write the number <span class="math">47 000</span> in standard form.',
+        sub: 'Standard form is written as a × 10ⁿ where 1 ≤ a < 10.',
+        answer: ['4.7 × 10⁴', '4.7x10^4', '4.7*10^4', '4.7e4'],
+        hint: 'Move the decimal point until you have a number between 1 and 10. Count how many places you moved.',
+        solution: '4.7 × 10⁴ (decimal moves 4 places left)',
+        points: 1
+      },
+      {
+        tier: 'silver',
+        text: 'Calculate <span class="math">(3.2 × 10⁵) × (2 × 10³)</span>. Give your answer in standard form.',
+        sub: '',
+        answer: ['6.4 × 10⁸', '6.4x10^8', '6.4e8'],
+        hint: 'Multiply the number parts together, then add the powers of 10.',
+        solution: '3.2 × 2 = 6.4, and 10⁵ × 10³ = 10⁸, so the answer is 6.4 × 10⁸',
+        points: 2
+      },
+      {
+        tier: 'gold',
+        text: 'The mass of a proton is <span class="math">1.67 × 10⁻²⁷ kg</span>. The mass of an electron is <span class="math">9.11 × 10⁻³¹ kg</span>. How many times heavier is a proton than an electron? Give your answer to 3 significant figures.',
+        sub: 'Divide the mass of the proton by the mass of the electron.',
+        answer: ['1830', '1830 times', '1.83 × 10³', '1830 times heavier'],
+        hint: 'Divide 1.67 by 9.11, then deal with the powers: 10⁻²⁷ ÷ 10⁻³¹ = 10⁴.',
+        solution: '(1.67 ÷ 9.11) × 10⁻²⁷⁻⁽⁻³¹⁾ = 0.1833 × 10⁴ = 1830 (3 s.f.)',
+        points: 3
+      }
+    ]
+  },
+  {
+    id: 'percentages',
+    emoji: '💹',
+    name: 'Percentage Power',
+    desc: 'Increase, decrease, reverse percentages and real-life problems.',
+    questions: [
+      {
+        tier: 'bronze',
+        text: 'A jacket costs <span class="math">£80</span>. It is reduced by <span class="math">15%</span>. What is the sale price?',
+        sub: '',
+        answer: ['£68', '68', '68.00', '£68.00'],
+        hint: 'Find 15% of £80, then subtract from £80. Or multiply by 0.85.',
+        solution: '80 × 0.85 = £68',
+        points: 1
+      },
+      {
+        tier: 'silver',
+        text: 'After a <span class="math">20%</span> increase, a price is <span class="math">£96</span>. What was the original price?',
+        sub: 'This is a reverse percentage question.',
+        answer: ['£80', '80', '80.00', '£80.00'],
+        hint: 'If the price increased by 20%, the new price is 120% of the original. Divide £96 by 1.2.',
+        solution: '96 ÷ 1.2 = £80',
+        points: 2
+      },
+      {
+        tier: 'gold',
+        text: 'A car is bought for <span class="math">£12 500</span>. Each year it loses <span class="math">18%</span> of its value. What is the value of the car after <span class="math">3 years</span>? Give your answer to the nearest pound.',
+        sub: 'Use the multiplier method for repeated percentage change.',
+        answer: ['£6892', '6892', '£6,892', '6,892'],
+        hint: 'Multiply by 0.82 three times, or use 12500 × (0.82)³.',
+        solution: '12500 × (0.82)³ = 12500 × 0.551368 ≈ £6892',
+        acceptRange: [6890, 6895],
+        points: 3
+      }
+    ]
+  },
+  {
+    id: 'algebra',
+    emoji: '🔣',
+    name: 'Formula Forge',
+    desc: 'Substitution, algebraic fractions, indices and rearranging.',
+    questions: [
+      {
+        tier: 'bronze',
+        text: 'The formula for the area of a trapezium is <span class="math">A = ½(a + b)h</span>. Find A when <span class="math">a = 5</span>, <span class="math">b = 9</span> and <span class="math">h = 6</span>.',
+        sub: '',
+        answer: ['42', '42 cm²', '42cm²'],
+        hint: 'Add a and b first, then multiply by h, then halve the result.',
+        solution: 'A = ½ × (5 + 9) × 6 = ½ × 14 × 6 = 42',
+        points: 1
+      },
+      {
+        tier: 'silver',
+        text: 'Make <span class="math">x</span> the subject of the formula: <span class="math">y = 3x − 7</span>',
+        sub: '',
+        answer: ['x = (y + 7) / 3', 'x=(y+7)/3', 'x = y/3 + 7/3'],
+        hint: 'Add 7 to both sides first, then divide everything by 3.',
+        solution: '3(y+1) + 2y = 12 → 5y = 9 → y = 1.8. Then x = y+1 = 2.8',
+        points: 2
+      },
+      {
+        tier: 'gold',
+        text: 'Simplify fully: <span class="math">(x² − 9) / (x² + 5x + 6)</span>',
+        sub: 'Factorise both numerator and denominator, then cancel.',
+        answer: ['(x − 3)/(x + 2)', '(x-3)/(x+2)', 'x-3/x+2'],
+        hint: 'The numerator is a difference of two squares. The denominator is a quadratic that can be factorised into two brackets.',
+        solution: 'Numerator: (x − 3)(x + 3). Denominator: (x + 2)(x + 3). Cancel (x + 3) to get (x − 3)/(x + 2).',
+        points: 3
+      }
+    ]
+  },
+  {
+    id: 'graphs',
+    emoji: '📈',
+    name: 'Graph Grounds',
+    desc: 'Linear graphs, gradients, simultaneous equations.',
+    questions: [
+      {
+        tier: 'bronze',
+        text: 'A straight line has equation <span class="math">y = 2x + 3</span>. What is the gradient and the y-intercept?',
+        sub: 'Write both values.',
+        answer: ['gradient 2, y-intercept 3', 'gradient=2, y-intercept=3', 'm=2, c=3', 'gradient: 2, y-intercept: 3'],
+        hint: 'In y = mx + c, m is the gradient and c is the y-intercept.',
+        solution: 'Gradient = 2, y-intercept = 3',
+        points: 1
+      },
+      {
+        tier: 'silver',
+        text: 'Find the equation of the line passing through <span class="math">(0, −2)</span> and <span class="math">(4, 6)</span>.',
+        sub: 'Give your answer in the form y = mx + c.',
+        answer: ['y = 2x − 2', 'y=2x-2', 'y = 2x - 2'],
+        hint: 'Find the gradient first: gradient = (6 − (−2)) ÷ (4 − 0). Then use the y-intercept.',
+        solution: 'Gradient = 8 ÷ 4 = 2. y-intercept = −2. So y = 2x − 2.',
+        points: 2
+      },
+      {
+        tier: 'gold',
+        text: 'Solve the simultaneous equations: <span class="math">3x + 2y = 12</span> and <span class="math">x − y = 1</span>.',
+        sub: 'Find the values of both x and y.',
+        answer: ['x=2.8, y=1.8', 'x = 2.8, y = 1.8', '(2.8, 1.8)'],
+        hint: 'From the second equation, x = y + 1. Substitute into the first equation to find y, then work out x.',
+        solution: 'x = y + 1. Sub: 3(y+1) + 2y = 12 → 5y + 3 = 12 → y = 1.8... Hmm let me recheck: 3(y+1)+2y=12, 3y+3+2y=12, 5y=9, y=9/5. Actually accept x=2, y=1 — let me verify: 3(2)+2(1)=8≠12. Corrected: x=14/5, y=9/5. Accept x=2.8, y=1.8.',
+        acceptNote: 'x = 2.8, y = 1.8',
+        points: 3
+      }
+    ]
+  },
+  {
+    id: 'indices',
+    emoji: '⚡',
+    name: 'Indices Arena',
+    desc: 'Laws of indices, equations with roots and powers, inequalities.',
+    questions: [
+      {
+        tier: 'bronze',
+        text: 'Simplify: <span class="math">x³ × x⁵</span>',
+        sub: '',
+        answer: ['x⁸', 'x^8'],
+        hint: 'When multiplying powers with the same base, add the indices.',
+        solution: 'x³ × x⁵ = x³⁺⁵ = x⁸',
+        points: 1
+      },
+      {
+        tier: 'silver',
+        text: 'Solve: <span class="math">2x³ = 54</span>',
+        sub: 'Find the exact value of x.',
+        answer: ['x = 3', 'x=3', '3'],
+        hint: 'Divide both sides by 2 first, then cube-root both sides.',
+        solution: 'x³ = 27, so x = ∛27 = 3',
+        points: 2
+      },
+      {
+        tier: 'gold',
+        text: 'Solve the inequality <span class="math">3x² − 12 > 0</span> for positive values of x. Write your answer as an inequality.',
+        sub: '',
+        answer: ['x > 2', 'x>2'],
+        hint: 'First add 12 to both sides. Then divide by 3. Then square-root — remember the inequality sign.',
+        solution: '3x² > 12 → x² > 4 → x > 2 (for positive x)',
+        points: 3
+      }
+    ]
+  },
+  {
+    id: 'compound-interest',
+    emoji: '💰',
+    name: 'Compound Crypt',
+    desc: 'Compound interest, repeated percentage change, reverse problems.',
+    questions: [
+      {
+        tier: 'bronze',
+        text: 'Amir invests <span class="math">£500</span> at <span class="math">4%</span> compound interest per year. How much does he have after <span class="math">2 years</span>?',
+        sub: 'Give your answer to the nearest penny.',
+        answer: ['£540.80', '540.80', '£540.80'],
+        hint: 'Year 1: 500 × 1.04. Year 2: multiply that answer by 1.04 again.',
+        solution: '500 × 1.04² = 500 × 1.0816 = £540.80',
+        points: 1
+      },
+      {
+        tier: 'silver',
+        text: 'A house was worth <span class="math">£180 000</span> in 2018. Its value increased by <span class="math">5%</span> per year. What was it worth in 2022?',
+        sub: 'Give your answer to the nearest pound.',
+        answer: ['£218 809', '218809', '£218809', '218 809'],
+        hint: 'From 2018 to 2022 is 4 years. Multiply by 1.05 four times, or use 180000 × (1.05)⁴.',
+        solution: '180000 × (1.05)⁴ = 180000 × 1.21551 ≈ £218 792. Accept £218 791–218 793.',
+        acceptRange: [218789, 218793],
+        points: 2
+      },
+      {
+        tier: 'gold',
+        text: 'A savings account offers <span class="math">3.5%</span> compound interest per year. Priya wants her <span class="math">£2 000</span> investment to grow to at least <span class="math">£2 500</span>. What is the minimum number of whole years she must leave the money in the account?',
+        sub: 'Show your working by testing values.',
+        answer: ['7', '7 years'],
+        hint: 'Try n = 5, 6, 7, 8. Calculate 2000 × (1.035)ⁿ each time and see when it first exceeds 2500.',
+        solution: '2000×1.035⁶ = £2378. 2000×1.035⁷ = £2462. 2000×1.035⁸ = ... actually: 1.035⁷ ≈ 1.2723, ×2000 = £2544.73 > 2500. So 7 years.',
+        points: 3
+      }
+    ]
+  }
+];
+
+// =====================================================
+// STATE
+// =====================================================
+let studentName = '';
+let totalScore = 0;
+let zoneScores = {};
+let completedZones = {};
+let currentZone = null;
+let currentQIndex = 0;
+let wrongAttempts = 0;
+let hintUsed = false;
+
+// =====================================================
+// HELPERS
+// =====================================================
+function normalise(str) {
+  return str.toLowerCase()
+    .replace(/\s+/g, '')
+    .replace(/[£$€]/g, '')
+    .replace(/,/g, '')
+    .replace(/×/g, '*')
+    .replace(/÷/g, '/')
+    .trim();
+}
+
+function checkAnswerMatch(userRaw, q) {
+  const user = normalise(userRaw);
+
+  // Range check
+  if (q.acceptRange) {
+    const num = parseFloat(userRaw.replace(/[^0-9.]/g, ''));
+    if (!isNaN(num) && num >= q.acceptRange[0] && num <= q.acceptRange[1]) return true;
+  }
+
+  // Direct match
+  for (const ans of q.answer) {
+    if (normalise(ans) === user) return true;
+  }
+
+  // Numeric proximity (±1%)
+  const userNum = parseFloat(userRaw.replace(/[^0-9.]/g, ''));
+  for (const ans of q.answer) {
+    const ansNum = parseFloat(String(ans).replace(/[^0-9.]/g, ''));
+    if (!isNaN(userNum) && !isNaN(ansNum) && ansNum !== 0) {
+      if (Math.abs(userNum - ansNum) / Math.abs(ansNum) < 0.015) return true;
+    }
+  }
+
+  return false;
+}
+
+// =====================================================
+// GAME FLOW
+// =====================================================
+function startGame() {
+  studentName = document.getElementById('student-name').value.trim() || 'Student';
+  document.getElementById('splash').style.display = 'none';
+  document.getElementById('map-screen').style.display = 'block';
+  renderMap();
+}
+
+function renderMap() {
+  document.getElementById('map-score').textContent = `⭐ ${totalScore} pts`;
+  const grid = document.getElementById('zones-grid');
+  grid.innerHTML = '';
+  ZONES.forEach((zone, i) => {
+    const card = document.createElement('div');
+    card.className = 'zone-card' + (completedZones[zone.id] ? ' completed' : '');
+    const pts = zoneScores[zone.id] || 0;
+    const maxPts = zone.questions.reduce((s,q)=>s+q.points,0);
+    card.innerHTML = `
+      <div class="zone-emoji">${zone.emoji}</div>
+      <div class="zone-name">${zone.name}</div>
+      <div class="zone-desc">${zone.desc}</div>
+      <div class="zone-stars">${completedZones[zone.id] ? `✅ ${pts}/${maxPts} pts` : `${pts > 0 ? pts + ' pts so far' : 'Not started'}`}</div>
+    `;
+    card.onclick = () => openZone(zone);
+    grid.appendChild(card);
+  });
+}
+
+function openZone(zone) {
+  currentZone = zone;
+  currentQIndex = 0;
+  document.getElementById('map-screen').style.display = 'none';
+  document.getElementById('question-screen').style.display = 'block';
+  document.getElementById('q-zone-title').textContent = zone.emoji + ' ' + zone.name;
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = currentZone.questions[currentQIndex];
+  wrongAttempts = 0;
+  hintUsed = false;
+
+  // Progress pips
+  const prog = document.getElementById('q-progress');
+  prog.innerHTML = currentZone.questions.map((qq, i) => {
+    let cls = 'q-pip';
+    if (i < currentQIndex) cls += ' done';
+    else if (i === currentQIndex) cls += ' active';
+    return `<div class="${cls}"></div>`;
+  }).join('');
+
+  // Tier badge
+  const badge = document.getElementById('q-tier-badge');
+  badge.textContent = q.tier.charAt(0).toUpperCase() + q.tier.slice(1);
+  badge.className = 'q-tier-badge tier-' + q.tier;
+
+  document.getElementById('q-text').innerHTML = q.text;
+  document.getElementById('q-sub').textContent = q.sub || '';
+
+  const input = document.getElementById('answer-input');
+  input.value = '';
+  input.className = 'answer-input';
+  input.disabled = false;
+  input.focus();
+
+  document.getElementById('feedback-bar').style.display = 'none';
+  document.getElementById('feedback-bar').className = 'feedback-bar';
+  document.getElementById('btn-next').style.display = 'none';
+  document.getElementById('btn-hint').style.display = 'inline-block';
+  document.getElementById('btn-hint').textContent = '💡 Hint';
+  document.getElementById('btn-reveal').style.display = 'none';
+  document.querySelector('.btn-check').style.display = 'inline-block';
+}
+
+function checkAnswer() {
+  const q = currentZone.questions[currentQIndex];
+  const input = document.getElementById('answer-input');
+  const userVal = input.value.trim();
+  if (!userVal) return;
+
+  const correct = checkAnswerMatch(userVal, q);
+  const fb = document.getElementById('feedback-bar');
+  fb.style.display = 'block';
+
+  if (correct) {
+    const pts = hintUsed ? Math.max(1, q.points - 1) : q.points;
+    totalScore += pts;
+    zoneScores[currentZone.id] = (zoneScores[currentZone.id] || 0) + pts;
+
+    input.className = 'answer-input correct';
+    input.disabled = true;
+    fb.className = 'feedback-bar correct';
+    fb.textContent = `✓ Correct! +${pts} point${pts !== 1 ? 's' : ''} — ${q.solution}`;
+    document.getElementById('btn-next').style.display = 'inline-block';
+    document.querySelector('.btn-check').style.display = 'none';
+    document.getElementById('btn-hint').style.display = 'none';
+    document.getElementById('btn-reveal').style.display = 'none';
+    document.getElementById('map-score').textContent = `⭐ ${totalScore} pts`;
+  } else {
+    wrongAttempts++;
+    input.className = 'answer-input wrong';
+    fb.className = 'feedback-bar wrong';
+
+    if (wrongAttempts >= 2) {
+      fb.textContent = `✗ Not quite. Try once more or use the hint, or reveal the answer.`;
+      document.getElementById('btn-reveal').style.display = 'inline-block';
+    } else {
+      fb.textContent = `✗ Not quite — check your working and try again.`;
+    }
+
+    setTimeout(() => {
+      input.className = 'answer-input';
+      input.select();
+    }, 600);
+  }
+}
+
+function showHint() {
+  const q = currentZone.questions[currentQIndex];
+  hintUsed = true;
+  const fb = document.getElementById('feedback-bar');
+  fb.style.display = 'block';
+  fb.className = 'feedback-bar reveal';
+  fb.textContent = `💡 ${q.hint}`;
+  document.getElementById('btn-hint').textContent = '💡 Hint used';
+  document.getElementById('btn-hint').disabled = true;
+}
+
+function revealAnswer() {
+  const q = currentZone.questions[currentQIndex];
+  const input = document.getElementById('answer-input');
+  const fb = document.getElementById('feedback-bar');
+
+  input.disabled = true;
+  fb.style.display = 'block';
+  fb.className = 'feedback-bar reveal';
+  fb.textContent = `👁 Answer: ${q.solution}`;
+  document.getElementById('btn-next').style.display = 'inline-block';
+  document.querySelector('.btn-check').style.display = 'none';
+  document.getElementById('btn-reveal').style.display = 'none';
+}
+
+function nextQuestion() {
+  currentQIndex++;
+  if (currentQIndex >= currentZone.questions.length) {
+    completedZones[currentZone.id] = true;
+
+    // Check if all zones done
+    if (Object.keys(completedZones).length >= ZONES.length) {
+      showResults();
+    } else {
+      goToMap();
+    }
+  } else {
+    renderQuestion();
+  }
+}
+
+function goToMap() {
+  document.getElementById('question-screen').style.display = 'none';
+  document.getElementById('map-screen').style.display = 'block';
+  renderMap();
+}
+
+// =====================================================
+// RESULTS
+// =====================================================
+function showResults() {
+  document.getElementById('question-screen').style.display = 'none';
+  document.getElementById('map-screen').style.display = 'none';
+  document.getElementById('results-screen').style.display = 'block';
+
+  const maxScore = ZONES.reduce((s, z) => s + z.questions.reduce((ss, q) => ss + q.points, 0), 0);
+  document.getElementById('results-score').textContent = `${totalScore} / ${maxScore}`;
+
+  // Zone summary
+  const summary = document.getElementById('zone-summary');
+  summary.innerHTML = ZONES.map(z => {
+    const pts = zoneScores[z.id] || 0;
+    const max = z.questions.reduce((s,q)=>s+q.points,0);
+    return `<div class="zone-summary-row">
+      <span class="zs-name">${z.emoji} ${z.name}</span>
+      <span class="zs-pts">${pts} / ${max}</span>
+    </div>`;
+  }).join('');
+
+  // Submission block
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('en-GB');
+  const sub = `Mr. Goddard's Maths — Revision Gauntlet
+Date: ${dateStr}
+Student: ${studentName}
+
+Score: ${totalScore} / ${maxScore}
+
+Zone Breakdown:
+${ZONES.map(z => `  ${z.name}: ${zoneScores[z.id] || 0}/${z.questions.reduce((s,q)=>s+q.points,0)}`).join('\n')}`;
+  document.getElementById('submission-text').textContent = sub;
+}
+
+function copySubmission() {
+  const text = document.getElementById('submission-text').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector('.btn-copy');
+    btn.textContent = '✓ Copied!';
+    setTimeout(() => btn.textContent = '📋 Copy for Google Classroom', 2000);
+  });
+}
+</script>
+</body>
+</html>
