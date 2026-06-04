@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Binomial Sniper — Mr. Goddard's Maths</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Share+Tech+Mono&family=Orbitron:wght@500;700;900&display=swap');
+
+:root {
+  --bg:      #0a0e1a;
+  --panel:   #111827;
+  --border:  #1e3a5f;
+  --blue:    #1d6fa4;
+  --teal:    #0ec4c4;
+  --gold:    #f0c040;
+  --red:     #e53935;
+  --green:   #22c55e;
+  --orange:  #f97316;
+  --white:   #f0f6ff;
+  --dim:     #4a5568;
+  --muted:   #8ba0b8;
+}
+
+* { box-sizing:border-box; margin:0; padding:0; }
+
+body {
+  background: var(--bg);
+  color: var(--white);
+  font-family: 'Rajdhani', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── SCANLINE OVERLAY ── */
+body::after {
+  content:'';
+  position:fixed; inset:0; pointer-events:none; z-index:9999;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+}
+
+/* ── SCREENS ── */
+.screen { display:none; }
+.screen.active { display:flex; flex-direction:column; min-height:100vh; }
+
+/* ══════ INTRO ══════ */
+#intro {
+  align-items:center; justify-content:center; text-align:center;
+  padding:40px 20px;
+  background: radial-gradient(ellipse at 50% 20%, #0d2a4a 0%, var(--bg) 65%);
+}
+
+.crosshair-logo {
+  position:relative; width:90px; height:90px; margin:0 auto 24px;
+  animation: rotateSlow 12s linear infinite;
+}
+
+.crosshair-logo svg { width:100%; height:100%; }
+
+@keyframes rotateSlow { to { transform: rotate(360deg); } }
+
+.intro-title {
+  font-family:'Orbitron',monospace;
+  font-size: clamp(2rem,7vw,3.8rem);
+  font-weight:900; color:var(--teal);
+  letter-spacing:.06em; line-height:1;
+  text-shadow: 0 0 40px rgba(14,196,196,0.5);
+  margin-bottom:6px;
+}
+
+.intro-sub {
+  font-family:'Share Tech Mono',monospace;
+  font-size:.82rem; color:var(--muted);
+  letter-spacing:.25em; margin-bottom:36px;
+}
+
+.intro-card {
+  background: rgba(17,24,39,0.9);
+  border:1px solid var(--border);
+  border-radius:10px; padding:28px 32px;
+  max-width:560px; text-align:left;
+  margin-bottom:28px;
+}
+
+.intro-card h3 {
+  font-family:'Share Tech Mono',monospace;
+  font-size:.72rem; color:var(--teal);
+  letter-spacing:.22em; margin-bottom:16px;
+}
+
+.rules-grid {
+  display:grid; grid-template-columns:1fr 1fr; gap:12px;
+}
+
+.rule-item {
+  display:flex; gap:10px; align-items:flex-start;
+  font-size:.9rem; color:var(--muted); line-height:1.5;
+}
+
+.rule-icon {
+  font-size:1.1rem; flex-shrink:0; margin-top:1px;
+}
+
+.casio-tip {
+  background: rgba(14,196,196,0.07);
+  border: 1px solid rgba(14,196,196,0.2);
+  border-radius:6px; padding:12px 16px;
+  margin-top:14px; font-size:.88rem;
+  color:var(--teal); line-height:1.6;
+}
+
+.casio-tip strong { display:block; margin-bottom:4px; font-family:'Share Tech Mono',monospace; font-size:.7rem; letter-spacing:.12em; }
+
+.name-row {
+  display:flex; gap:10px; align-items:center;
+  margin-bottom:18px; flex-wrap:wrap; justify-content:center;
+}
+
+.name-input {
+  background:var(--panel); border:1.5px solid var(--border);
+  border-radius:6px; color:var(--white);
+  font-family:'Rajdhani',sans-serif; font-size:1rem; font-weight:600;
+  padding:10px 16px; outline:none; min-width:220px;
+  transition: border-color .2s;
+}
+.name-input:focus { border-color:var(--teal); }
+.name-input::placeholder { color:var(--dim); }
+
+.btn-start {
+  background: linear-gradient(135deg, #0a3d5c, #0ec4c4);
+  border:none; border-radius:8px;
+  color:var(--bg); font-family:'Orbitron',monospace;
+  font-size:.78rem; font-weight:700; letter-spacing:.12em;
+  padding:12px 28px; cursor:pointer; transition:all .2s;
+  box-shadow: 0 0 20px rgba(14,196,196,0.3);
+}
+.btn-start:hover { transform:translateY(-2px); box-shadow: 0 4px 24px rgba(14,196,196,0.5); }
+.btn-start:disabled { opacity:.3; cursor:not-allowed; transform:none; }
+
+.level-badges {
+  display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-top:10px;
+}
+.lbadge {
+  font-family:'Share Tech Mono',monospace; font-size:.68rem;
+  padding:4px 12px; border-radius:999px; letter-spacing:.08em;
+}
+.lb1 { background:rgba(34,197,94,0.15); border:1px solid rgba(34,197,94,0.4); color:#22c55e; }
+.lb2 { background:rgba(240,192,64,0.15); border:1px solid rgba(240,192,64,0.4); color:var(--gold); }
+.lb3 { background:rgba(249,115,22,0.15); border:1px solid rgba(249,115,22,0.4); color:var(--orange); }
+.lb4 { background:rgba(229,57,53,0.15); border:1px solid rgba(229,57,53,0.4); color:var(--red); }
+
+/* ══════ GAME ══════ */
+#game {
+  flex-direction:column;
+  background: radial-gradient(ellipse at 50% 0%, #0d2a4a 0%, var(--bg) 50%);
+}
+
+/* HUD */
+.hud {
+  background: rgba(10,14,26,0.95);
+  backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--border);
+  padding:10px 20px;
+  display:flex; align-items:center; gap:16px; flex-wrap:wrap;
+  position:sticky; top:0; z-index:100;
+}
+
+.hud-brand {
+  font-family:'Orbitron',monospace; font-size:.7rem;
+  color:var(--teal); letter-spacing:.16em; flex:1;
+  white-space:nowrap;
+}
+
+.hud-stat { display:flex; align-items:center; gap:6px; }
+.hud-label { font-family:'Share Tech Mono',monospace; font-size:.62rem; color:var(--dim); letter-spacing:.1em; }
+.hud-val { font-family:'Orbitron',monospace; font-size:.88rem; font-weight:700; color:var(--gold); }
+
+.bullets-display { display:flex; gap:4px; }
+.bullet {
+  width:10px; height:18px; border-radius:999px 999px 3px 3px;
+  background: linear-gradient(to bottom, var(--gold), #a07820);
+  transition: all .2s;
+}
+.bullet.spent { background: var(--dim); opacity:.35; }
+
+.level-indicator {
+  font-family:'Share Tech Mono',monospace; font-size:.68rem;
+  padding:3px 10px; border-radius:999px; letter-spacing:.08em;
+}
+
+/* RANGE — target area */
+.range-wrap {
+  max-width:900px; margin:0 auto; width:100%;
+  padding:20px 16px 0;
+}
+
+.range-bg {
+  position:relative;
+  background: linear-gradient(180deg, #0a1a2e 0%, #050d18 60%, #0a1505 100%);
+  border:1px solid var(--border);
+  border-radius:12px; overflow:hidden;
+  height:200px;
+  margin-bottom:20px;
+}
+
+.range-bg::before {
+  content:'';
+  position:absolute; inset:0;
+  background-image:
+    linear-gradient(rgba(14,196,196,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(14,196,196,0.04) 1px, transparent 1px);
+  background-size:40px 40px;
+}
+
+/* Targets */
+.targets-row {
+  position:absolute; bottom:24px; left:0; right:0;
+  display:flex; justify-content:space-around; align-items:flex-end;
+  padding:0 20px;
+}
+
+.target-wrap {
+  display:flex; flex-direction:column; align-items:center; gap:6px;
+  transition: transform .15s;
+}
+
+.target-pole {
+  width:4px;
+  background: linear-gradient(to top, #5a3a10, #8a6030);
+  border-radius:2px;
+}
+
+.target-circle {
+  width:54px; height:54px;
+  border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Orbitron',monospace; font-size:1rem; font-weight:700;
+  cursor:default; transition:all .25s;
+  position:relative;
+}
+
+.target-circle.alive {
+  background: radial-gradient(circle at 35% 35%, #1a4a70, #0a2a45);
+  border:2.5px solid var(--teal);
+  box-shadow: 0 0 14px rgba(14,196,196,0.3), inset 0 0 10px rgba(14,196,196,0.1);
+  color:var(--teal);
+}
+
+.target-circle.hit {
+  background: radial-gradient(circle at 50% 50%, #2a0505, #1a0000);
+  border:2.5px solid var(--red);
+  box-shadow: 0 0 20px rgba(229,57,53,0.6);
+  color:var(--red);
+  animation: hitFlash .5s ease;
+}
+
+.target-circle.correct {
+  background: radial-gradient(circle at 50% 50%, #0a2a10, #051505);
+  border:2.5px solid var(--green);
+  box-shadow: 0 0 20px rgba(34,197,94,0.6);
+  color:var(--green);
+  animation: correctFlash .4s ease;
+}
+
+@keyframes hitFlash {
+  0% { transform:scale(1.3) rotate(-5deg); opacity:1; }
+  50% { transform:scale(0.9) rotate(3deg); }
+  100% { transform:scale(1); }
+}
+
+@keyframes correctFlash {
+  0% { transform:scale(1.4); }
+  60% { transform:scale(0.95); }
+  100% { transform:scale(1); }
+}
+
+/* Distance markers */
+.dist-markers {
+  position:absolute; bottom:4px; left:0; right:0;
+  display:flex; justify-content:space-around; padding:0 20px;
+}
+.dist-m { font-family:'Share Tech Mono',monospace; font-size:.58rem; color:rgba(14,196,196,0.35); }
+
+/* Scope reticle (decorative) */
+.reticle {
+  position:absolute; top:12px; right:16px;
+  width:40px; height:40px; opacity:.3;
+}
+
+/* QUESTION PANEL */
+.q-wrap {
+  max-width:900px; margin:0 auto; width:100%; padding:0 16px 20px;
+}
+
+.level-sep {
+  display:flex; align-items:center; gap:12px; margin-bottom:18px;
+}
+.sep-line { flex:1; height:1px; }
+.sep-text { font-family:'Share Tech Mono',monospace; font-size:.65rem; letter-spacing:.2em; white-space:nowrap; }
+
+.q-card {
+  background: var(--panel);
+  border:1px solid var(--border);
+  border-radius:10px; overflow:hidden;
+  margin-bottom:0;
+}
+
+.q-header {
+  padding:12px 20px;
+  display:flex; align-items:center; gap:12px;
+  border-bottom:1px solid rgba(30,58,95,0.5);
+}
+
+.q-num {
+  font-family:'Orbitron',monospace; font-size:.75rem; font-weight:700;
+  padding:4px 12px; border-radius:999px;
+  white-space:nowrap;
+}
+
+.q-topic {
+  font-family:'Share Tech Mono',monospace; font-size:.68rem;
+  color:var(--muted); letter-spacing:.1em; flex:1;
+}
+
+.q-pts {
+  font-family:'Share Tech Mono',monospace; font-size:.68rem;
+  color:var(--dim); letter-spacing:.06em;
+}
+
+.q-body { padding:20px 24px; }
+
+.q-text {
+  font-size:1.05rem; line-height:1.7;
+  color:rgba(240,246,255,0.92); margin-bottom:18px;
+}
+
+.q-text .math {
+  font-family:'Share Tech Mono',monospace;
+  color:var(--gold); background:rgba(240,192,64,0.08);
+  padding:1px 6px; border-radius:3px; font-size:.95rem;
+}
+
+.q-text .block {
+  display:block; text-align:center; margin:14px 0;
+  font-family:'Share Tech Mono',monospace; font-size:1.05rem;
+  color:var(--gold); background:rgba(240,192,64,0.06);
+  border:1px solid rgba(240,192,64,0.15);
+  padding:10px; border-radius:6px;
+}
+
+.hint-panel {
+  background:rgba(14,196,196,0.06); border:1px solid rgba(14,196,196,0.2);
+  border-radius:6px; padding:10px 14px; margin-bottom:16px;
+  font-size:.88rem; color:var(--teal); line-height:1.6; display:none;
+}
+.hint-panel.show { display:block; }
+.hint-label { font-family:'Share Tech Mono',monospace; font-size:.62rem; letter-spacing:.15em; margin-bottom:5px; opacity:.7; }
+
+.fire-row {
+  display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+}
+
+.ans-input {
+  flex:1; min-width:160px;
+  background:#0a0e1a; border:1.5px solid var(--border);
+  border-radius:6px; color:var(--white);
+  font-family:'Share Tech Mono',monospace; font-size:1rem;
+  padding:10px 14px; outline:none; transition:border-color .2s;
+  text-align:center;
+}
+.ans-input:focus { border-color:var(--teal); }
+.ans-input.correct { border-color:var(--green); background:rgba(34,197,94,0.06); }
+.ans-input.wrong   { border-color:var(--red);   background:rgba(229,57,53,0.06); animation:shake .3s ease; }
+
+@keyframes shake {
+  0%,100% { transform:translateX(0); }
+  20%,60% { transform:translateX(-5px); }
+  40%,80% { transform:translateX(5px); }
+}
+
+.btn-fire {
+  background: linear-gradient(135deg, #8a3000, #e05010);
+  border:none; border-radius:8px; color:white;
+  font-family:'Orbitron',monospace; font-size:.75rem; font-weight:700;
+  letter-spacing:.1em; padding:10px 22px; cursor:pointer;
+  transition:all .2s; box-shadow:0 2px 12px rgba(229,57,53,0.3);
+  white-space:nowrap;
+}
+.btn-fire:hover { transform:translateY(-1px); box-shadow:0 4px 18px rgba(229,57,53,0.5); }
+.btn-fire:disabled { opacity:.3; cursor:not-allowed; transform:none; }
+
+.bullets-row {
+  display:flex; gap:5px; align-items:center; margin-top:10px;
+}
+.b-dot { width:8px; height:8px; border-radius:50%; background:var(--gold); transition:all .2s; }
+.b-dot.spent { background:var(--red); }
+.b-dot.ok { background:var(--green); }
+
+.format-guide {
+  font-family:'Share Tech Mono',monospace;
+  font-size:.65rem; color:var(--dim);
+  letter-spacing:.06em; margin-top:7px;
+  padding-left:2px;
+}
+  margin-top:12px; font-size:.92rem; font-family:'Share Tech Mono',monospace;
+  padding:9px 14px; border-radius:6px; display:none;
+}
+.fb-text.correct { display:block; color:var(--green); background:rgba(34,197,94,0.07); border:1px solid rgba(34,197,94,0.2); }
+.fb-text.wrong   { display:block; color:var(--red);   background:rgba(229,57,53,0.07); border:1px solid rgba(229,57,53,0.2); }
+.fb-text.reveal  { display:block; color:var(--gold);  background:rgba(240,192,64,0.07); border:1px solid rgba(240,192,64,0.2); }
+
+.btn-next {
+  margin-top:14px; padding:10px 24px;
+  background:transparent; border:1.5px solid var(--teal);
+  color:var(--teal); font-family:'Orbitron',monospace;
+  font-size:.72rem; font-weight:700; letter-spacing:.1em;
+  cursor:pointer; border-radius:6px; transition:all .2s; display:none;
+}
+.btn-next.show { display:inline-block; }
+.btn-next:hover { background:rgba(14,196,196,0.12); }
+
+/* ══════ RESULT ══════ */
+#result {
+  align-items:center; justify-content:center;
+  padding:80px 20px 40px; text-align:center;
+  background: radial-gradient(ellipse at 50% 30%, #0d2a4a 0%, var(--bg) 60%);
+}
+
+.res-icon { font-size:4.5rem; margin-bottom:20px; display:block; }
+.res-title {
+  font-family:'Orbitron',monospace;
+  font-size:clamp(1.8rem,6vw,3.2rem); font-weight:900;
+  color:var(--teal); letter-spacing:.06em;
+  text-shadow: 0 0 30px rgba(14,196,196,0.5);
+  margin-bottom:8px;
+}
+.res-sub { font-family:'Share Tech Mono',monospace; font-size:.8rem; color:var(--muted); letter-spacing:.18em; margin-bottom:28px; }
+
+.score-ring {
+  width:140px; height:140px; border-radius:50%;
+  border:3px solid var(--teal);
+  box-shadow: 0 0 30px rgba(14,196,196,0.3), inset 0 0 20px rgba(14,196,196,0.05);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  margin:0 auto 24px;
+}
+.score-big { font-family:'Orbitron',monospace; font-size:2.2rem; font-weight:900; color:var(--teal); line-height:1; }
+.score-max { font-family:'Share Tech Mono',monospace; font-size:.72rem; color:var(--muted); margin-top:4px; }
+
+.breakdown-grid {
+  display:grid; grid-template-columns:repeat(auto-fill, minmax(180px,1fr));
+  gap:10px; max-width:640px; margin:0 auto 24px; text-align:left;
+}
+.bk-card {
+  background:var(--panel); border:1px solid var(--border);
+  border-radius:8px; padding:12px 16px;
+}
+.bk-level { font-family:'Share Tech Mono',monospace; font-size:.62rem; letter-spacing:.15em; color:var(--muted); margin-bottom:5px; }
+.bk-score { font-family:'Orbitron',monospace; font-size:1.2rem; font-weight:700; }
+
+.sub-box {
+  background:var(--panel); border:1px solid var(--border);
+  border-radius:10px; padding:16px 20px; max-width:560px;
+  margin:0 auto 20px; text-align:left;
+}
+.sub-box pre { font-family:'Share Tech Mono',monospace; font-size:.76rem; color:var(--muted); white-space:pre-wrap; line-height:1.65; }
+.copy-btn {
+  display:block; width:100%; margin-top:10px; padding:10px;
+  background:var(--teal); border:none; border-radius:6px;
+  color:var(--bg); font-family:'Orbitron',monospace; font-size:.72rem;
+  font-weight:700; letter-spacing:.1em; cursor:pointer;
+}
+
+.btn-again {
+  padding:12px 32px; background:transparent;
+  border:2px solid var(--teal); color:var(--teal);
+  font-family:'Orbitron',monospace; font-size:.78rem; font-weight:700;
+  letter-spacing:.1em; cursor:pointer; border-radius:8px; transition:all .2s;
+}
+.btn-again:hover { background:rgba(14,196,196,0.12); transform:translateY(-2px); }
+
+.toast {
+  position:fixed; bottom:20px; left:50%; transform:translateX(-50%) translateY(80px);
+  background:var(--panel); border:1.5px solid var(--gold);
+  border-radius:8px; padding:10px 22px;
+  font-family:'Share Tech Mono',monospace; font-size:.82rem; color:var(--gold);
+  z-index:9998; transition:transform .3s;
+}
+.toast.show { transform:translateX(-50%) translateY(0); }
+
+/* Muzzle flash */
+.muzzle { position:fixed; top:0; left:0; right:0; bottom:0; pointer-events:none; z-index:9997; }
+.muzzle.flash { animation:muzzleFlash .12s ease; }
+@keyframes muzzleFlash {
+  0% { background:rgba(240,192,64,0); }
+  30% { background:rgba(240,192,64,0.08); }
+  100% { background:rgba(240,192,64,0); }
+}
+
+@media(max-width:580px){
+  .rules-grid { grid-template-columns:1fr; }
+  .targets-row { gap:8px; }
+  .target-circle { width:44px; height:44px; font-size:.82rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="muzzle" id="muzzle"></div>
+<div class="toast" id="toast"></div>
+
+<!-- ══════ INTRO ══════ -->
+<div id="intro" class="screen active">
+  <div class="crosshair-logo">
+    <svg viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="45" cy="45" r="38" stroke="#0ec4c4" stroke-width="2" stroke-dasharray="6 4"/>
+      <circle cx="45" cy="45" r="22" stroke="#0ec4c4" stroke-width="1.5"/>
+      <circle cx="45" cy="45" r="5" fill="#0ec4c4"/>
+      <line x1="45" y1="4" x2="45" y2="23" stroke="#0ec4c4" stroke-width="1.5"/>
+      <line x1="45" y1="67" x2="45" y2="86" stroke="#0ec4c4" stroke-width="1.5"/>
+      <line x1="4" y1="45" x2="23" y2="45" stroke="#0ec4c4" stroke-width="1.5"/>
+      <line x1="67" y1="45" x2="86" y2="45" stroke="#0ec4c4" stroke-width="1.5"/>
+    </svg>
+  </div>
+
+  <div class="intro-title">BINOMIAL SNIPER</div>
+  <div class="intro-sub">FURTHER PURE · BINOMIAL EXPANSION · EDEXCEL</div>
+
+  <div class="intro-card">
+    <h3>// MISSION BRIEFING //</h3>
+    <div class="rules-grid">
+      <div class="rule-item"><span class="rule-icon">🎯</span><span>12 targets across 4 levels. Each correct answer takes down a target.</span></div>
+      <div class="rule-item"><span class="rule-icon">🔫</span><span>3 bullets per target. Miss all 3 and the answer is revealed — target stays up.</span></div>
+      <div class="rule-item"><span class="rule-icon">💡</span><span>A hint unlocks after your 2nd miss on any target.</span></div>
+      <div class="rule-item"><span class="rule-icon">⭐</span><span>Full points for 1st shot. Fewer for 2nd or 3rd. 0 if all bullets spent.</span></div>
+    </div>
+    <div class="casio-tip">
+      <strong>// CASIO CALCULATOR — nCr //</strong>
+      To calculate <sup>n</sup>C<sub>r</sub>: type the value of <strong>n</strong>, then press <strong>SHIFT → ÷</strong> (labelled nCr), then type <strong>r</strong>, then <strong>=</strong>.
+      Example: ⁶C₂ → type <strong>6 SHIFT ÷ 2 =</strong> → gives <strong>15</strong>.
+    </div>
+  </div>
+
+  <div class="level-badges">
+    <span class="lbadge lb1">LVL 1 · Pascal's Triangle</span>
+    <span class="lbadge lb2">LVL 2 · nCr with Coefficients</span>
+    <span class="lbadge lb3">LVL 3 · Finding Unknowns</span>
+    <span class="lbadge lb4">LVL 4 · Problem Solving</span>
+  </div>
+
+  <br>
+  <div class="name-row">
+    <input class="name-input" id="playerName" type="text" placeholder="Enter your name" autocomplete="name">
+    <button class="btn-start" id="startBtn" onclick="startGame()" disabled>▶ OPEN FIRE</button>
+  </div>
+</div>
+
+<!-- ══════ GAME ══════ -->
+<div id="game" class="screen">
+  <div class="hud">
+    <div class="hud-brand">BINOMIAL SNIPER</div>
+    <div class="hud-stat"><span class="hud-label">AGENT</span><span class="hud-val" id="hudName">—</span></div>
+    <div class="hud-stat"><span class="hud-label">SCORE</span><span class="hud-val" id="hudScore">0</span></div>
+    <div class="hud-stat"><span class="hud-label">TARGETS</span><span class="hud-val" id="hudTargets">0/12</span></div>
+    <div class="hud-stat"><span class="hud-label">AMMO</span><div class="bullets-display" id="hudBullets"></div></div>
+    <div class="level-indicator" id="hudLevel"></div>
+  </div>
+
+  <!-- Range -->
+  <div class="range-wrap">
+    <div class="range-bg">
+      <svg class="reticle" viewBox="0 0 40 40" fill="none">
+        <circle cx="20" cy="20" r="18" stroke="#0ec4c4" stroke-width="1" stroke-dasharray="3 3"/>
+        <line x1="20" y1="2" x2="20" y2="9" stroke="#0ec4c4" stroke-width="1"/>
+        <line x1="20" y1="31" x2="20" y2="38" stroke="#0ec4c4" stroke-width="1"/>
+        <line x1="2" y1="20" x2="9" y2="20" stroke="#0ec4c4" stroke-width="1"/>
+        <line x1="31" y1="20" x2="38" y2="20" stroke="#0ec4c4" stroke-width="1"/>
+        <circle cx="20" cy="20" r="3" fill="#0ec4c4" opacity="0.6"/>
+      </svg>
+      <div class="targets-row" id="targetsRow"></div>
+      <div class="dist-markers" id="distMarkers"></div>
+    </div>
+  </div>
+
+  <!-- Question -->
+  <div class="q-wrap" id="qWrap"></div>
+</div>
+
+<!-- ══════ RESULT ══════ -->
+<div id="result" class="screen">
+  <span class="res-icon" id="resIcon">🎯</span>
+  <div class="res-title" id="resTitle">MISSION COMPLETE</div>
+  <div class="res-sub" id="resSub">// BINOMIAL SNIPER · DEBRIEF //</div>
+  <div class="score-ring">
+    <div class="score-big" id="resBig">—</div>
+    <div class="score-max" id="resMax">/ 36 pts</div>
+  </div>
+  <div class="breakdown-grid" id="resBkd"></div>
+  <div class="sub-box">
+    <pre id="subText"></pre>
+    <button class="copy-btn" onclick="copySubmission()">📋 COPY FOR GOOGLE CLASSROOM</button>
+  </div>
+  <button class="btn-again" onclick="restartAll()">↺ RELOAD &amp; RETRY</button>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// QUESTIONS
+// ══════════════════════════════════════════
+var QUESTIONS = [
+  // ── LEVEL 1: Pascal's Triangle ──
+  {
+    id:'q1', level:1, levelName:"Pascal's Triangle", pts:3,
+    color:'22c55e',
+    topic:"Pascal's Triangle — Read the row",
+    text:'Using Pascal\'s triangle, find the coefficient of <span class="math">x³</span> in the expansion of <span class="math">(1 + x)⁵</span>.',
+    hint:"Write out row n=5 of Pascal's triangle: 1  5  10  10  5  1. The coefficient of x³ is the 4th number (starting from x⁰).",
+    format:'Enter a whole number.',
+    answers:['10'],
+    reveal:'Row 5 of Pascal\'s triangle: 1 5 10 10 5 1. The x³ term is the 4th entry = 10.'
+  },
+  {
+    id:'q2', level:1, levelName:"Pascal's Triangle", pts:3,
+    color:'22c55e',
+    topic:"Pascal's Triangle — Signs",
+    text:'Using Pascal\'s triangle, find the coefficient of <span class="math">x²</span> in the expansion of <span class="math">(1 − x)⁴</span>.',
+    hint:"Row n=4: 1  4  6  4  1. The x² term is C(4,2)·(−x)² = 6x². Since (−x)² = x², the coefficient is positive.",
+    format:'Enter a whole number.',
+    answers:['6'],
+    reveal:'C(4,2)·(−x)² = 6·x². Coefficient = 6 (positive since squaring removes the minus).'
+  },
+  {
+    id:'q3', level:1, levelName:"Pascal's Triangle", pts:3,
+    color:'22c55e',
+    topic:"Pascal's Triangle — Single term",
+    text:'Find the coefficient of <span class="math">x³</span> in the expansion of <span class="math">(1 + 2x)⁴</span>.',
+    hint:"Row n=4: 1  4  6  4  1. The x³ term is C(4,3)·(2x)³ = 4·8x³. Multiply the Pascal coefficient by (2)³.",
+    format:'Enter a whole number.',
+    answers:['32'],
+    reveal:'C(4,3)·(2x)³ = 4·8·x³ = 32x³. Coefficient = 32.'
+  },
+
+  // ── LEVEL 2: nCr with coefficients ──
+  {
+    id:'q4', level:2, levelName:'nCr · Coefficients', pts:3,
+    color:'f0c040',
+    topic:'nCr — Coefficient extraction',
+    text:'Find the coefficient of <span class="math">x²</span> in the expansion of <span class="math">(1 + 2x)⁵</span>.<br><br>Use <sup>n</sup>C<sub>r</sub> notation.',
+    hint:'The x² term is ⁵C₂·(2x)². On your Casio: 5 SHIFT÷ 2 = gives 10. Then multiply by (2)² = 4.',
+    format:'Enter a whole number.',
+    answers:['40'],
+    reveal:'⁵C₂·(2x)² = 10·4·x² = 40x². Coefficient = 40.'
+  },
+  {
+    id:'q5', level:2, levelName:'nCr · Coefficients', pts:3,
+    color:'f0c040',
+    topic:'nCr — Larger power',
+    text:'Find the coefficient of <span class="math">x³</span> in the expansion of <span class="math">(2 + x)⁶</span>.',
+    hint:'The x³ term is ⁶C₃·(2)³·(x)³. On Casio: 6 SHIFT÷ 3 = gives 20. Then multiply by 2³ = 8.',
+    format:'Enter a whole number.',
+    answers:['160'],
+    reveal:'⁶C₃·2³·x³ = 20·8·x³ = 160x³. Coefficient = 160.'
+  },
+  {
+    id:'q6', level:2, levelName:'nCr · Coefficients', pts:3,
+    color:'f0c040',
+    topic:'nCr — Two coefficients and signs',
+    text:'Find the coefficient of <span class="math">x²</span> in the expansion of <span class="math">(3 − 2x)⁵</span>.',
+    hint:'Term: ⁵C₂·(3)³·(−2x)². Note (−2x)² = +4x². So: ⁵C₂ × 27 × 4. On Casio: 5 SHIFT÷ 2 = 10.',
+    format:'Enter a whole number. Watch the sign carefully.',
+    answers:['1080'],
+    reveal:'⁵C₂·(3)³·(−2x)² = 10·27·4·x² = 1080x². Positive since (−2x)² squares away the minus.'
+  },
+
+  // ── LEVEL 3: Finding unknowns ──
+  {
+    id:'q7', level:3, levelName:'Finding Unknowns', pts:3,
+    color:'f97316',
+    topic:'Reverse — Find k',
+    text:'The coefficient of <span class="math">x²</span> in the expansion of <span class="math">(1 + kx)⁶</span> is 60.<br><br>Find the value(s) of <span class="math">k</span>.',
+    hint:'Write the x² term: ⁶C₂·(kx)² = 15k²x². Set 15k² = 60, so k² = 4.',
+    format:'There may be more than one value. If so, enter both separated by a comma (e.g. 3,-3).',
+    answers:['2','-2','k=2','k=-2','±2','+/-2','2,-2','-2,2'],
+    reveal:'⁶C₂·k² = 15k² = 60 → k² = 4 → k = ±2. Accept either value.'
+  },
+  {
+    id:'q8', level:3, levelName:'Finding Unknowns', pts:3,
+    color:'f97316',
+    topic:'Reverse — Find a (two-term base)',
+    text:'The coefficient of <span class="math">x²</span> in the expansion of <span class="math">(2 + ax)⁴</span> is 96.<br><br>Find the value(s) of <span class="math">a</span>.',
+    hint:'x² term: ⁴C₂·(2)²·(a)²x² = 6·4·a²·x² = 24a². Set 24a² = 96, so a² = 4.',
+    format:'There may be more than one value. If so, enter both separated by a comma (e.g. 3,-3).',
+    answers:['2','-2','a=2','a=-2','±2','+/-2','2,-2','-2,2'],
+    reveal:'⁴C₂·4·a² = 24a² = 96 → a² = 4 → a = ±2.'
+  },
+  {
+    id:'q9', level:3, levelName:'Finding Unknowns', pts:3,
+    color:'f97316',
+    topic:'Constant term — Index rule',
+    text:'Find the constant term in the expansion of <span class="math">(x + 2/x)⁶</span>.',
+    hint:'General term: ⁶Cᵣ·x^(6−r)·(2/x)ʳ = ⁶Cᵣ·2ʳ·x^(6−2r). For a constant: 6−2r=0, so r=3.',
+    format:'Enter a whole number.',
+    answers:['160'],
+    reveal:'r=3: ⁶C₃·2³·x^(6−6) = 20·8·1 = 160. Constant term = 160.'
+  },
+
+  // ── LEVEL 4: IB-style problem solving ──
+  {
+    id:'q10', level:4, levelName:'IB Problem Solving', pts:3,
+    color:'e53935',
+    topic:'Two expansions multiplied',
+    text:'Find the coefficient of <span class="math">x²</span> in the expansion of<span class="block">(1 + x)⁴ · (2 − x)³</span>',
+    hint:'Expand both up to x². (1+x)⁴: 1 + 4x + 6x² + … (2−x)³: 8 − 12x + 6x² − … . Then collect x² terms: (1)(6x²) + (4x)(−12x) + (6x²)(8).',
+    format:'Enter a whole number. The answer may be positive or negative.',
+    answers:['6'],
+    reveal:'(1)(6) + (4)(−12) + (6)(8) = 6 − 48 + 48 = 6. Coefficient = 6.'
+  },
+  {
+    id:'q11', level:4, levelName:'IB Problem Solving', pts:3,
+    color:'e53935',
+    topic:'Ratio of coefficients — Find n',
+    text:'The coefficient of <span class="math">x³</span> in <span class="math">(1+x)ⁿ</span> is four times the coefficient of <span class="math">x²</span>.<br><br>Find the value of <span class="math">n</span>.',
+    hint:'Write both coefficients: ⁿC₃ = 4·ⁿC₂. Expand: n(n−1)(n−2)/6 = 4·n(n−1)/2. Cancel n(n−1) from both sides.',
+    format:'Enter a whole number.',
+    answers:['14','n=14'],
+    reveal:'ⁿC₃ = 4·ⁿC₂ → (n−2)/6 = 4/2 = 2 → n−2 = 12 → n = 14.'
+  },
+  {
+    id:'q12', level:4, levelName:'IB Problem Solving', pts:3,
+    color:'e53935',
+    topic:'Constant term — Harder',
+    text:'Find the term independent of <span class="math">x</span> (the constant term) in the expansion of<span class="block">(2x − 1/x²)⁶</span>',
+    hint:'General term: ⁶Cᵣ·(2x)^(6−r)·(−1/x²)ʳ = ⁶Cᵣ·2^(6−r)·(−1)ʳ·x^(6−3r). Set 6−3r=0 → r=2.',
+    format:'Enter a whole number.',
+    answers:['240'],
+    reveal:'r=2: ⁶C₂·2⁴·(−1)²·x⁰ = 15·16·1 = 240. Constant term = 240.'
+  }
+];
+
+var MAX_SCORE = QUESTIONS.reduce(function(a,q){ return a+q.pts; }, 0);
+
+// ══ STATE ══
+var playerName = '';
+var currentQ   = 0;
+var attempts   = {};
+var scores     = {};
+var solved     = {};
+
+QUESTIONS.forEach(function(q){ attempts[q.id]=0; scores[q.id]=0; solved[q.id]=false; });
+
+var totalScore = 0;
+var targetsHit = 0;
+
+// ══ INTRO ══
+document.getElementById('playerName').addEventListener('input', function(){
+  document.getElementById('startBtn').disabled = this.value.trim().length < 2;
+});
+document.getElementById('playerName').addEventListener('keydown', function(e){
+  if(e.key==='Enter' && this.value.trim().length>=2) startGame();
+});
+
+function startGame(){
+  playerName = document.getElementById('playerName').value.trim();
+  document.getElementById('hudName').textContent = playerName.toUpperCase();
+  showScreen('game');
+  buildTargets();
+  loadQuestion(0);
+}
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+// ══ TARGETS ══
+var TARGET_DISTS = ['100m','200m','300m','400m','500m','600m','700m','800m','900m','1000m','1100m','1200m'];
+var TARGET_POLES = [55,50,45,40,48,38,52,42,36,44,50,56];
+
+function buildTargets(){
+  var row = document.getElementById('targetsRow');
+  var dists = document.getElementById('distMarkers');
+  row.innerHTML=''; dists.innerHTML='';
+
+  QUESTIONS.forEach(function(q,i){
+    var wrap = document.createElement('div');
+    wrap.className='target-wrap';
+    wrap.id='twrap_'+q.id;
+
+    var pole = document.createElement('div');
+    pole.className='target-pole';
+    pole.style.height = TARGET_POLES[i]+'px';
+
+    var circ = document.createElement('div');
+    circ.className='target-circle alive';
+    circ.id='target_'+q.id;
+    circ.textContent = i+1;
+
+    wrap.appendChild(circ);
+    wrap.appendChild(pole);
+    row.appendChild(wrap);
+
+    var dm = document.createElement('div');
+    dm.className='dist-m';
+    dm.textContent = TARGET_DISTS[i];
+    dists.appendChild(dm);
+  });
+}
+
+function updateTarget(qid, state){
+  var circ = document.getElementById('target_'+qid);
+  if(!circ) return;
+  circ.className = 'target-circle ' + state;
+}
+
+// ══ QUESTION LOADER ══
+function levelColor(lvl){
+  return ['','22c55e','f0c040','f97316','e53935'][lvl];
+}
+function levelBg(lvl){
+  return ['','rgba(34,197,94,0.1)','rgba(240,192,64,0.1)','rgba(249,115,22,0.1)','rgba(229,57,53,0.1)'][lvl];
+}
+
+function loadQuestion(idx){
+  currentQ = idx;
+  var q = QUESTIONS[idx];
+
+  document.getElementById('hudTargets').textContent = targetsHit+'/12';
+  updateHudBullets(attempts[q.id]);
+  updateHudLevel(q.level, q.levelName);
+
+  var wrap = document.getElementById('qWrap');
+
+  // Level separator
+  var sepHtml = '';
+  if(idx === 0 || QUESTIONS[idx].level !== QUESTIONS[idx-1].level){
+    var c = levelColor(q.level);
+    sepHtml = '<div class="level-sep" style="margin-top:16px">'+
+      '<div class="sep-line" style="background:linear-gradient(to right, transparent, #'+c+')"></div>'+
+      '<div class="sep-text" style="color:#'+c+'">// LEVEL '+q.level+' — '+q.levelName.toUpperCase()+' //</div>'+
+      '<div class="sep-line" style="background:linear-gradient(to left, transparent, #'+c+')"></div>'+
+    '</div>';
+  }
+
+  var dotsHtml = '';
+  for(var d=0;d<3;d++) dotsHtml += '<div class="b-dot" id="dot_'+q.id+'_'+d+'"></div>';
+
+  wrap.innerHTML = sepHtml +
+    '<div class="q-card" id="qcard_'+q.id+'">' +
+      '<div class="q-header" style="background:'+levelBg(q.level)+'">' +
+        '<div class="q-num" style="background:rgba('+hexToRgb(levelColor(q.level))+',0.2);color:#'+levelColor(q.level)+';border:1px solid rgba('+hexToRgb(levelColor(q.level))+',0.4)">TARGET '+('0'+(idx+1)).slice(-2)+'</div>' +
+        '<div class="q-topic">'+q.topic+'</div>' +
+        '<div class="q-pts">'+q.pts+' pts</div>' +
+      '</div>' +
+      '<div class="q-body">' +
+        '<div class="q-text">'+q.text+'</div>' +
+        '<div class="hint-panel" id="hint_'+q.id+'">' +
+          '<div class="hint-label">// SNIPER HINT — UNLOCKED //</div>' +
+          q.hint +
+        '</div>' +
+        '<div class="fire-row">' +
+          '<input class="ans-input" id="inp_'+q.id+'" type="text" placeholder="Enter your answer..." onkeydown="if(event.key===\'Enter\') fireShot(\''+q.id+'\')">' +
+          '<button class="btn-fire" id="firebtn_'+q.id+'" onclick="fireShot(\''+q.id+'\')">🔫 FIRE</button>' +
+        '</div>' +
+        '<div class="format-guide">// FORMAT: '+q.format+'</div>' +
+        '<div class="bullets-row">'+dotsHtml+'<span style="margin-left:auto;font-family:\'Share Tech Mono\',monospace;font-size:.65rem;color:var(--dim)">'+q.pts+' pts available</span></div>' +
+        '<div class="fb-text" id="fb_'+q.id+'"></div>' +
+        '<button class="btn-next" id="nxt_'+q.id+'" onclick="nextQuestion()">NEXT TARGET →</button>' +
+      '</div>' +
+    '</div>';
+
+  // Focus input
+  setTimeout(function(){ var inp=document.getElementById('inp_'+q.id); if(inp) inp.focus(); }, 80);
+}
+
+function hexToRgb(hex){
+  var r=parseInt(hex.substr(0,2),16), g=parseInt(hex.substr(2,2),16), b=parseInt(hex.substr(4,2),16);
+  return r+','+g+','+b;
+}
+
+function updateHudBullets(used){
+  var hud = document.getElementById('hudBullets');
+  hud.innerHTML='';
+  for(var i=0;i<3;i++){
+    var b=document.createElement('div');
+    b.className='bullet'+(i<used?' spent':'');
+    hud.appendChild(b);
+  }
+}
+
+function updateHudLevel(lvl, name){
+  var el=document.getElementById('hudLevel');
+  var colors=['','22c55e','f0c040','f97316','e53935'];
+  el.style.background='rgba('+hexToRgb(colors[lvl])+',0.12)';
+  el.style.border='1px solid rgba('+hexToRgb(colors[lvl])+',0.35)';
+  el.style.color='#'+colors[lvl];
+  el.textContent='LVL '+lvl+' · '+name.toUpperCase();
+}
+
+// ══ FIRE LOGIC ══
+function fireShot(qid){
+  if(solved[qid]) return;
+  var q = QUESTIONS.find(function(x){ return x.id===qid; });
+  var inp = document.getElementById('inp_'+qid);
+  var raw = inp.value.trim();
+  if(!raw){ showToast('// ENTER A VALUE BEFORE FIRING //'); return; }
+
+  // Muzzle flash
+  var muzz = document.getElementById('muzzle');
+  muzz.classList.remove('flash');
+  void muzz.offsetWidth;
+  muzz.classList.add('flash');
+
+  // Normalise answer
+  var norm = raw.toLowerCase().replace(/\s+/g,'').replace(/k=/,'').replace(/a=/,'').replace(/n=/,'');
+  var correct = q.answers.some(function(a){
+    return a.toLowerCase().replace(/\s+/g,'').replace(/k=/,'').replace(/a=/,'').replace(/n=/,'') === norm;
+  });
+
+  var aidx = attempts[qid];
+  var dot = document.getElementById('dot_'+qid+'_'+aidx);
+
+  if(correct){
+    // Hit!
+    var remaining = 3 - aidx;
+    var pts = remaining===3 ? q.pts : remaining===2 ? Math.ceil(q.pts*0.67) : Math.ceil(q.pts*0.34);
+    scores[qid] = pts;
+    solved[qid] = true;
+    targetsHit++;
+    totalScore += pts;
+
+    inp.className='ans-input correct'; inp.disabled=true;
+    if(dot){ dot.className='b-dot ok'; }
+    document.getElementById('firebtn_'+qid).disabled=true;
+
+    var fb=document.getElementById('fb_'+qid);
+    fb.className='fb-text correct';
+    fb.textContent='✓ TARGET DOWN — '+pts+' / '+q.pts+' pts awarded'+(remaining<3?' (partial — took '+(4-remaining)+' shots)':'');
+
+    updateTarget(qid, 'correct');
+    document.getElementById('hudScore').textContent = totalScore;
+    document.getElementById('hudTargets').textContent = targetsHit+'/12';
+
+    showNextBtn(qid);
+    checkDone();
+
+  } else {
+    // Miss
+    attempts[qid]++;
+    if(dot){ dot.className='b-dot spent'; }
+    inp.className='ans-input wrong';
+    setTimeout(function(){ inp.className='ans-input'; }, 500);
+
+    updateHudBullets(attempts[qid]);
+
+    var fb2=document.getElementById('fb_'+qid);
+
+    if(attempts[qid]===2){
+      document.getElementById('hint_'+qid).classList.add('show');
+    }
+
+    if(attempts[qid]>=3){
+      // All bullets spent
+      solved[qid]=true; scores[qid]=0;
+      inp.disabled=true;
+      document.getElementById('firebtn_'+qid).disabled=true;
+      fb2.className='fb-text reveal';
+      fb2.textContent='💥 ALL BULLETS SPENT · '+q.reveal;
+      updateTarget(qid, 'hit');
+      showNextBtn(qid);
+      checkDone();
+    } else {
+      fb2.className='fb-text wrong';
+      fb2.textContent='✗ MISS — '+(3-attempts[qid])+' bullet'+(3-attempts[qid]===1?'':'s')+' remaining'+(attempts[qid]===2?' · Hint now unlocked above':'');
+    }
+  }
+}
+
+function showNextBtn(qid){
+  var nxt = document.getElementById('nxt_'+qid);
+  if(nxt){
+    nxt.classList.add('show');
+    var isLast = QUESTIONS[QUESTIONS.length-1].id === qid;
+    nxt.textContent = isLast ? 'MISSION DEBRIEF →' : 'NEXT TARGET →';
+    if(isLast) nxt.onclick = showResult;
+  }
+}
+
+function nextQuestion(){
+  if(currentQ < QUESTIONS.length-1){
+    loadQuestion(currentQ+1);
+    setTimeout(function(){
+      var qw = document.getElementById('qWrap');
+      if(qw) qw.scrollIntoView({ behavior:'smooth', block:'start' });
+    }, 80);
+  } else {
+    showResult();
+  }
+}
+
+function checkDone(){
+  if(QUESTIONS.every(function(q){ return solved[q.id]; })) setTimeout(showResult, 900);
+}
+
+// ══ RESULT ══
+function showResult(){
+  showScreen('result');
+  var pct = totalScore / MAX_SCORE;
+
+  var icon, title, sub;
+  if(pct>=0.9){ icon='🏆'; title='ELITE SNIPER'; sub='Outstanding. Every target neutralised with precision.'; }
+  else if(pct>=0.7){ icon='🎯'; title='SHARPSHOOTER'; sub='Strong performance. A few targets took multiple shots.'; }
+  else if(pct>=0.5){ icon='🔫'; title='FIELD AGENT'; sub='You got through the mission — but the IB-style targets need more work.'; }
+  else { icon='💥'; title='MISSION FAILED'; sub='Return to base. Review Pascal\'s triangle and nCr, then reload.'; }
+
+  document.getElementById('resIcon').textContent = icon;
+  document.getElementById('resTitle').textContent = title;
+  document.getElementById('resSub').textContent = sub;
+  document.getElementById('resBig').textContent = totalScore;
+  document.getElementById('resMax').textContent = '/ '+MAX_SCORE+' pts';
+
+  // Breakdown by level
+  var levels = [
+    { n:1, name:"Pascal's Triangle", qs:['q1','q2','q3'] },
+    { n:2, name:'nCr · Coefficients', qs:['q4','q5','q6'] },
+    { n:3, name:'Finding Unknowns',   qs:['q7','q8','q9'] },
+    { n:4, name:'IB Problem Solving', qs:['q10','q11','q12'] }
+  ];
+  var colors=['','22c55e','f0c040','f97316','e53935'];
+  var bkd='';
+  levels.forEach(function(lv){
+    var tot=lv.qs.reduce(function(a,id){ return a+scores[id]; },0);
+    var max=lv.qs.reduce(function(a,id){ var q=QUESTIONS.find(function(x){return x.id===id;}); return a+q.pts; },0);
+    bkd+='<div class="bk-card"><div class="bk-level">LVL '+lv.n+' · '+lv.name.toUpperCase()+'</div><div class="bk-score" style="color:#'+colors[lv.n]+'">'+tot+' / '+max+'</div></div>';
+  });
+  document.getElementById('resBkd').innerHTML=bkd;
+
+  // Submission
+  var lines=[
+    'BINOMIAL SNIPER — Student Submission',
+    'Player: '+playerName,
+    'Date:   '+new Date().toLocaleDateString(),
+    '',
+    'TARGET LOG',
+    '─────────────────────────────────────',
+  ];
+  QUESTIONS.forEach(function(q,i){
+    var st = solved[q.id] && scores[q.id]>0 ? 'HIT' : 'MISSED';
+    lines.push('T'+(i+1)+' '+q.topic+': '+st+' · '+scores[q.id]+'/'+q.pts+' pts');
+  });
+  lines.push('─────────────────────────────────────');
+  lines.push('TOTAL: '+totalScore+' / '+MAX_SCORE+' pts');
+  lines.push('Targets hit: '+targetsHit+' / 12');
+  document.getElementById('subText').textContent=lines.join('\n');
+}
+
+function copySubmission(){
+  navigator.clipboard.writeText(document.getElementById('subText').textContent)
+    .then(function(){ showToast('Copied!'); })
+    .catch(function(){ showToast('Select text and copy manually'); });
+}
+
+function restartAll(){
+  QUESTIONS.forEach(function(q){ attempts[q.id]=0; scores[q.id]=0; solved[q.id]=false; });
+  totalScore=0; targetsHit=0; currentQ=0;
+  document.getElementById('hudScore').textContent='0';
+  document.getElementById('hudTargets').textContent='0/12';
+  showScreen('intro');
+  document.getElementById('playerName').value='';
+  document.getElementById('startBtn').disabled=true;
+}
+
+function showToast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); },2400);
+}
+</script>
+</body>
+</html>
