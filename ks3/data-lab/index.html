@@ -1,0 +1,1600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mr. Goddard's Data Lab — Scatter Graphs</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0f1117;--panel:#1a1d27;--panel2:#22263a;--border:#2e3350;
+  --gold:#fbbf24;--teal:#06b6d4;--green:#22c55e;--red:#ef4444;
+  --purple:#8b5cf6;--orange:#f97316;--white:#f0f4ff;--dim:#4a5568;--text:#e2e8f0;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+.header{background:var(--panel);border-bottom:3px solid var(--teal);padding:13px 22px;
+  display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:100;
+  box-shadow:0 4px 24px rgba(0,0,0,.5);flex-wrap:wrap}
+.header-icon{font-size:1.8rem}
+.header h1{font-family:'Fredoka One',cursive;font-size:1.2rem;color:var(--teal);line-height:1.1}
+.header p{font-size:.73rem;color:var(--dim);margin-top:1px}
+.hdr-right{margin-left:auto;display:flex;gap:10px;align-items:center}
+.pts-pill{font-family:'Fredoka One',cursive;font-size:1rem;color:var(--gold);
+  background:rgba(251,191,36,.1);border:2px solid rgba(251,191,36,.35);
+  padding:5px 15px;border-radius:24px;min-width:86px;text-align:center;
+  position:relative;overflow:hidden}
+.pts-pill.pop{animation:ptspop .4s ease}
+@keyframes ptspop{0%{transform:scale(1)}40%{transform:scale(1.25)}100%{transform:scale(1)}}
+.pts-flash{position:absolute;top:0;left:50%;transform:translateX(-50%);
+  font-size:.75rem;pointer-events:none;animation:floatUp .8s ease forwards;opacity:0}
+@keyframes floatUp{0%{opacity:1;top:0}100%{opacity:0;top:-28px}}
+
+.name-banner{background:rgba(15,17,23,.95);border-bottom:1px solid var(--border);
+  padding:9px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.name-banner label{font-weight:800;font-size:.83rem;color:var(--teal)}
+.name-inp{border:2px solid rgba(6,182,212,.3);border-radius:8px;padding:6px 12px;
+  font-size:.88rem;font-family:inherit;background:rgba(255,255,255,.05);
+  color:var(--white);outline:none;width:190px;transition:border-color .2s}
+.name-inp:focus{border-color:var(--teal)}
+.name-inp::placeholder{color:var(--dim)}
+
+.prog-wrap{background:rgba(8,10,18,.9);border-bottom:1px solid var(--border);
+  padding:7px 22px;display:flex;align-items:center;gap:12px}
+.prog-label{font-size:.7rem;color:var(--dim);font-weight:700;letter-spacing:.5px;white-space:nowrap}
+.prog-bar{flex:1;height:7px;background:var(--border);border-radius:6px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--purple));
+  border-radius:6px;transition:width .4s ease;width:0%}
+.prog-text{font-size:.7rem;color:var(--dim);white-space:nowrap}
+
+.main{max-width:920px;margin:0 auto;padding:22px 18px 80px}
+
+.intro-card{background:var(--panel);border:1.5px solid var(--border);border-radius:16px;
+  padding:24px;margin-bottom:22px;box-shadow:0 4px 20px rgba(0,0,0,.3)}
+.intro-card h2{font-family:'Fredoka One',cursive;font-size:1.3rem;color:var(--teal);margin-bottom:8px}
+.intro-card p{font-size:.93rem;line-height:1.65;margin-bottom:8px;color:var(--text)}
+.intro-card p:last-child{margin-bottom:0}
+.intro-card strong{color:var(--gold)}
+.mission-badge{display:inline-flex;align-items:center;gap:7px;
+  background:rgba(6,182,212,.1);border:1px solid rgba(6,182,212,.25);
+  border-radius:20px;padding:4px 14px;font-size:.75rem;font-weight:800;
+  color:var(--teal);letter-spacing:.5px;margin-bottom:12px}
+
+.inv-card{background:var(--panel);border:1.5px solid var(--border);border-radius:16px;
+  overflow:hidden;margin-bottom:24px;box-shadow:0 4px 20px rgba(0,0,0,.3)}
+.inv-header{padding:14px 18px;display:flex;align-items:center;gap:12px;
+  border-bottom:1px solid var(--border)}
+.inv-num{font-family:'Fredoka One',cursive;background:var(--teal);color:var(--bg);
+  padding:3px 13px;border-radius:20px;font-size:.82rem;white-space:nowrap}
+.inv-title{font-family:'Fredoka One',cursive;font-size:1rem;color:var(--white)}
+.inv-pts{margin-left:auto;font-size:.7rem;font-weight:800;color:var(--gold);
+  background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.25);
+  padding:2px 10px;border-radius:20px;white-space:nowrap}
+.inv-body{padding:18px}
+.inv-scenario{font-size:.93rem;line-height:1.6;color:var(--text);margin-bottom:16px;
+  background:rgba(6,182,212,.05);border-left:3px solid var(--teal);
+  padding:10px 14px;border-radius:0 8px 8px 0}
+.inv-scenario strong{color:var(--teal)}
+
+/* Two-column layout: table + canvas */
+.plot-layout{display:grid;grid-template-columns:160px 1fr;gap:14px;margin-bottom:10px}
+@media(max-width:560px){.plot-layout{grid-template-columns:1fr}}
+
+/* Data table */
+.data-table{width:100%;border-collapse:collapse;font-size:.82rem}
+.data-table th{padding:6px 8px;font-weight:800;text-align:center;
+  border-bottom:2px solid var(--border);font-size:.75rem}
+.data-table td{padding:5px 8px;text-align:center;
+  border-bottom:1px solid rgba(255,255,255,.04);transition:background .2s}
+.data-table tr.current-row td{background:rgba(251,191,36,.12);color:var(--gold);font-weight:800}
+.data-table tr.done-row td{color:var(--green)}
+.data-table tr.skipped-row td{color:var(--dim)}
+
+/* Canvas */
+.canvas-wrap{position:relative;user-select:none}
+canvas{display:block;border-radius:10px;cursor:crosshair;touch-action:none;width:100%}
+.canvas-instruction{font-size:.78rem;color:var(--gold);font-style:italic;
+  text-align:center;margin-top:6px;font-weight:700}
+
+/* Plot status bar */
+.plot-status{background:var(--panel2);border:1px solid var(--border);border-radius:8px;
+  padding:9px 14px;font-size:.83rem;color:var(--text);margin-bottom:12px;
+  display:flex;align-items:center;gap:8px}
+.plot-count{font-family:'Fredoka One',cursive;color:var(--teal);font-size:.9rem}
+
+.step{background:var(--panel2);border:1.5px solid var(--border);border-radius:12px;
+  padding:15px 18px;margin-bottom:14px;transition:opacity .3s}
+.step.locked{opacity:.35;pointer-events:none}
+.step-title{font-family:'Fredoka One',cursive;font-size:.95rem;color:var(--purple);
+  margin-bottom:10px;display:flex;align-items:center;gap:7px}
+.step-badge{background:var(--purple);color:white;border-radius:50%;
+  width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;
+  font-size:.72rem;font-weight:900;flex-shrink:0}
+
+.corr-btns{display:flex;gap:8px;flex-wrap:wrap}
+.corr-btn{padding:8px 14px;background:var(--panel);border:2px solid var(--border);
+  border-radius:10px;color:var(--text);font-family:'Nunito',sans-serif;
+  font-size:.83rem;font-weight:700;cursor:pointer;transition:all .18s}
+.corr-btn:hover:not(:disabled){border-color:var(--teal);background:rgba(6,182,212,.08)}
+.corr-btn.sel-ok{border-color:var(--green);background:rgba(34,197,94,.1);color:var(--green)}
+.corr-btn.sel-bad{border-color:var(--red);background:rgba(239,68,68,.1);color:var(--red)}
+.corr-btn:disabled{cursor:default;opacity:.7}
+
+.line-instructions{background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.2);
+  border-radius:8px;padding:10px 14px;font-size:.83rem;color:var(--text);
+  line-height:1.6;margin-bottom:10px}
+.line-instructions strong{color:var(--gold)}
+.line-btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.line-btn{padding:8px 16px;background:var(--orange);color:var(--bg);border:none;
+  border-radius:8px;font-family:'Fredoka One',cursive;font-size:.88rem;cursor:pointer;transition:all .15s}
+.line-btn:hover{background:#fb923c;transform:scale(1.04)}
+.line-btn.sec{background:var(--panel);border:1.5px solid var(--border);color:var(--text)}
+.line-btn.sec:hover{border-color:var(--orange);color:var(--orange)}
+.line-btn.grn{background:var(--green)}
+.line-btn.grn:hover{background:#4ade80}
+
+.acc-wrap{margin-top:10px}
+.acc-label{font-size:.78rem;color:var(--dim);margin-bottom:5px}
+.acc-bar{height:10px;background:var(--border);border-radius:6px;overflow:hidden;margin-bottom:4px}
+.acc-fill{height:100%;border-radius:6px;transition:width .6s ease,background .4s}
+.acc-score-text{font-size:.82rem;font-weight:800;text-align:center}
+
+.pred-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}
+.pred-label{font-size:.85rem;color:var(--text);font-weight:700}
+.pred-inp{border:2px solid var(--border);border-radius:8px;padding:7px 10px;
+  font-size:.95rem;font-family:'Fredoka One',cursive;background:rgba(255,255,255,.05);
+  color:var(--gold);outline:none;width:100px;text-align:center;transition:border-color .2s}
+.pred-inp:focus{border-color:var(--gold)}
+.pred-inp.ok{border-color:var(--green);background:rgba(34,197,94,.08);color:var(--green)}
+.pred-inp.bad{border-color:var(--red);background:rgba(239,68,68,.08);color:var(--red)}
+.pred-unit{font-size:.82rem;color:var(--dim)}
+.chk-btn{padding:8px 16px;background:var(--teal);color:var(--bg);border:none;
+  border-radius:8px;font-family:'Fredoka One',cursive;font-size:.88rem;cursor:pointer;transition:all .15s}
+.chk-btn:hover{background:#22d3ee;transform:scale(1.04)}
+.chk-btn:disabled{background:var(--dim);cursor:default;transform:none}
+
+.fb{font-size:.85rem;font-weight:700;margin-top:9px;padding:8px 12px;
+  border-radius:8px;display:none;line-height:1.5}
+.fb.ok{display:block;background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.2)}
+.fb.bad{display:block;background:rgba(239,68,68,.08);color:var(--red);border:1px solid rgba(239,68,68,.18)}
+.fb.info{display:block;background:rgba(139,92,246,.08);color:var(--purple);border:1px solid rgba(139,92,246,.2)}
+
+.danger-box{background:rgba(239,68,68,.07);border:1.5px solid rgba(239,68,68,.25);
+  border-radius:10px;padding:14px 16px;margin-top:12px;display:none}
+.danger-title{font-family:'Fredoka One',cursive;font-size:.95rem;color:var(--red);margin-bottom:6px}
+.danger-box p{font-size:.85rem;line-height:1.6;color:var(--text)}
+
+.mean-reveal{display:none;margin-top:10px;padding:10px 14px;
+  background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.2);
+  border-radius:8px;font-size:.85rem;line-height:1.6;color:var(--text)}
+.mean-reveal strong{color:var(--gold)}
+
+.sub-card{background:var(--panel);border:1.5px solid var(--border);border-radius:16px;
+  padding:24px;margin-top:24px}
+.sub-title{font-family:'Fredoka One',cursive;font-size:1rem;color:var(--green);margin-bottom:6px}
+.sub-note{font-size:.82rem;color:var(--dim);margin-bottom:16px;line-height:1.5}
+.gen-btn{padding:11px 24px;background:var(--green);color:var(--bg);border:none;
+  border-radius:10px;font-family:'Fredoka One',cursive;font-size:.95rem;cursor:pointer;transition:all .15s}
+.gen-btn:hover{background:#4ade80;transform:scale(1.04)}
+.sum-wrap{margin-top:14px;display:none}
+.sum-ta{width:100%;min-height:240px;background:rgba(0,0,0,.4);color:#7fffbc;
+  border:2px solid rgba(34,197,94,.3);border-radius:10px;padding:13px;
+  font-family:'Courier New',monospace;font-size:.76rem;line-height:1.65;resize:vertical;outline:none}
+.copy-row{display:flex;align-items:center;gap:12px;margin-top:10px;flex-wrap:wrap}
+.copy-btn{padding:8px 20px;background:var(--gold);color:var(--bg);border:none;
+  border-radius:8px;font-family:'Fredoka One',cursive;font-size:.88rem;cursor:pointer;transition:transform .12s}
+.copy-btn:hover{background:#fbbf24;transform:scale(1.03)}
+.copy-ok{color:var(--green);font-weight:800;font-size:.83rem;display:none}
+.gc-steps{margin-top:10px;background:rgba(0,0,0,.25);border-radius:8px;
+  padding:10px 13px;color:var(--dim);font-size:.76rem;line-height:1.75}
+.gc-steps strong{color:var(--gold)}
+/* ── EXTENSION ── */
+.ext-card{background:var(--panel);border:2px solid rgba(139,92,246,.4);border-radius:16px;
+  overflow:hidden;margin-bottom:24px;box-shadow:0 4px 24px rgba(139,92,246,.15)}
+.ext-header{padding:14px 18px;display:flex;align-items:center;gap:12px;
+  border-bottom:1px solid rgba(139,92,246,.25);
+  background:linear-gradient(135deg,rgba(139,92,246,.15),transparent)}
+.ext-badge{font-family:'Fredoka One',cursive;background:var(--purple);color:white;
+  padding:3px 13px;border-radius:20px;font-size:.82rem;white-space:nowrap}
+.ext-title{font-family:'Fredoka One',cursive;font-size:1rem;color:var(--white)}
+.ext-body{padding:18px}
+.ext-scenario{font-size:.93rem;line-height:1.6;color:var(--text);margin-bottom:16px;
+  background:rgba(139,92,246,.06);border-left:3px solid var(--purple);
+  padding:10px 14px;border-radius:0 8px 8px 0}
+.ext-step{background:var(--panel2);border:1.5px solid rgba(139,92,246,.25);border-radius:12px;
+  padding:15px 18px;margin-bottom:14px;transition:opacity .3s}
+.ext-step.locked{opacity:.35;pointer-events:none}
+.ext-step-title{font-family:'Fredoka One',cursive;font-size:.95rem;color:var(--purple);
+  margin-bottom:10px;display:flex;align-items:center;gap:7px}
+.ext-step-badge{background:var(--purple);color:white;border-radius:50%;
+  width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;
+  font-size:.72rem;font-weight:900;flex-shrink:0}
+
+/* Variable inputs */
+.var-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.var-inp{border:2px solid rgba(139,92,246,.35);border-radius:8px;padding:7px 12px;
+  font-size:.9rem;font-family:inherit;background:rgba(255,255,255,.05);
+  color:var(--white);outline:none;flex:1;min-width:140px;max-width:240px;
+  transition:border-color .2s}
+.var-inp:focus{border-color:var(--purple)}
+.var-inp::placeholder{color:var(--dim)}
+.var-confirm-btn{padding:8px 18px;background:var(--purple);color:white;border:none;
+  border-radius:8px;font-family:'Fredoka One',cursive;font-size:.88rem;cursor:pointer;
+  transition:all .15s}
+.var-confirm-btn:hover{background:#a78bfa;transform:scale(1.04)}
+
+/* Data entry table */
+.ext-table-wrap{overflow-x:auto;margin-bottom:12px}
+.ext-data-table{width:100%;border-collapse:collapse;font-size:.85rem}
+.ext-data-table th{padding:8px 10px;font-weight:800;text-align:center;
+  border-bottom:2px solid var(--border)}
+.ext-data-table td{padding:4px 6px;text-align:center;border-bottom:1px solid rgba(255,255,255,.04)}
+.ext-num-inp{width:80px;background:var(--panel);border:1.5px solid var(--border);
+  border-radius:6px;color:var(--text);font-family:'Fredoka One',cursive;font-size:.9rem;
+  padding:5px 8px;text-align:center;outline:none;transition:border-color .2s}
+.ext-num-inp:focus{border-color:var(--purple)}
+.ext-num-inp.filled{border-color:rgba(139,92,246,.5);color:var(--purple)}
+.add-row-btn{padding:7px 16px;background:rgba(139,92,246,.15);border:1.5px solid rgba(139,92,246,.35);
+  border-radius:8px;color:var(--purple);font-family:'Fredoka One',cursive;font-size:.85rem;
+  cursor:pointer;transition:all .15s;margin-top:6px}
+.add-row-btn:hover{background:rgba(139,92,246,.28)}
+.del-btn{background:none;border:none;color:var(--dim);cursor:pointer;
+  font-size:.85rem;padding:2px 6px;border-radius:4px;transition:all .15s}
+.del-btn:hover{color:var(--red);background:rgba(239,68,68,.1)}
+
+.plot-ext-btn{padding:9px 20px;background:var(--purple);color:white;border:none;
+  border-radius:8px;font-family:'Fredoka One',cursive;font-size:.9rem;cursor:pointer;
+  transition:all .15s;margin-top:10px}
+.plot-ext-btn:hover{background:#a78bfa;transform:scale(1.04)}
+.plot-ext-btn:disabled{background:var(--dim);cursor:default;transform:none}
+
+/* Axis range inputs */
+.range-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.range-inp{width:80px;border:1.5px solid rgba(139,92,246,.35);border-radius:7px;
+  padding:6px 8px;font-size:.88rem;font-family:inherit;background:rgba(255,255,255,.05);
+  color:var(--white);outline:none;text-align:center;transition:border-color .2s}
+.range-inp:focus{border-color:var(--purple)}
+.range-label{font-size:.82rem;color:var(--dim);white-space:nowrap}
+
+/* Corr radio-style buttons for extension */
+.ext-corr-btns{display:flex;gap:8px;flex-wrap:wrap}
+.ext-corr-btn{padding:7px 13px;background:var(--panel);border:2px solid var(--border);
+  border-radius:10px;color:var(--text);font-family:'Nunito',sans-serif;
+  font-size:.83rem;font-weight:700;cursor:pointer;transition:all .18s}
+.ext-corr-btn:hover:not(:disabled){border-color:var(--purple);background:rgba(139,92,246,.08)}
+.ext-corr-btn.sel{border-color:var(--purple);background:rgba(139,92,246,.15);color:var(--purple)}
+.ext-corr-btn:disabled{cursor:default}
+
+/* Conclusion textarea */
+.conc-ta{width:100%;min-height:80px;background:rgba(255,255,255,.05);
+  border:2px solid rgba(139,92,246,.3);border-radius:8px;color:var(--text);
+  font-family:'Nunito',sans-serif;font-size:.88rem;padding:10px 12px;
+  outline:none;resize:vertical;line-height:1.55;transition:border-color .2s}
+.conc-ta:focus{border-color:var(--purple)}
+.conc-btn{padding:8px 18px;background:var(--purple);color:white;border:none;
+  border-radius:8px;font-family:'Fredoka One',cursive;font-size:.88rem;cursor:pointer;
+  transition:all .15s;margin-top:8px}
+.conc-btn:hover{background:#a78bfa;transform:scale(1.04)}
+
+/* Min points warning */
+.min-pts-note{font-size:.78rem;color:var(--gold);font-style:italic;margin-top:5px}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-icon">🔬</div>
+  <div>
+    <h1>Mr. Goddard's Data Lab</h1>
+    <p>Year 7 · Scatter Graphs · Lines of Best Fit · Predictions</p>
+  </div>
+  <div class="hdr-right">
+    <div class="pts-pill" id="ptsPill">0 pts</div>
+  </div>
+</div>
+
+<div class="name-banner">
+  <label>🧑‍🔬 Scientist:</label>
+  <input class="name-inp" id="nameInp" placeholder="Your full name" type="text" autocomplete="name">
+</div>
+
+<div class="prog-wrap">
+  <span class="prog-label">PROGRESS</span>
+  <div class="prog-bar"><div class="prog-fill" id="progFill"></div></div>
+  <span class="prog-text" id="progText">Complete each investigation below</span>
+</div>
+
+<div class="main" id="mainContent"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════════════════════
+var INVESTIGATIONS = [
+  {
+    id:'inv1', num:1, emoji:'🏃', title:'Sprint Training',
+    scenario:'The <strong>Greenfield Athletics Club</strong> recorded how many hours per week their junior athletes train, and their best 100m sprint time. They want to know if more training leads to faster times.',
+    xLabel:'Training hours / week', yLabel:'100m time (seconds)',
+    xUnit:'hrs', yUnit:'s',
+    data:[{x:2,y:17.4},{x:3,y:16.8},{x:4,y:16.1},{x:5,y:15.6},{x:6,y:15.0},{x:7,y:14.5},{x:8,y:14.2},{x:9,y:13.8},{x:10,y:13.4}],
+    xMin:0,xMax:12,yMin:12,yMax:19,
+    trueM:-0.44,trueC:18.2,
+    corrAns:'strong negative',
+    corrOpts:['strong positive','weak positive','strong negative','weak negative','no correlation'],
+    corrFb:'✅ Strong negative correlation — as training hours increase, sprint times go down (faster). The points follow a clear downward line.',
+    predX:6.5,predAns:14.7,predTol:0.7,predLabel:'An athlete trains 6.5 hrs/week. Predicted 100m time:',
+    extrapX:25,extrapLabel:'25 hours of training per week',extrapDanger:'Extrapolating to 25 hours gives around 7 seconds — faster than the world record! <strong>Extrapolation</strong> means predicting outside our data range. The pattern doesn\'t keep going forever, so the prediction becomes unreliable.',
+    meanPt:{x:6,y:15.2},meanFact:'Every line of best fit passes through the <strong>mean point</strong> — the average x and average y. Here: x̄ = 6 hrs, ȳ = 15.2 s. Can you see that the true line (green) goes through the ⭐ point?'
+  },
+  {
+    id:'inv2', num:2, emoji:'🐘', title:'Animal Body Mass',
+    scenario:'A nature researcher measured the <strong>body length</strong> (cm) and <strong>body mass</strong> (kg) of different animals of the same species. She wants to use length to predict mass for animals she hasn\'t measured yet.',
+    xLabel:'Body length (cm)', yLabel:'Body mass (kg)',
+    xUnit:'cm', yUnit:'kg',
+    data:[{x:40,y:8},{x:48,y:11},{x:55,y:15},{x:62,y:18},{x:70,y:24},{x:78,y:30},{x:85,y:35},{x:91,y:40},{x:100,y:47}],
+    xMin:30,xMax:115,yMin:0,yMax:55,
+    trueM:0.645,trueC:-17.9,
+    corrAns:'strong positive',
+    corrOpts:['strong positive','weak positive','strong negative','no correlation'],
+    corrFb:'✅ Strong positive correlation — longer animals tend to be heavier. The relationship is close to a straight line going uphill.',
+    predX:74,predAns:29.7,predTol:3.5,predLabel:'An animal is 74 cm long. Predicted body mass:',
+    extrapX:20,extrapLabel:'a tiny 20 cm animal',extrapDanger:'Extrapolating back to 20 cm gives a negative mass — impossible! <strong>Extrapolation</strong> outside our data range (40–100 cm) is unreliable because the pattern may not continue.',
+    meanPt:{x:70,y:25.3},meanFact:'The <strong>mean point</strong> is x̄ = 70 cm, ȳ = 25.3 kg. The true line of best fit (green) always passes through this point — use it to check your line!'
+  },
+  {
+    id:'inv3', num:3, emoji:'🍕', title:'Pizza Delivery',
+    scenario:'A pizza restaurant records the <strong>distance</strong> (km) to each customer and their <strong>delivery time</strong> (minutes). They want to predict delivery times for new orders.',
+    xLabel:'Distance (km)', yLabel:'Delivery time (mins)',
+    xUnit:'km', yUnit:'min',
+    data:[{x:0.5,y:14},{x:1.2,y:17},{x:2.0,y:22},{x:2.8,y:26},{x:3.5,y:30},{x:4.1,y:34},{x:5.0,y:39},{x:5.8,y:44},{x:6.5,y:48}],
+    xMin:0,xMax:8,yMin:8,yMax:58,
+    trueM:5.6,trueC:11.5,
+    corrAns:'strong positive',
+    corrOpts:['strong positive','weak positive','no correlation','weak negative'],
+    corrFb:'✅ Strong positive correlation — the further away, the longer the delivery. The points are close together in a clear upward line.',
+    predX:3.2,predAns:29.4,predTol:3.5,predLabel:'A customer lives 3.2 km away. Predicted delivery time:',
+    extrapX:50,extrapLabel:'50 km away',extrapDanger:'50 km gives nearly 5 hours — but the restaurant probably doesn\'t even deliver that far! <strong>Extrapolation</strong> assumes the pattern keeps going indefinitely, which is rarely true in real life. Our data only covers 0.5–6.5 km.',
+    meanPt:{x:3.5,y:30.4},meanFact:'Mean point: x̄ = 3.5 km, ȳ = 30.4 mins. The true line always passes through the <strong>mean point</strong> ⭐ — a key fact about lines of best fit!'
+  }
+];
+
+var PAD = {l:55,r:22,t:22,b:48};
+var totalPts = 0;
+var tasksDone = {};
+
+// per-investigation state
+var plotState = {}; // {plotted: [], wrongAttempts: {}}
+var lineState  = {}; // {drawn, p1, p2, rawP1, rawP2, score}
+var drawMode   = {};
+var drawStart  = {};
+
+INVESTIGATIONS.forEach(function(inv){
+  plotState[inv.id]  = {plotted:[], wrongAttempts:{}};
+  lineState[inv.id]  = {drawn:false,p1:null,p2:null,score:0};
+  drawMode[inv.id]   = false;
+  drawStart[inv.id]  = null;
+});
+
+// ═══════════════════════════════════════════════════════════════
+// POINTS
+// ═══════════════════════════════════════════════════════════════
+function awardPts(n){
+  if(n<=0) return;
+  totalPts+=n;
+  var el=document.getElementById('ptsPill');
+  el.textContent=totalPts+' pts';
+  el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop');
+  var f=document.createElement('span');
+  f.className='pts-flash'; f.textContent='+'+n; f.style.color='var(--green)';
+  el.appendChild(f); setTimeout(function(){f.remove();},900);
+  updateProg();
+}
+
+function updateProg(){
+  var total=INVESTIGATIONS.length*5; // plot+corr+line+pred+extrap
+  var done=Object.keys(tasksDone).length;
+  var pct=Math.round(done/total*100);
+  document.getElementById('progFill').style.width=pct+'%';
+  document.getElementById('progText').textContent=done+' / '+total+' tasks completed';
+}
+
+// ═══════════════════════════════════════════════════════════════
+// CANVAS HELPERS
+// ═══════════════════════════════════════════════════════════════
+function cSize(){
+  var w=Math.min(window.innerWidth-230,680);
+  if(window.innerWidth<=560) w=window.innerWidth-52;
+  return {w:w,h:Math.round(w*0.58)};
+}
+
+function d2c(dx,dy,inv,cw,ch){
+  var xR=inv.xMax-inv.xMin, yR=inv.yMax-inv.yMin;
+  return {
+    cx: PAD.l+((dx-inv.xMin)/xR)*(cw-PAD.l-PAD.r),
+    cy: ch-PAD.b-((dy-inv.yMin)/yR)*(ch-PAD.t-PAD.b)
+  };
+}
+function c2d(cx,cy,inv,cw,ch){
+  var xR=inv.xMax-inv.xMin, yR=inv.yMax-inv.yMin;
+  return {
+    dx: inv.xMin+((cx-PAD.l)/(cw-PAD.l-PAD.r))*xR,
+    dy: inv.yMin+((ch-PAD.b-cy)/(ch-PAD.t-PAD.b))*yR
+  };
+}
+
+function drawGraph(invId, opts){
+  // opts: showPlotted, showAllPoints, showUserLine, showTrueLine, showMean, highlightIdx
+  opts = opts||{};
+  var inv=INVESTIGATIONS.find(function(i){return i.id===invId;});
+  var canvas=document.getElementById('canvas_'+invId);
+  if(!canvas) return;
+  var s=cSize();
+  canvas.width=s.w; canvas.height=s.h;
+  var cw=s.w, ch=s.h;
+  var ctx=canvas.getContext('2d');
+
+  // BG
+  ctx.fillStyle='#0a0e1a'; ctx.fillRect(0,0,cw,ch);
+
+  // Grid
+  ctx.strokeStyle='rgba(46,51,80,0.7)'; ctx.lineWidth=1;
+  var xSteps=8,ySteps=6;
+  for(var i=0;i<=xSteps;i++){
+    var gx=PAD.l+(i/xSteps)*(cw-PAD.l-PAD.r);
+    ctx.beginPath(); ctx.moveTo(gx,PAD.t); ctx.lineTo(gx,ch-PAD.b); ctx.stroke();
+    var xv=inv.xMin+(i/xSteps)*(inv.xMax-inv.xMin);
+    ctx.fillStyle='rgba(100,116,139,0.8)'; ctx.font='11px Nunito,sans-serif';
+    ctx.textAlign='center';
+    ctx.fillText(xv.toFixed(inv.xMax>20?0:1),gx,ch-PAD.b+16);
+  }
+  for(var j=0;j<=ySteps;j++){
+    var gy=PAD.t+(j/ySteps)*(ch-PAD.t-PAD.b);
+    ctx.beginPath(); ctx.moveTo(PAD.l,gy); ctx.lineTo(cw-PAD.r,gy); ctx.stroke();
+    var yv=inv.yMax-(j/ySteps)*(inv.yMax-inv.yMin);
+    ctx.fillStyle='rgba(100,116,139,0.8)'; ctx.font='11px Nunito,sans-serif';
+    ctx.textAlign='right';
+    ctx.fillText(yv.toFixed(inv.yMax>30?0:1),PAD.l-5,gy+4);
+  }
+
+  // Axes
+  ctx.strokeStyle='rgba(148,163,184,0.5)'; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.moveTo(PAD.l,PAD.t); ctx.lineTo(PAD.l,ch-PAD.b); ctx.lineTo(cw-PAD.r,ch-PAD.b); ctx.stroke();
+
+  // Axis labels
+  ctx.fillStyle='#06b6d4'; ctx.font='bold 11px Nunito,sans-serif';
+  ctx.textAlign='center';
+  ctx.fillText(inv.xLabel,PAD.l+(cw-PAD.l-PAD.r)/2,ch-4);
+  ctx.save(); ctx.translate(13,PAD.t+(ch-PAD.t-PAD.b)/2);
+  ctx.rotate(-Math.PI/2); ctx.fillText(inv.yLabel,0,0); ctx.restore();
+
+  // "Next point to plot" target ghost
+  var ps=plotState[invId];
+  var nextIdx=ps.plotted.length;
+  if(opts.showPlotted && !opts.showAllPoints && nextIdx<inv.data.length){
+    var npt=inv.data[nextIdx];
+    var np=d2c(npt.x,npt.y,inv,cw,ch);
+    ctx.strokeStyle='rgba(251,191,36,0.3)'; ctx.lineWidth=1; ctx.setLineDash([3,3]);
+    ctx.beginPath(); ctx.moveTo(np.cx,PAD.t); ctx.lineTo(np.cx,ch-PAD.b); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(PAD.l,np.cy); ctx.lineTo(cw-PAD.r,np.cy); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // Mean point
+  if(opts.showMean){
+    var mp=d2c(inv.meanPt.x,inv.meanPt.y,inv,cw,ch);
+    ctx.strokeStyle='rgba(251,191,36,0.5)'; ctx.lineWidth=1.5; ctx.setLineDash([4,4]);
+    ctx.beginPath(); ctx.moveTo(mp.cx-14,mp.cy); ctx.lineTo(mp.cx+14,mp.cy); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(mp.cx,mp.cy-14); ctx.lineTo(mp.cx,mp.cy+14); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='rgba(251,191,36,0.9)';
+    ctx.font='14px Arial'; ctx.textAlign='center';
+    ctx.fillText('⭐',mp.cx,mp.cy+5);
+  }
+
+  // True line
+  if(opts.showTrueLine){
+    var tp1=d2c(inv.xMin,inv.trueM*inv.xMin+inv.trueC,inv,cw,ch);
+    var tp2=d2c(inv.xMax,inv.trueM*inv.xMax+inv.trueC,inv,cw,ch);
+    ctx.strokeStyle='rgba(34,197,94,0.45)'; ctx.lineWidth=2.5; ctx.setLineDash([7,5]);
+    ctx.beginPath(); ctx.moveTo(tp1.cx,tp1.cy); ctx.lineTo(tp2.cx,tp2.cy); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='rgba(34,197,94,0.7)'; ctx.font='10px Nunito'; ctx.textAlign='right';
+    ctx.fillText('best fit line',tp2.cx-4,tp2.cy-8);
+  }
+
+  // User line
+  if(opts.showUserLine){
+    var ls=lineState[invId];
+    if(ls&&ls.drawn){
+      ctx.strokeStyle='#f97316'; ctx.lineWidth=3; ctx.setLineDash([]);
+      ctx.beginPath(); ctx.moveTo(ls.p1.cx,ls.p1.cy); ctx.lineTo(ls.p2.cx,ls.p2.cy); ctx.stroke();
+      [ls.p1,ls.p2].forEach(function(p){
+        ctx.fillStyle='#f97316'; ctx.beginPath(); ctx.arc(p.cx,p.cy,5,0,Math.PI*2); ctx.fill();
+      });
+    }
+  }
+
+  // Draw-mode first point
+  if(drawStart[invId]){
+    var ds=drawStart[invId];
+    ctx.fillStyle='rgba(249,115,22,0.85)';
+    ctx.beginPath(); ctx.arc(ds.cx,ds.cy,7,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='rgba(249,115,22,0.7)'; ctx.font='bold 11px Nunito';
+    ctx.textAlign='center';
+    ctx.fillText('1st point ✓',ds.cx,ds.cy-12);
+  }
+
+  // Ghosted skipped points (wrong attempts exhausted)
+  if(opts.showPlotted||opts.showAllPoints){
+    var wa=ps.wrongAttempts;
+    inv.data.forEach(function(pt,idx){
+      if(wa[idx]>=2 && ps.plotted.indexOf(idx)<0){
+        // show ghost
+        var gp=d2c(pt.x,pt.y,inv,cw,ch);
+        ctx.fillStyle='rgba(100,116,139,0.4)';
+        ctx.beginPath(); ctx.arc(gp.cx,gp.cy,5.5,0,Math.PI*2); ctx.fill();
+      }
+    });
+  }
+
+  // Plotted points by student
+  if(opts.showPlotted||opts.showAllPoints){
+    ps.plotted.forEach(function(idx){
+      var pt=inv.data[idx];
+      var pp=d2c(pt.x,pt.y,inv,cw,ch);
+      ctx.fillStyle='#06b6d4'; ctx.strokeStyle='rgba(6,182,212,0.4)'; ctx.lineWidth=1.5;
+      ctx.beginPath(); ctx.arc(pp.cx,pp.cy,5.5,0,Math.PI*2); ctx.fill(); ctx.stroke();
+    });
+  }
+
+  // All points (after plotting phase done)
+  if(opts.showAllPoints){
+    inv.data.forEach(function(pt,idx){
+      if(ps.plotted.indexOf(idx)>=0) return; // already drawn
+      var pp=d2c(pt.x,pt.y,inv,cw,ch);
+      ctx.fillStyle='#06b6d4'; ctx.strokeStyle='rgba(6,182,212,0.4)'; ctx.lineWidth=1.5;
+      ctx.beginPath(); ctx.arc(pp.cx,pp.cy,5.5,0,Math.PI*2); ctx.fill(); ctx.stroke();
+    });
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// PLOTTING STEP
+// ═══════════════════════════════════════════════════════════════
+function plotClick(e,invId){
+  var inv=INVESTIGATIONS.find(function(i){return i.id===invId;});
+  var ps=plotState[invId];
+  var nextIdx=ps.plotted.length;
+  if(nextIdx>=inv.data.length) return; // all done
+
+  var canvas=document.getElementById('canvas_'+invId);
+  var rect=canvas.getBoundingClientRect();
+  var scX=canvas.width/rect.width, scY=canvas.height/rect.height;
+  var cx=(e.clientX-rect.left)*scX;
+  var cy=(e.clientY-rect.top)*scY;
+  var s=cSize();
+
+  // Convert to data coords
+  var dd=c2d(cx,cy,inv,s.w,s.h);
+  var target=inv.data[nextIdx];
+
+  // Tolerance: 1 grid square
+  var xTol=(inv.xMax-inv.xMin)/8;
+  var yTol=(inv.yMax-inv.yMin)/6;
+  var ok=Math.abs(dd.dx-target.x)<=xTol && Math.abs(dd.dy-target.y)<=yTol;
+
+  if(ok){
+    // Correct
+    ps.plotted.push(nextIdx);
+    drawGraph(invId,{showPlotted:true});
+    updatePlotStatus(invId);
+    highlightTableRow(invId, ps.plotted.length); // next row
+    if(ps.plotted.length>=inv.data.length){
+      onAllPlotted(invId);
+    }
+  } else {
+    // Wrong
+    ps.wrongAttempts[nextIdx]=(ps.wrongAttempts[nextIdx]||0)+1;
+    // Flash red
+    var fb=document.getElementById('plotFb_'+invId);
+    fb.textContent='❌ Not quite — check the '+inv.xLabel+' axis for '+target.x+' and the '+inv.yLabel+' axis for '+target.y;
+    fb.style.display='block'; fb.className='fb bad';
+    setTimeout(function(){fb.style.display='none';},2500);
+
+    if(ps.wrongAttempts[nextIdx]>=2){
+      // Skip — show ghost and move on
+      fb.textContent='👻 Showing correct position in grey — moving to the next point.';
+      fb.className='fb info'; fb.style.display='block';
+      ps.plotted.push(nextIdx); // mark as "done" but it'll draw greyed out
+      // Actually we need to track skipped differently
+      ps.plotted.pop();
+      ps.wrongAttempts[nextIdx]=99; // mark skipped
+      // Mark as "moved past" by treating it as plotted for progress but ghost on canvas
+      ps.plotted.push(nextIdx);
+      drawGraph(invId,{showPlotted:true});
+      updatePlotStatus(invId);
+      highlightTableRow(invId, ps.plotted.length);
+      setTimeout(function(){fb.style.display='none';},3000);
+      if(ps.plotted.length>=inv.data.length){
+        onAllPlotted(invId);
+      }
+    }
+  }
+}
+
+function plotTouch(e,invId){
+  e.preventDefault();
+  var t=e.touches[0]||e.changedTouches[0];
+  plotClick({clientX:t.clientX,clientY:t.clientY},invId);
+}
+
+function onAllPlotted(invId){
+  // Award points
+  var ps=plotState[invId];
+  var skipped=Object.values(ps.wrongAttempts).filter(function(v){return v>=99;}).length;
+  var pts=skipped===0?15:skipped<=2?10:5;
+  if(!tasksDone['plot_'+invId]){
+    tasksDone['plot_'+invId]=true;
+    awardPts(pts);
+  }
+  // Update instruction
+  var inst=document.getElementById('plotInst_'+invId);
+  if(inst) inst.textContent='All points plotted! ✅ Scroll down to describe the correlation.';
+  // Unlock step 2 (correlation)
+  unlock('step2_'+invId);
+  // Switch canvas to "all plotted" state — now acts as line-drawing canvas
+  var canvas=document.getElementById('canvas_'+invId);
+  canvas.removeEventListener('click',canvas._plotHandler);
+  canvas.removeEventListener('touchend',canvas._plotTouchHandler);
+  drawGraph(invId,{showAllPoints:true});
+}
+
+function updatePlotStatus(invId){
+  var inv=INVESTIGATIONS.find(function(i){return i.id===invId;});
+  var ps=plotState[invId];
+  var done=ps.plotted.length;
+  var total=inv.data.length;
+  var el=document.getElementById('plotCount_'+invId);
+  if(el) el.textContent=done+' / '+total+' points plotted';
+}
+
+function highlightTableRow(invId, nextIdx){
+  var inv=INVESTIGATIONS.find(function(i){return i.id===invId;});
+  var tbody=document.getElementById('tbody_'+invId);
+  if(!tbody) return;
+  var rows=tbody.querySelectorAll('tr');
+  rows.forEach(function(r,i){
+    r.className='';
+    if(i<nextIdx) r.className='done-row';
+    else if(i===nextIdx) r.className='current-row';
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// CORRELATION STEP
+// ═══════════════════════════════════════════════════════════════
+function checkCorr(invId,chosen){
+  var inv=INVESTIGATIONS.find(function(i){return i.id===invId;});
+  var ok=chosen===inv.corrAns;
+  var btns=document.querySelectorAll('#corrBtns_'+invId+' .corr-btn');
+  btns.forEach(function(b){
+    b.disabled=true;
+    if(b.textContent.toLowerCase()===inv.corrAns) b.classList.add('sel-ok');
+    else if(b.textContent.toLowerCase()===chosen&&!ok) b.classList.add('sel-bad');
+  });
+  var fb=document.getElementById('corrFb_'+invId);
+  fb.className='fb '+(ok?'ok':'bad');
+  fb.innerHTML=(ok?'':('❌ The answer is <strong>'+inv.corrAns+'</strong>. '))+inv.corrFb;
+  if(!tasksDone['corr_'+invId]){ tasksDone['corr_'+invId]=true; awardPts(ok?10:3); }
+  unlock('step3_'+invId);
+  // Attach line drawing to canvas
+  var canvas=document.getElementById('canvas_'+invId);
+  canvas._lineHandler=function(e){ lineCanvasClick(e,invId); };
+  canvas._lineTouchHandler=function(e){ e.preventDefault(); var t=e.touches[0]||e.changedTouches[0]; lineCanvasClick({clientX:t.clientX,clientY:t.clientY},invId); };
+}
+
+// ═══════════════════════════════════════════════════════════════
+// LINE DRAWING STEP
+// ═══════════════════════════════════════════════════════════════
+function startDraw(invId){
+  drawMode[invId]=true;
+  drawStart[invId]=null;
+  lineState[invId]={drawn:false,p1:null,p2:null,score:0};
+  var canvas=document.getElementById('canvas_'+invId);
+  canvas.addEventListener('click',canvas._lineHandler);
+  canvas.addEventListener('touchend',canvas._lineTouchHandler);
+  drawGraph(invId,{showAllPoints:true});
+  document.getElementById('drawBtn_'+invId).textContent='📍 Click two points on the graph';
+  document.getElementById('scoreBtn_'+invId).style.display='none';
+  document.getElementById('accWrap_'+invId).style.display='none';
+}
+
+function clearLine(invId){
+  drawMode[invId]=false; drawStart[invId]=null;
+  lineState[invId]={drawn:false,p1:null,p2:null,score:0};
+  drawGraph(invId,{showAllPoints:true});
+  document.getElementById('drawBtn_'+invId).textContent='✏️ Start Drawing';
+  document.getElementById('scoreBtn_'+invId).style.display='none';
+  document.getElementById('accWrap_'+invId).style.display='none';
+}
+
+function lineCanvasClick(e,invId){
+  if(!drawMode[invId]) return;
+  var canvas=document.getElementById('canvas_'+invId);
+  var rect=canvas.getBoundingClientRect();
+  var scX=canvas.width/rect.width, scY=canvas.height/rect.height;
+  var cx=(e.clientX-rect.left)*scX, cy=(e.clientY-rect.top)*scY;
+  var s=cSize();
+
+  if(!drawStart[invId]){
+    drawStart[invId]={cx:cx,cy:cy};
+    drawGraph(invId,{showAllPoints:true,showUserLine:true});
+  } else {
+    var p1=drawStart[invId], p2={cx:cx,cy:cy};
+    var dx=p2.cx-p1.cx;
+    if(Math.abs(dx)<2) return;
+    var slope=(p2.cy-p1.cy)/dx;
+    var ext1={cx:0,  cy:p1.cy-slope*p1.cx};
+    var ext2={cx:s.w,cy:p1.cy+slope*(s.w-p1.cx)};
+    lineState[invId]={drawn:true,p1:ext1,p2:ext2,rawP1:p1,rawP2:p2,score:0};
+    drawStart[invId]=null; drawMode[invId]=false;
+    canvas.removeEventListener('click',canvas._lineHandler);
+    canvas.removeEventListener('touchend',canvas._lineTouchHandler);
+    drawGraph(invId,{showAllPoints:true,showUserLine:true});
+    document.getElementById('drawBtn_'+invId).textContent='✏️ Redraw Line';
+    document.getElementById('scoreBtn_'+invId).style.display='inline-block';
+  }
+}
+
+function scoreLine(invId){
+  var inv=INVESTIGATIONS.find(function(i){return i.id===invId;});
+  var ls=lineState[invId];
+  var s=cSize();
+  if(!ls||!ls.drawn) return;
+  var rp1=ls.rawP1||ls.p1, rp2=ls.rawP2||ls.p2;
+  var d1=c2d(rp1.cx,rp1.cy,inv,s.w,s.h), d2=c2d(rp2.cx,rp2.cy,inv,s.w,s.h);
+  if(Math.abs(d2.dx-d1.dx)<0.01) return;
+  var uM=(d2.dy-d1.dy)/(d2.dx-d1.dx), uC=d1.dy-uM*d1.dx;
+  var totalResid=0, yR=inv.yMax-inv.yMin;
+  inv.data.forEach(function(pt){
+    totalResid+=Math.abs((uM*pt.x+uC)-(inv.trueM*pt.x+inv.trueC))/yR;
+  });
+  var score=Math.max(0,Math.min(100,Math.round((1-totalResid/inv.data.length*8)*100)));
+  ls.score=score;
+
+  var col,txt,pts;
+  if(score>=85){col='var(--green)';txt='🎯 Excellent! Very close to the best fit line.';pts=15;}
+  else if(score>=65){col='var(--teal)';txt='👍 Good line — slightly off but close.';pts=10;}
+  else if(score>=40){col='var(--gold)';txt='📏 Getting there — try to balance points above and below.';pts=5;}
+  else{col='var(--red)';txt='↔️ Try again — the line should run through the middle of the cluster.';pts=0;}
+
+  document.getElementById('accWrap_'+invId).style.display='block';
+  var fill=document.getElementById('accFill_'+invId);
+  fill.style.width=score+'%'; fill.style.background=col;
+  document.getElementById('accScoreTxt_'+invId).textContent=score+'% accuracy';
+  document.getElementById('accScoreTxt_'+invId).style.color=col;
+  var fb=document.getElementById('lineFb_'+invId);
+  fb.className='fb '+(score>=65?'ok':score>=40?'info':'bad'); fb.textContent=txt;
+
+  if(!tasksDone['line_'+invId]){ tasksDone['line_'+invId]=true; if(pts>0)awardPts(pts); }
+
+  drawGraph(invId,{showAllPoints:true,showUserLine:true,showTrueLine:true,showMean:true});
+  document.getElementById('meanReveal_'+invId).style.display='block';
+  unlock('step4_'+invId);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// PREDICTION STEP
+// ═══════════════════════════════════════════════════════════════
+function checkPred(invId){
+  var inv=INVESTIGATIONS.find(function(i){return i.id===invId;});
+  var inp=document.getElementById('predInp_'+invId);
+  var val=parseFloat(inp.value);
+  if(isNaN(val)){inp.focus();return;}
+  var ok=Math.abs(val-inv.predAns)<=inv.predTol;
+  inp.disabled=true; inp.classList.add(ok?'ok':'bad');
+  document.getElementById('chkPred_'+invId).disabled=true;
+  var fb=document.getElementById('predFb_'+invId);
+  fb.className='fb '+(ok?'ok':'bad');
+  fb.innerHTML=ok
+    ?'✅ Great prediction! Expected around <strong>'+inv.predAns.toFixed(1)+' '+inv.yUnit+'</strong>. Reading from the line works!'
+    :'❌ Expected around <strong>'+inv.predAns.toFixed(1)+' '+inv.yUnit+'</strong>. Read along the x-axis to '+inv.predX+', then go straight up to your line, then across to the y-axis.';
+  if(!tasksDone['pred_'+invId]){ tasksDone['pred_'+invId]=true; awardPts(ok?10:4); }
+  unlock('step5_'+invId);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// EXTRAPOLATION STEP
+// ═══════════════════════════════════════════════════════════════
+function checkExtrap(invId){
+  var inv=INVESTIGATIONS.find(function(i){return i.id===invId;});
+  var inp=document.getElementById('extrapInp_'+invId);
+  var val=parseFloat(inp.value);
+  if(isNaN(val)){inp.focus();return;}
+  inp.disabled=true;
+  document.getElementById('chkExtrap_'+invId).disabled=true;
+  var fb=document.getElementById('extrapFb_'+invId);
+  fb.className='fb info';
+  fb.innerHTML='You predicted <strong>'+val+' '+inv.yUnit+'</strong>. Read the important message below 👇';
+  document.getElementById('dangerBox_'+invId).style.display='block';
+  if(!tasksDone['extrap_'+invId]){ tasksDone['extrap_'+invId]=true; awardPts(5); }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// UNLOCK
+// ═══════════════════════════════════════════════════════════════
+function unlock(id){
+  var el=document.getElementById(id);
+  if(el) el.classList.remove('locked');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// BUILD HTML
+// ═══════════════════════════════════════════════════════════════
+function buildAll(){
+  var c=document.getElementById('mainContent');
+  c.innerHTML='';
+
+  var intro=document.createElement('div');
+  intro.className='intro-card';
+  intro.innerHTML='<div class="mission-badge">🧪 Mission Briefing</div><h2>Welcome to the Data Lab!</h2>'
+    +'<p>You are a <strong>data scientist</strong>. Three investigations have just come in — from a running club, a nature researcher and a pizza restaurant. For each one you will: <strong>plot the data</strong>, describe the pattern, draw a line of best fit, make a prediction, and discover why some predictions are dangerous.</p>'
+    +'<p>Work through each investigation in order. Each step unlocks the next one.</p>';
+  c.appendChild(intro);
+
+  INVESTIGATIONS.forEach(function(inv){ c.appendChild(buildInv(inv)); });
+  c.appendChild(buildExtension());
+  c.appendChild(buildSub());
+  setTimeout(function(){
+    INVESTIGATIONS.forEach(function(inv){ initCanvas(inv.id); });
+    initExtCanvas();
+  },80);
+}
+
+function buildInv(inv){
+  var card=document.createElement('div');
+  card.className='inv-card';
+
+  var header='<div class="inv-header">'
+    +'<span class="inv-num">'+inv.emoji+' Investigation '+inv.num+'</span>'
+    +'<span class="inv-title">'+inv.title+'</span>'
+    +'<span class="inv-pts">Up to 40 pts</span>'
+    +'</div>';
+
+  // Data table rows with id for highlighting
+  var trs=inv.data.map(function(pt,i){
+    return '<tr class="'+(i===0?'current-row':'')+'" id="trow_'+inv.id+'_'+i+'">'
+      +'<td>'+pt.x+'</td><td>'+pt.y+'</td></tr>';
+  }).join('');
+
+  var body='<div class="inv-body">'
+    +'<div class="inv-scenario">'+inv.scenario+'</div>'
+
+    // Step 0 — plot
+    +'<div class="step" id="step1_'+inv.id+'">'
+    +'<div class="step-title"><span class="step-badge">1</span> Plot the Points</div>'
+    +'<p style="font-size:.85rem;color:var(--text);margin-bottom:12px">The axes are ready. <strong>Click on the graph</strong> to place each point. The highlighted row in the table shows which point to plot next. The dashed lines on the graph show where that point should go — use them to help you read the scales.</p>'
+    +'<div class="plot-layout">'
+      +'<div style="overflow-x:auto">'
+        +'<table class="data-table"><thead><tr>'
+          +'<th style="color:var(--teal)">'+inv.xUnit+'</th>'
+          +'<th style="color:var(--gold)">'+inv.yUnit+'</th>'
+        +'</tr></thead>'
+        +'<tbody id="tbody_'+inv.id+'">'+trs+'</tbody>'
+        +'</table>'
+      +'</div>'
+      +'<div class="canvas-wrap" id="cwrap_'+inv.id+'">'
+        +'<canvas id="canvas_'+inv.id+'"></canvas>'
+      +'</div>'
+    +'</div>'
+    +'<div class="plot-status"><span>Points plotted:</span><span class="plot-count" id="plotCount_'+inv.id+'">0 / '+inv.data.length+'</span></div>'
+    +'<div class="fb" id="plotFb_'+inv.id+'" style="display:none"></div>'
+    +'<div class="canvas-instruction" id="plotInst_'+inv.id+'">👆 Click on the graph to plot the highlighted point</div>'
+    +'</div>'
+
+    // Step 2 — correlation
+    +'<div class="step locked" id="step2_'+inv.id+'">'
+    +'<div class="step-title"><span class="step-badge">2</span> Describe the Correlation</div>'
+    +'<p style="font-size:.85rem;color:var(--text);margin-bottom:10px">Now you can see all the points — what type of correlation does the data show?</p>'
+    +'<div class="corr-btns" id="corrBtns_'+inv.id+'">'
+    +inv.corrOpts.map(function(o){ return '<button class="corr-btn" onclick="checkCorr(\''+inv.id+'\',\''+o+'\')">'+o.charAt(0).toUpperCase()+o.slice(1)+'</button>'; }).join('')
+    +'</div><div class="fb" id="corrFb_'+inv.id+'"></div></div>'
+
+    // Step 3 — draw line
+    +'<div class="step locked" id="step3_'+inv.id+'">'
+    +'<div class="step-title"><span class="step-badge">3</span> Draw a Line of Best Fit</div>'
+    +'<div class="line-instructions">Click <strong>Start Drawing</strong>, then click <strong>two points</strong> on the graph. Your line will extend across the whole graph. Aim for roughly equal numbers of points above and below your line.</div>'
+    +'<div class="line-btn-row">'
+    +'<button class="line-btn" id="drawBtn_'+inv.id+'" onclick="startDraw(\''+inv.id+'\')">✏️ Start Drawing</button>'
+    +'<button class="line-btn sec" onclick="clearLine(\''+inv.id+'\')">🗑️ Clear</button>'
+    +'<button class="line-btn grn" id="scoreBtn_'+inv.id+'" onclick="scoreLine(\''+inv.id+'\')" style="display:none">✅ Score My Line</button>'
+    +'</div>'
+    +'<div class="acc-wrap" id="accWrap_'+inv.id+'" style="display:none">'
+    +'<div class="acc-label">Line accuracy:</div>'
+    +'<div class="acc-bar"><div class="acc-fill" id="accFill_'+inv.id+'" style="width:0%"></div></div>'
+    +'<div class="acc-score-text" id="accScoreTxt_'+inv.id+'"></div>'
+    +'<div class="fb" id="lineFb_'+inv.id+'"></div>'
+    +'<div class="mean-reveal" id="meanReveal_'+inv.id+'">'+inv.meanFact+'</div>'
+    +'</div></div>'
+
+    // Step 4 — prediction
+    +'<div class="step locked" id="step4_'+inv.id+'">'
+    +'<div class="step-title"><span class="step-badge">4</span> Make a Prediction</div>'
+    +'<p style="font-size:.85rem;color:var(--text);margin-bottom:8px">Use your line of best fit to predict a value you don\'t have in the data.</p>'
+    +'<div class="pred-row"><span class="pred-label">'+inv.predLabel+'</span>'
+    +'<input class="pred-inp" type="number" step="0.5" id="predInp_'+inv.id+'" placeholder="?">'
+    +'<span class="pred-unit">'+inv.yUnit+'</span>'
+    +'<button class="chk-btn" id="chkPred_'+inv.id+'" onclick="checkPred(\''+inv.id+'\')">Check</button>'
+    +'</div><div class="fb" id="predFb_'+inv.id+'"></div></div>'
+
+    // Step 5 — extrapolation
+    +'<div class="step locked" id="step5_'+inv.id+'">'
+    +'<div class="step-title"><span class="step-badge">5</span> Danger Zone — Extrapolation</div>'
+    +'<p style="font-size:.85rem;color:var(--text);margin-bottom:8px">What would your line predict for <strong>'+inv.extrapLabel+'</strong>? Try extending the line and reading off. Enter your best guess.</p>'
+    +'<div class="pred-row"><span class="pred-label">Predicted value:</span>'
+    +'<input class="pred-inp" type="number" step="1" id="extrapInp_'+inv.id+'" placeholder="?">'
+    +'<span class="pred-unit">'+inv.yUnit+'</span>'
+    +'<button class="chk-btn" id="chkExtrap_'+inv.id+'" onclick="checkExtrap(\''+inv.id+'\')">Check</button>'
+    +'</div><div class="fb" id="extrapFb_'+inv.id+'"></div>'
+    +'<div class="danger-box" id="dangerBox_'+inv.id+'">'
+    +'<div class="danger-title">⚠️ Extrapolation Alert!</div>'
+    +'<p>'+inv.extrapDanger+'</p></div>'
+    +'</div>'
+
+    +'</div>'; // inv-body
+
+  card.innerHTML=header+body;
+  return card;
+}
+
+function initCanvas(invId){
+  var inv=INVESTIGATIONS.find(function(i){return i.id===invId;});
+  var canvas=document.getElementById('canvas_'+invId);
+  if(!canvas) return;
+  var s=cSize(); canvas.width=s.w; canvas.height=s.h;
+  drawGraph(invId,{showPlotted:true});
+  // Attach plot click handler
+  canvas._plotHandler=function(e){ plotClick(e,invId); };
+  canvas._plotTouchHandler=function(e){ e.preventDefault(); var t=e.touches[0]||e.changedTouches[0]; plotClick({clientX:t.clientX,clientY:t.clientY},invId); };
+  canvas.addEventListener('click',canvas._plotHandler);
+  canvas.addEventListener('touchend',canvas._plotTouchHandler);
+}
+
+window.addEventListener('resize',function(){
+  INVESTIGATIONS.forEach(function(inv){
+    var canvas=document.getElementById('canvas_'+inv.id);
+    if(!canvas) return;
+    var ps=plotState[inv.id];
+    var allDone=ps.plotted.length>=inv.data.length;
+    drawGraph(inv.id,{
+      showPlotted:!allDone,
+      showAllPoints:allDone,
+      showUserLine:lineState[inv.id].drawn,
+      showTrueLine:!!tasksDone['line_'+inv.id],
+      showMean:!!tasksDone['line_'+inv.id]
+    });
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════
+// SUBMISSION
+// ═══════════════════════════════════════════════════════════════
+function buildSub(){
+  var d=document.createElement('div');
+  d.className='sub-card';
+  d.innerHTML='<div class="sub-title">📤 Submit to Google Classroom</div>'
+    +'<p class="sub-note">When you\'ve finished all three investigations, generate your submission and paste it into the assignment comment box.</p>'
+    +'<button class="gen-btn" onclick="genSummary()">📋 Generate My Submission</button>'
+    +'<div class="sum-wrap" id="sumWrap">'
+    +'<textarea class="sum-ta" id="sumText" readonly></textarea>'
+    +'<div class="copy-row">'
+    +'<button class="copy-btn" onclick="copySummary()">📋 Copy to Clipboard</button>'
+    +'<span class="copy-ok" id="copyOk">✅ Copied!</span>'
+    +'</div>'
+    +'<div class="gc-steps"><strong>How to submit:</strong><br>'
+    +'1. Click <strong>Copy to Clipboard</strong><br>'
+    +'2. Open Google Classroom → find the Data Lab assignment<br>'
+    +'3. Click <strong>Add private comment</strong><br>'
+    +'4. Paste with <strong>Ctrl+V</strong> (Cmd+V on Mac / long-press on iPad)<br>'
+    +'5. Click <strong>Submit</strong> ✅</div>'
+    +'</div>';
+  return d;
+}
+
+function genSummary(){
+  var name=document.getElementById('nameInp').value.trim()||'(Name not entered)';
+  var now=new Date().toLocaleString('en-GB',{dateStyle:'short',timeStyle:'short'});
+  var done=Object.keys(tasksDone).length;
+  var L=[];
+  L.push('╔══════════════════════════════════════════════════════╗');
+  L.push('║   MR. GODDARD\'S DATA LAB — SUBMISSION               ║');
+  L.push('║   Year 7 · Scatter Graphs & Lines of Best Fit        ║');
+  L.push('╚══════════════════════════════════════════════════════╝');
+  L.push('');
+  L.push('Student   : '+name);
+  L.push('Submitted : '+now);
+  L.push('Score     : '+totalPts+' pts');
+  L.push('Tasks done: '+done+' / '+(INVESTIGATIONS.length*5));
+  L.push('');
+  L.push('─────────────────────────────────────────────────────');
+  INVESTIGATIONS.forEach(function(inv){
+    var ps=plotState[inv.id];
+    var skipped=Object.values(ps.wrongAttempts).filter(function(v){return v>=99;}).length;
+    L.push('  '+inv.emoji+' Investigation '+inv.num+': '+inv.title);
+    L.push('     Plot points   : '+(tasksDone['plot_'+inv.id]?'✅ Done ('+skipped+' point(s) needed hints)':'○ Not done'));
+    L.push('     Correlation   : '+(tasksDone['corr_'+inv.id]?'✅ Done':'○ Not done'));
+    L.push('     Line of fit   : '+(tasksDone['line_'+inv.id]?'✅ Score: '+lineState[inv.id].score+'%':'○ Not done'));
+    L.push('     Prediction    : '+(tasksDone['pred_'+inv.id]?'✅ Done':'○ Not done'));
+    L.push('     Extrapolation : '+(tasksDone['extrap_'+inv.id]?'✅ Done':'○ Not done'));
+    L.push('');
+  });
+  // Extension
+  L.push('  🔬 Extension: My Own Investigation');
+  if(extData.xVar && extData.yVar){
+    L.push('     Variables : '+extData.xVar+' vs '+extData.yVar);
+    L.push('     Data points collected : '+extData.rows.filter(function(r){return r.x!==''&&r.y!=='';}).length);
+    L.push('     Correlation described : '+(tasksDone['ext_corr']?'✅ '+extData.corrChoice:'○ Not done'));
+    L.push('     Line of best fit      : '+(tasksDone['ext_line']?'✅ Score: '+extLineScore+'%':'○ Not done'));
+    L.push('     Prediction made       : '+(tasksDone['ext_pred']?'✅ Done':'○ Not done'));
+    L.push('     Written conclusion    : '+(tasksDone['ext_conc']?'✅ Done':'○ Not done'));
+    if(extData.conclusion) L.push('     Conclusion: "'+extData.conclusion+'"');
+  } else {
+    L.push('     Not attempted');
+  }
+  L.push('');
+  L.push('─────────────────────────────────────────────────────');
+  L.push('  TOTAL: '+totalPts+' pts');
+  L.push('═════════════════════════════════════════════════════');
+  document.getElementById('sumText').value=L.join('\n');
+  document.getElementById('sumWrap').style.display='block';
+  setTimeout(function(){ document.getElementById('sumText').scrollIntoView({behavior:'smooth',block:'nearest'}); },100);
+}
+
+function copySummary(){
+  var ta=document.getElementById('sumText');
+  ta.select(); ta.setSelectionRange(0,99999);
+  try{navigator.clipboard.writeText(ta.value).catch(function(){document.execCommand('copy');});}
+  catch(e){document.execCommand('copy');}
+  var c=document.getElementById('copyOk');
+  c.style.display='inline';
+  setTimeout(function(){c.style.display='none';},3000);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// EXTENSION — MY OWN INVESTIGATION
+// ═══════════════════════════════════════════════════════════════
+var extData = {xVar:'',yVar:'',rows:[],xMin:0,xMax:100,yMin:0,yMax:100,corrChoice:''};
+var extLineScore = 0;
+var extDrawMode = false;
+var extDrawStart = null;
+var extLineState = {drawn:false,p1:null,p2:null,rawP1:null,rawP2:null};
+var extPlotted = false; // has the graph been drawn at least once
+
+var EXT_MIN_PTS = 6;
+
+function buildExtension(){
+  var card = document.createElement('div');
+  card.className = 'ext-card';
+  card.innerHTML =
+    '<div class="ext-header">'
+    +'<span class="ext-badge">🔬 Extension</span>'
+    +'<span class="ext-title">My Own Investigation</span>'
+    +'<span class="inv-pts" style="margin-left:auto">Bonus pts</span>'
+    +'</div>'
+    +'<div class="ext-body">'
+    +'<div class="ext-scenario">You\'ve seen three investigations — now it\'s your turn. <strong>Choose your own variables</strong>, collect at least 6 data points (make them up or use real data you know), plot your scatter graph, describe the correlation, draw a line of best fit, and make a prediction.</div>'
+
+    // Step E1 — choose variables
+    +'<div class="ext-step" id="estep1">'
+    +'<div class="ext-step-title"><span class="ext-step-badge">1</span> Choose Your Variables</div>'
+    +'<p style="font-size:.85rem;color:var(--text);margin-bottom:12px">What are you investigating? Pick two things you think might be related. Examples: <em>hours of sunshine vs ice cream sales, age vs height, hours revision vs test score, temperature vs electricity use</em>.</p>'
+    +'<div class="var-row">'
+    +'<span style="font-size:.85rem;font-weight:700;color:var(--teal)">x variable (cause):</span>'
+    +'<input class="var-inp" id="extXVar" placeholder="e.g. Hours of sunshine" type="text">'
+    +'</div>'
+    +'<div class="var-row">'
+    +'<span style="font-size:.85rem;font-weight:700;color:var(--gold)">y variable (effect):</span>'
+    +'<input class="var-inp" id="extYVar" placeholder="e.g. Ice cream sales (£)" type="text">'
+    +'</div>'
+    +'<button class="var-confirm-btn" onclick="confirmVars()">✅ Confirm Variables</button>'
+    +'<div class="fb" id="extVarFb"></div>'
+    +'</div>'
+
+    // Step E2 — enter data
+    +'<div class="ext-step locked" id="estep2">'
+    +'<div class="ext-step-title"><span class="ext-step-badge">2</span> Enter Your Data</div>'
+    +'<p style="font-size:.85rem;color:var(--text);margin-bottom:12px" id="extDataDesc">Enter at least <strong>6 pairs</strong> of values. You can make up realistic data or use values you know.</p>'
+    +'<div class="ext-table-wrap">'
+    +'<table class="ext-data-table"><thead><tr>'
+    +'<th style="color:var(--teal)" id="extXHead">x</th>'
+    +'<th style="color:var(--gold)" id="extYHead">y</th>'
+    +'<th style="width:32px"></th>'
+    +'</tr></thead>'
+    +'<tbody id="extTbody"></tbody>'
+    +'</table>'
+    +'</div>'
+    +'<button class="add-row-btn" onclick="addExtRow()">+ Add row</button>'
+    +'<div class="min-pts-note" id="extMinNote">Add at least 6 pairs to unlock the graph</div>'
+    +'</div>'
+
+    // Step E3 — set axis range and plot
+    +'<div class="ext-step locked" id="estep3">'
+    +'<div class="ext-step-title"><span class="ext-step-badge">3</span> Set Your Axes &amp; Plot</div>'
+    +'<p style="font-size:.85rem;color:var(--text);margin-bottom:10px">Choose sensible min and max values for each axis, then click <strong>Plot My Graph</strong>.</p>'
+    +'<div class="range-row">'
+    +'<span class="range-label" style="color:var(--teal)" id="extXRangeLabel">x axis:</span>'
+    +'<span class="range-label">min</span><input class="range-inp" id="extXMin" type="number" value="0">'
+    +'<span class="range-label">max</span><input class="range-inp" id="extXMax" type="number" value="100">'
+    +'</div>'
+    +'<div class="range-row">'
+    +'<span class="range-label" style="color:var(--gold)" id="extYRangeLabel">y axis:</span>'
+    +'<span class="range-label">min</span><input class="range-inp" id="extYMin" type="number" value="0">'
+    +'<span class="range-label">max</span><input class="range-inp" id="extYMax" type="number" value="100">'
+    +'</div>'
+    +'<div class="canvas-wrap"><canvas id="extCanvas"></canvas></div>'
+    +'<div class="canvas-instruction" id="extCanvasInst">Set your axis ranges and click Plot My Graph</div>'
+    +'<button class="plot-ext-btn" onclick="plotExtGraph()">📊 Plot My Graph</button>'
+    +'</div>'
+
+    // Step E4 — describe correlation
+    +'<div class="ext-step locked" id="estep4">'
+    +'<div class="ext-step-title"><span class="ext-step-badge">4</span> Describe the Correlation</div>'
+    +'<p style="font-size:.85rem;color:var(--text);margin-bottom:10px">Look at your scatter graph. What type of correlation does your data show?</p>'
+    +'<div class="ext-corr-btns" id="extCorrBtns">'
+    +'<button class="ext-corr-btn" onclick="selectExtCorr(this,\'strong positive\')">Strong positive</button>'
+    +'<button class="ext-corr-btn" onclick="selectExtCorr(this,\'weak positive\')">Weak positive</button>'
+    +'<button class="ext-corr-btn" onclick="selectExtCorr(this,\'strong negative\')">Strong negative</button>'
+    +'<button class="ext-corr-btn" onclick="selectExtCorr(this,\'weak negative\')">Weak negative</button>'
+    +'<button class="ext-corr-btn" onclick="selectExtCorr(this,\'no correlation\')">No correlation</button>'
+    +'</div>'
+    +'<button class="var-confirm-btn" style="margin-top:10px" onclick="confirmExtCorr()">✅ Confirm</button>'
+    +'<div class="fb" id="extCorrFb"></div>'
+    +'</div>'
+
+    // Step E5 — draw line
+    +'<div class="ext-step locked" id="estep5">'
+    +'<div class="ext-step-title"><span class="ext-step-badge">5</span> Draw a Line of Best Fit</div>'
+    +'<div class="line-instructions">Click <strong>Start Drawing</strong>, then click two points on your graph to draw your line of best fit. Try to balance points above and below. Remember — <strong>the line must pass through the mean point</strong> ⭐ shown on your graph.</div>'
+    +'<div class="line-btn-row">'
+    +'<button class="line-btn" id="extDrawBtn" onclick="startExtDraw()">✏️ Start Drawing</button>'
+    +'<button class="line-btn sec" onclick="clearExtLine()">🗑️ Clear</button>'
+    +'<button class="line-btn grn" id="extScoreBtn" onclick="scoreExtLine()" style="display:none">✅ Check My Line</button>'
+    +'</div>'
+    +'<div class="acc-wrap" id="extAccWrap" style="display:none">'
+    +'<div class="acc-label">Line accuracy:</div>'
+    +'<div class="acc-bar"><div class="acc-fill" id="extAccFill" style="width:0%"></div></div>'
+    +'<div class="acc-score-text" id="extAccTxt"></div>'
+    +'<div class="fb" id="extLineFb"></div>'
+    +'</div>'
+    +'</div>'
+
+    // Step E6 — prediction
+    +'<div class="ext-step locked" id="estep6">'
+    +'<div class="ext-step-title"><span class="ext-step-badge">6</span> Make a Prediction</div>'
+    +'<p style="font-size:.85rem;color:var(--text);margin-bottom:10px">Use your line of best fit to predict a value <strong>within your data range</strong> (not extrapolation!). Choose an x value you didn\'t collect data for.</p>'
+    +'<div class="var-row" style="margin-bottom:6px">'
+    +'<span style="font-size:.85rem;font-weight:700" id="extPredXLabel">If x =</span>'
+    +'<input class="pred-inp" type="number" step="any" id="extPredX" placeholder="x value">'
+    +'<span style="font-size:.85rem;font-weight:700" id="extPredYLabel">then y ≈</span>'
+    +'<input class="pred-inp" type="number" step="any" id="extPredY" placeholder="y value">'
+    +'<button class="chk-btn" onclick="checkExtPred()">Check</button>'
+    +'</div>'
+    +'<div class="fb" id="extPredFb"></div>'
+    +'</div>'
+
+    // Step E7 — conclusion
+    +'<div class="ext-step locked" id="estep7">'
+    +'<div class="ext-step-title"><span class="ext-step-badge">7</span> Write a Conclusion</div>'
+    +'<p style="font-size:.85rem;color:var(--text);margin-bottom:10px">Write 2–3 sentences summing up your investigation. Include: <strong>what you found</strong>, <strong>what type of correlation</strong> it was, and <strong>one prediction</strong> with a comment on whether it\'s reliable.</p>'
+    +'<textarea class="conc-ta" id="extConc" placeholder="e.g. I investigated whether hours of sunshine affect ice cream sales. I found a strong positive correlation — as sunshine hours increase, sales also increase. I predicted that on a day with 8 hours of sunshine, sales would be around £420. This is a reliable prediction as 8 hours is within my data range."></textarea>'
+    +'<button class="conc-btn" onclick="submitConc()">✅ Submit Conclusion</button>'
+    +'<div class="fb" id="extConcFb"></div>'
+    +'</div>'
+
+    +'</div>'; // ext-body
+  return card;
+}
+
+// ── Variable confirmation ──
+function confirmVars(){
+  var xv=document.getElementById('extXVar').value.trim();
+  var yv=document.getElementById('extYVar').value.trim();
+  if(!xv||!yv){
+    var fb=document.getElementById('extVarFb');
+    fb.className='fb bad'; fb.textContent='❌ Please enter both variable names.'; return;
+  }
+  extData.xVar=xv; extData.yVar=yv;
+  // Update table headers and labels
+  document.getElementById('extXHead').textContent=xv;
+  document.getElementById('extYHead').textContent=yv;
+  document.getElementById('extXRangeLabel').textContent=xv+' axis:';
+  document.getElementById('extYRangeLabel').textContent=yv+' axis:';
+  document.getElementById('extPredXLabel').textContent='If '+xv+' =';
+  document.getElementById('extPredYLabel').textContent='then '+yv+' ≈';
+  document.getElementById('extDataDesc').innerHTML='Enter at least <strong>6 pairs</strong> of values for your investigation: <em>'+xv+'</em> and <em>'+yv+'</em>.';
+  // Seed with 6 blank rows
+  var tb=document.getElementById('extTbody'); tb.innerHTML='';
+  for(var i=0;i<6;i++) addExtRow(true);
+  var fb=document.getElementById('extVarFb');
+  fb.className='fb ok'; fb.textContent='✅ Variables set! Now enter your data in the table below.';
+  unlockExt('estep2');
+}
+
+// ── Add row ──
+function addExtRow(silent){
+  var tb=document.getElementById('extTbody');
+  var idx=tb.rows.length;
+  var tr=document.createElement('tr');
+  tr.id='extrow_'+idx;
+  tr.innerHTML='<td><input class="ext-num-inp" type="number" step="any" id="extx_'+idx+'" placeholder="x" onchange="onExtInput('+idx+')"></td>'
+    +'<td><input class="ext-num-inp" type="number" step="any" id="exty_'+idx+'" placeholder="y" onchange="onExtInput('+idx+')"></td>'
+    +'<td><button class="del-btn" onclick="delExtRow('+idx+')">✕</button></td>';
+  tb.appendChild(tr);
+  if(!silent) document.getElementById('extx_'+idx).focus();
+  checkExtMinPts();
+}
+
+function delExtRow(idx){
+  var r=document.getElementById('extrow_'+idx);
+  if(r) r.remove();
+  checkExtMinPts();
+}
+
+function onExtInput(idx){
+  var xi=document.getElementById('extx_'+idx);
+  var yi=document.getElementById('exty_'+idx);
+  if(xi&&xi.value) xi.classList.add('filled'); else if(xi) xi.classList.remove('filled');
+  if(yi&&yi.value) yi.classList.add('filled'); else if(yi) yi.classList.remove('filled');
+  checkExtMinPts();
+}
+
+function checkExtMinPts(){
+  var rows=getExtRows();
+  var valid=rows.filter(function(r){return r.x!==null&&r.y!==null;});
+  var note=document.getElementById('extMinNote');
+  if(valid.length>=EXT_MIN_PTS){
+    if(note) note.style.color='var(--green)';
+    if(note) note.textContent='✅ '+valid.length+' data points — ready to plot!';
+    unlockExt('estep3');
+    // Auto-suggest axis ranges
+    var xs=valid.map(function(r){return r.x;}), ys=valid.map(function(r){return r.y;});
+    var xmn=Math.floor(Math.min.apply(null,xs)*0.9);
+    var xmx=Math.ceil(Math.max.apply(null,xs)*1.1);
+    var ymn=Math.floor(Math.min.apply(null,ys)*0.9);
+    var ymx=Math.ceil(Math.max.apply(null,ys)*1.1);
+    document.getElementById('extXMin').value=xmn;
+    document.getElementById('extXMax').value=xmx;
+    document.getElementById('extYMin').value=ymn;
+    document.getElementById('extYMax').value=ymx;
+  } else {
+    if(note) note.style.color='var(--gold)';
+    if(note) note.textContent='Add at least '+EXT_MIN_PTS+' pairs to unlock the graph ('+valid.length+' so far)';
+  }
+}
+
+function getExtRows(){
+  var rows=[];
+  var tb=document.getElementById('extTbody');
+  if(!tb) return rows;
+  Array.from(tb.rows).forEach(function(tr,i){
+    var xi=tr.querySelector('input[id^="extx_"]');
+    var yi=tr.querySelector('input[id^="exty_"]');
+    var xv=xi&&xi.value!==''?parseFloat(xi.value):null;
+    var yv=yi&&yi.value!==''?parseFloat(yi.value):null;
+    rows.push({x:xv,y:yv});
+  });
+  return rows.filter(function(r){return r.x!==null&&r.y!==null;});
+}
+
+// ── Plot ext graph ──
+function initExtCanvas(){
+  var canvas=document.getElementById('extCanvas');
+  if(!canvas) return;
+  var s=cSize(); canvas.width=s.w; canvas.height=s.h;
+  // blank axes
+  drawExtGraph({});
+}
+
+function plotExtGraph(){
+  var xMin=parseFloat(document.getElementById('extXMin').value);
+  var xMax=parseFloat(document.getElementById('extXMax').value);
+  var yMin=parseFloat(document.getElementById('extYMin').value);
+  var yMax=parseFloat(document.getElementById('extYMax').value);
+  if(isNaN(xMin)||isNaN(xMax)||isNaN(yMin)||isNaN(yMax)||xMin>=xMax||yMin>=yMax){
+    alert('Please check your axis ranges — max must be greater than min.');
+    return;
+  }
+  var rows=getExtRows();
+  if(rows.length<EXT_MIN_PTS){ alert('You need at least '+EXT_MIN_PTS+' data points.'); return; }
+
+  extData.xMin=xMin; extData.xMax=xMax; extData.yMin=yMin; extData.yMax=yMax;
+  extData.rows=rows;
+
+  // Compute regression for scoring
+  var n=rows.length;
+  var sx=0,sy=0,sxy=0,sx2=0;
+  rows.forEach(function(r){sx+=r.x;sy+=r.y;sxy+=r.x*r.y;sx2+=r.x*r.x;});
+  extData.trueM=(n*sxy-sx*sy)/(n*sx2-sx*sx);
+  extData.trueC=(sy-extData.trueM*sx)/n;
+  extData.meanX=sx/n; extData.meanY=sy/n;
+
+  extPlotted=true;
+  drawExtGraph({showData:true});
+  document.getElementById('extCanvasInst').textContent='Your scatter graph! Now describe the correlation below.';
+
+  // Attach line drawing
+  var canvas=document.getElementById('extCanvas');
+  canvas._extLineHandler=function(e){ extLineClick(e); };
+  canvas._extLineTouchHandler=function(e){ e.preventDefault(); var t=e.touches[0]||e.changedTouches[0]; extLineClick({clientX:t.clientX,clientY:t.clientY}); };
+
+  if(!tasksDone['ext_plot']){ tasksDone['ext_plot']=true; awardPts(10); }
+  unlockExt('estep4');
+}
+
+function drawExtGraph(opts){
+  opts=opts||{};
+  var canvas=document.getElementById('extCanvas');
+  if(!canvas) return;
+  var s=cSize(); canvas.width=s.w; canvas.height=s.h;
+  var cw=s.w,ch=s.h;
+  var ctx=canvas.getContext('2d');
+  var xMin=extData.xMin||0, xMax=extData.xMax||100;
+  var yMin=extData.yMin||0, yMax=extData.yMax||100;
+
+  ctx.fillStyle='#0a0e1a'; ctx.fillRect(0,0,cw,ch);
+
+  // Grid
+  ctx.strokeStyle='rgba(46,51,80,0.7)'; ctx.lineWidth=1;
+  for(var i=0;i<=8;i++){
+    var gx=PAD.l+(i/8)*(cw-PAD.l-PAD.r);
+    ctx.beginPath(); ctx.moveTo(gx,PAD.t); ctx.lineTo(gx,ch-PAD.b); ctx.stroke();
+    var xv=xMin+(i/8)*(xMax-xMin);
+    ctx.fillStyle='rgba(100,116,139,0.8)'; ctx.font='11px Nunito,sans-serif';
+    ctx.textAlign='center'; ctx.fillText(Number(xv.toFixed(2)),gx,ch-PAD.b+16);
+  }
+  for(var j=0;j<=6;j++){
+    var gy=PAD.t+(j/6)*(ch-PAD.t-PAD.b);
+    ctx.beginPath(); ctx.moveTo(PAD.l,gy); ctx.lineTo(cw-PAD.r,gy); ctx.stroke();
+    var yv=yMax-(j/6)*(yMax-yMin);
+    ctx.fillStyle='rgba(100,116,139,0.8)'; ctx.font='11px Nunito,sans-serif';
+    ctx.textAlign='right'; ctx.fillText(Number(yv.toFixed(2)),PAD.l-5,gy+4);
+  }
+
+  ctx.strokeStyle='rgba(148,163,184,0.5)'; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.moveTo(PAD.l,PAD.t); ctx.lineTo(PAD.l,ch-PAD.b); ctx.lineTo(cw-PAD.r,ch-PAD.b); ctx.stroke();
+
+  ctx.fillStyle='#8b5cf6'; ctx.font='bold 11px Nunito,sans-serif'; ctx.textAlign='center';
+  ctx.fillText(extData.xVar||'x',PAD.l+(cw-PAD.l-PAD.r)/2,ch-4);
+  ctx.save(); ctx.translate(13,PAD.t+(ch-PAD.t-PAD.b)/2);
+  ctx.rotate(-Math.PI/2); ctx.fillText(extData.yVar||'y',0,0); ctx.restore();
+
+  var inv={xMin:xMin,xMax:xMax,yMin:yMin,yMax:yMax};
+
+  // Mean point
+  if(opts.showMean && extData.meanX!==undefined){
+    var mp=d2cExt(extData.meanX,extData.meanY,inv,cw,ch);
+    ctx.strokeStyle='rgba(251,191,36,0.5)'; ctx.lineWidth=1.5; ctx.setLineDash([4,4]);
+    ctx.beginPath(); ctx.moveTo(mp.cx-14,mp.cy); ctx.lineTo(mp.cx+14,mp.cy); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(mp.cx,mp.cy-14); ctx.lineTo(mp.cx,mp.cy+14); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.font='14px Arial'; ctx.textAlign='center'; ctx.fillText('⭐',mp.cx,mp.cy+5);
+  }
+
+  // True line
+  if(opts.showTrueLine && extData.trueM!==undefined){
+    var tp1=d2cExt(xMin,extData.trueM*xMin+extData.trueC,inv,cw,ch);
+    var tp2=d2cExt(xMax,extData.trueM*xMax+extData.trueC,inv,cw,ch);
+    ctx.strokeStyle='rgba(34,197,94,0.4)'; ctx.lineWidth=2.5; ctx.setLineDash([7,5]);
+    ctx.beginPath(); ctx.moveTo(tp1.cx,tp1.cy); ctx.lineTo(tp2.cx,tp2.cy); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // User line
+  if(opts.showUserLine && extLineState.drawn){
+    ctx.strokeStyle='#f97316'; ctx.lineWidth=3; ctx.setLineDash([]);
+    ctx.beginPath(); ctx.moveTo(extLineState.p1.cx,extLineState.p1.cy);
+    ctx.lineTo(extLineState.p2.cx,extLineState.p2.cy); ctx.stroke();
+    [extLineState.p1,extLineState.p2].forEach(function(p){
+      ctx.fillStyle='#f97316'; ctx.beginPath(); ctx.arc(p.cx,p.cy,5,0,Math.PI*2); ctx.fill();
+    });
+  }
+
+  // Draw mode first point
+  if(extDrawStart){
+    ctx.fillStyle='rgba(249,115,22,0.85)';
+    ctx.beginPath(); ctx.arc(extDrawStart.cx,extDrawStart.cy,7,0,Math.PI*2); ctx.fill();
+  }
+
+  // Data points
+  if(opts.showData && extData.rows){
+    extData.rows.forEach(function(r){
+      var p=d2cExt(r.x,r.y,inv,cw,ch);
+      ctx.fillStyle='#8b5cf6'; ctx.strokeStyle='rgba(139,92,246,0.4)'; ctx.lineWidth=1.5;
+      ctx.beginPath(); ctx.arc(p.cx,p.cy,5.5,0,Math.PI*2); ctx.fill(); ctx.stroke();
+    });
+  }
+}
+
+function d2cExt(dx,dy,inv,cw,ch){
+  return {
+    cx:PAD.l+((dx-inv.xMin)/(inv.xMax-inv.xMin))*(cw-PAD.l-PAD.r),
+    cy:ch-PAD.b-((dy-inv.yMin)/(inv.yMax-inv.yMin))*(ch-PAD.t-PAD.b)
+  };
+}
+function c2dExt(cx,cy,inv,cw,ch){
+  return {
+    dx:inv.xMin+((cx-PAD.l)/(cw-PAD.l-PAD.r))*(inv.xMax-inv.xMin),
+    dy:inv.yMin+((ch-PAD.b-cy)/(ch-PAD.t-PAD.b))*(inv.yMax-inv.yMin)
+  };
+}
+
+// ── Correlation ──
+function selectExtCorr(btn,val){
+  document.querySelectorAll('.ext-corr-btn').forEach(function(b){b.classList.remove('sel');});
+  btn.classList.add('sel');
+  extData.corrChoice=val;
+}
+
+function confirmExtCorr(){
+  if(!extData.corrChoice){
+    var fb=document.getElementById('extCorrFb');
+    fb.className='fb bad'; fb.textContent='❌ Please select a correlation type first.'; return;
+  }
+  var fb=document.getElementById('extCorrFb');
+  fb.className='fb ok';
+  fb.innerHTML='✅ You described <strong>'+extData.corrChoice+'</strong> correlation. Does that match what you see on the graph? Look at whether the points go uphill or downhill, and how closely clustered they are.';
+  document.querySelectorAll('.ext-corr-btn').forEach(function(b){b.disabled=true;});
+  document.querySelector('.var-confirm-btn[onclick="confirmExtCorr()"]').disabled=true;
+  if(!tasksDone['ext_corr']){ tasksDone['ext_corr']=true; awardPts(10); }
+  unlockExt('estep5');
+  // Re-draw with mean point visible
+  drawExtGraph({showData:true,showMean:true});
+  // Attach line handler
+  var canvas=document.getElementById('extCanvas');
+  canvas.addEventListener('click',canvas._extLineHandler);
+  canvas.addEventListener('touchend',canvas._extLineTouchHandler);
+}
+
+// ── Draw line (extension) ──
+function startExtDraw(){
+  extDrawMode=true; extDrawStart=null;
+  extLineState={drawn:false,p1:null,p2:null,rawP1:null,rawP2:null};
+  var canvas=document.getElementById('extCanvas');
+  canvas.addEventListener('click',canvas._extLineHandler);
+  canvas.addEventListener('touchend',canvas._extLineTouchHandler);
+  drawExtGraph({showData:true,showMean:true});
+  document.getElementById('extDrawBtn').textContent='📍 Click two points on the graph';
+  document.getElementById('extScoreBtn').style.display='none';
+  document.getElementById('extAccWrap').style.display='none';
+}
+
+function clearExtLine(){
+  extDrawMode=false; extDrawStart=null;
+  extLineState={drawn:false,p1:null,p2:null,rawP1:null,rawP2:null};
+  drawExtGraph({showData:true,showMean:true});
+  document.getElementById('extDrawBtn').textContent='✏️ Start Drawing';
+  document.getElementById('extScoreBtn').style.display='none';
+  document.getElementById('extAccWrap').style.display='none';
+}
+
+function extLineClick(e){
+  if(!extDrawMode) return;
+  var canvas=document.getElementById('extCanvas');
+  var rect=canvas.getBoundingClientRect();
+  var scX=canvas.width/rect.width, scY=canvas.height/rect.height;
+  var cx=(e.clientX-rect.left)*scX, cy=(e.clientY-rect.top)*scY;
+  var s=cSize();
+  if(!extDrawStart){
+    extDrawStart={cx:cx,cy:cy};
+    drawExtGraph({showData:true,showMean:true,showUserLine:true});
+  } else {
+    var p1=extDrawStart,p2={cx:cx,cy:cy};
+    var dx=p2.cx-p1.cx;
+    if(Math.abs(dx)<2) return;
+    var slope=(p2.cy-p1.cy)/dx;
+    var ext1={cx:0,cy:p1.cy-slope*p1.cx};
+    var ext2={cx:s.w,cy:p1.cy+slope*(s.w-p1.cx)};
+    extLineState={drawn:true,p1:ext1,p2:ext2,rawP1:p1,rawP2:p2};
+    extDrawStart=null; extDrawMode=false;
+    canvas.removeEventListener('click',canvas._extLineHandler);
+    canvas.removeEventListener('touchend',canvas._extLineTouchHandler);
+    drawExtGraph({showData:true,showMean:true,showUserLine:true});
+    document.getElementById('extDrawBtn').textContent='✏️ Redraw Line';
+    document.getElementById('extScoreBtn').style.display='inline-block';
+  }
+}
+
+function scoreExtLine(){
+  var s=cSize();
+  var inv={xMin:extData.xMin,xMax:extData.xMax,yMin:extData.yMin,yMax:extData.yMax};
+  var rp1=extLineState.rawP1||extLineState.p1;
+  var rp2=extLineState.rawP2||extLineState.p2;
+  var d1=c2dExt(rp1.cx,rp1.cy,inv,s.w,s.h);
+  var d2=c2dExt(rp2.cx,rp2.cy,inv,s.w,s.h);
+  if(Math.abs(d2.dx-d1.dx)<0.001) return;
+  var uM=(d2.dy-d1.dy)/(d2.dx-d1.dx), uC=d1.dy-uM*d1.dx;
+  var totalR=0, yR=extData.yMax-extData.yMin;
+  extData.rows.forEach(function(r){
+    totalR+=Math.abs((uM*r.x+uC)-(extData.trueM*r.x+extData.trueC))/yR;
+  });
+  var score=Math.max(0,Math.min(100,Math.round((1-totalR/extData.rows.length*8)*100)));
+  extLineScore=score;
+
+  var col,txt,pts;
+  if(score>=85){col='var(--green)';txt='🎯 Excellent line of best fit!';pts=15;}
+  else if(score>=65){col='var(--teal)';txt='👍 Good line — close to best fit.';pts=10;}
+  else if(score>=40){col='var(--gold)';txt='📏 Not bad — try to pass through the mean point ⭐.';pts=5;}
+  else{col='var(--red)';txt='↔️ Needs work — try again, aiming through the middle of the data.';pts=0;}
+
+  document.getElementById('extAccWrap').style.display='block';
+  var fill=document.getElementById('extAccFill');
+  fill.style.width=score+'%'; fill.style.background=col;
+  document.getElementById('extAccTxt').textContent=score+'% accuracy';
+  document.getElementById('extAccTxt').style.color=col;
+  var fb=document.getElementById('extLineFb');
+  fb.className='fb '+(score>=65?'ok':score>=40?'info':'bad'); fb.textContent=txt;
+
+  drawExtGraph({showData:true,showMean:true,showUserLine:true,showTrueLine:true});
+  if(!tasksDone['ext_line']){ tasksDone['ext_line']=true; if(pts>0)awardPts(pts); }
+  unlockExt('estep6');
+}
+
+// ── Prediction ──
+function checkExtPred(){
+  var xVal=parseFloat(document.getElementById('extPredX').value);
+  var yVal=parseFloat(document.getElementById('extPredY').value);
+  if(isNaN(xVal)||isNaN(yVal)){
+    document.getElementById('extPredFb').className='fb bad';
+    document.getElementById('extPredFb').textContent='❌ Please enter both an x value and a predicted y value.';
+    return;
+  }
+  // Check x is within data range (interpolation)
+  var inRange=xVal>=extData.xMin&&xVal<=extData.xMax;
+  var trueY=extData.trueM*xVal+extData.trueC;
+  var yRange=extData.yMax-extData.yMin;
+  var close=Math.abs(yVal-trueY)<yRange*0.12;
+  document.querySelector('.chk-btn[onclick="checkExtPred()"]').disabled=true;
+  var fb=document.getElementById('extPredFb');
+  if(!inRange){
+    fb.className='fb bad';
+    fb.innerHTML='⚠️ That x value is outside your data range — that\'s <strong>extrapolation</strong>! Choose an x value between '+extData.xMin+' and '+extData.xMax+' for a more reliable prediction.';
+  } else if(close){
+    fb.className='fb ok';
+    fb.innerHTML='✅ Great prediction! The regression line gives approximately <strong>'+trueY.toFixed(1)+'</strong> — your answer is close. This is <strong>interpolation</strong> — predicting within the data range — which is reliable.';
+    if(!tasksDone['ext_pred']){ tasksDone['ext_pred']=true; awardPts(10); }
+    unlockExt('estep7');
+  } else {
+    fb.className='fb bad';
+    fb.innerHTML='❌ Not quite — the line gives approximately <strong>'+trueY.toFixed(1)+'</strong>. Read across from x = '+xVal+' on your graph to your line, then across to the y-axis.';
+    document.querySelector('.chk-btn[onclick="checkExtPred()"]').disabled=false;
+  }
+  if(inRange&&!tasksDone['ext_pred']){ unlockExt('estep7'); }
+}
+
+// ── Conclusion ──
+function submitConc(){
+  var txt=document.getElementById('extConc').value.trim();
+  if(txt.length<40){
+    var fb=document.getElementById('extConcFb');
+    fb.className='fb bad'; fb.textContent='❌ Please write a bit more — aim for 2–3 sentences.'; return;
+  }
+  extData.conclusion=txt;
+  var fb=document.getElementById('extConcFb');
+  fb.className='fb ok';
+  fb.innerHTML='✅ Brilliant! You\'ve completed your own data science investigation — from choosing variables to drawing conclusions. <strong>That\'s exactly what real data scientists do.</strong>';
+  document.getElementById('extConc').disabled=true;
+  document.querySelector('.conc-btn').disabled=true;
+  if(!tasksDone['ext_conc']){ tasksDone['ext_conc']=true; awardPts(10); }
+}
+
+function unlockExt(id){
+  var el=document.getElementById(id);
+  if(el) el.classList.remove('locked');
+}
+
+buildAll();
+</script>
+</body>
+</html>
