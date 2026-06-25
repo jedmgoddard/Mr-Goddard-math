@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Operation: Free Mr. Goddard</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Nunito:wght@400;700;800;900&family=VT323&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#050810;--panel:#0a0f1e;--panel2:#0f1729;--border:#1a2a4a;
+  --gold:#f5c518;--teal:#00e5ff;--green:#00ff88;--red:#ff4444;
+  --purple:#b44dff;--orange:#ff8c00;--pink:#ff69b4;--dim:#3a4a6a;--text:#c8d8f0;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);
+  min-height:100vh;overflow-x:hidden}
+
+/* Animated starfield bg */
+body::before{content:'';position:fixed;inset:0;z-index:0;
+  background:radial-gradient(ellipse at 20% 20%,rgba(0,229,255,.04) 0%,transparent 50%),
+  radial-gradient(ellipse at 80% 80%,rgba(180,77,255,.04) 0%,transparent 50%);
+  pointer-events:none}
+
+/* ── HEADER ── */
+.axiom-header{background:rgba(5,8,16,.97);border-bottom:2px solid var(--red);
+  padding:10px 20px;display:flex;align-items:center;gap:14px;
+  position:sticky;top:0;z-index:200;box-shadow:0 0 30px rgba(255,68,68,.2)}
+.axiom-logo{font-family:'VT323',monospace;font-size:1.5rem;color:var(--red);
+  letter-spacing:2px;text-shadow:0 0 10px rgba(255,68,68,.5)}
+.axiom-sub{font-size:.68rem;color:var(--dim);letter-spacing:1px;font-family:'Orbitron',sans-serif}
+.keys-display{margin-left:auto;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.key-slot{width:28px;height:28px;border-radius:6px;border:1.5px solid var(--dim);
+  display:flex;align-items:center;justify-content:center;font-size:1rem;
+  transition:all .3s;background:rgba(255,255,255,.02)}
+.key-slot.collected{border-color:var(--gold);background:rgba(245,197,24,.12);
+  box-shadow:0 0 10px rgba(245,197,24,.3);animation:keyGlow .5s ease}
+@keyframes keyGlow{0%{transform:scale(1.4)}100%{transform:scale(1)}}
+.pts-pill{font-family:'Orbitron',sans-serif;font-size:.82rem;color:var(--gold);
+  background:rgba(245,197,24,.08);border:1.5px solid rgba(245,197,24,.3);
+  padding:5px 12px;border-radius:20px;white-space:nowrap;position:relative;overflow:hidden}
+.pts-pill.pop{animation:pop .4s ease}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.3)}100%{transform:scale(1)}}
+.pts-flash{position:absolute;top:0;left:50%;transform:translateX(-50%);
+  font-size:.7rem;pointer-events:none;animation:floatUp .8s ease forwards;opacity:0;color:var(--green)}
+@keyframes floatUp{0%{opacity:1;top:0}100%{opacity:0;top:-26px}}
+
+/* ── NAME ── */
+.name-bar{background:rgba(10,15,30,.95);border-bottom:1px solid var(--border);
+  padding:8px 20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.name-bar label{font-size:.8rem;font-weight:800;color:var(--teal)}
+.name-inp{background:rgba(255,255,255,.05);border:1.5px solid var(--border);
+  border-radius:7px;padding:6px 12px;color:var(--text);font-family:'Nunito',sans-serif;
+  font-size:.88rem;outline:none;width:180px;transition:border-color .2s}
+.name-inp:focus{border-color:var(--teal)}
+.name-inp::placeholder{color:var(--dim)}
+
+/* ── PROGRESS ── */
+.prog-bar-wrap{background:rgba(5,8,16,.9);border-bottom:1px solid var(--border);
+  padding:7px 20px;display:flex;align-items:center;gap:12px}
+.prog-bar{flex:1;height:6px;background:var(--border);border-radius:6px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--purple));
+  border-radius:6px;transition:width .5s ease;width:0%}
+.prog-text{font-size:.7rem;color:var(--dim);white-space:nowrap;font-family:'Orbitron',sans-serif}
+
+/* ── MAIN ── */
+.main{max-width:960px;margin:0 auto;padding:20px 16px 80px;position:relative;z-index:1}
+
+/* ── INTRO ── */
+.intro-card{background:var(--panel);border:2px solid var(--red);border-radius:16px;
+  overflow:hidden;margin-bottom:24px;box-shadow:0 0 40px rgba(255,68,68,.1)}
+.intro-top{background:linear-gradient(135deg,rgba(255,68,68,.12),rgba(180,77,255,.08));
+  padding:24px;text-align:center;border-bottom:1px solid rgba(255,68,68,.2)}
+.axiom-big{font-family:'VT323',monospace;font-size:clamp(2.5rem,8vw,5rem);
+  color:var(--red);letter-spacing:4px;text-shadow:0 0 30px rgba(255,68,68,.5);
+  line-height:1;margin-bottom:4px}
+.intro-subtitle{font-family:'Orbitron',sans-serif;font-size:.72rem;color:var(--dim);
+  letter-spacing:2px;margin-bottom:16px}
+.mr-g-msg{background:rgba(0,229,255,.06);border:1.5px solid rgba(0,229,255,.2);
+  border-radius:10px;padding:14px 18px;max-width:600px;margin:0 auto;
+  font-size:.9rem;line-height:1.7;color:var(--text);text-align:left}
+.mr-g-msg .speaker{font-family:'Orbitron',sans-serif;font-size:.62rem;
+  color:var(--teal);letter-spacing:1.5px;margin-bottom:6px}
+.mr-g-msg em{color:var(--gold);font-style:normal}
+.intro-body{padding:20px 24px}
+.intro-body p{font-size:.9rem;line-height:1.65;margin-bottom:10px;color:var(--text)}
+.intro-body p:last-child{margin-bottom:0}
+.intro-body strong{color:var(--gold)}
+.keys-needed{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:14px 0}
+.key-needed-item{background:rgba(245,197,24,.06);border:1.5px solid rgba(245,197,24,.2);
+  border-radius:10px;padding:6px 12px;font-size:.8rem;font-weight:800;color:var(--gold)}
+
+/* ── BARRIERS ── */
+.barriers-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:620px){.barriers-grid{grid-template-columns:1fr}}
+
+.barrier-card{background:var(--panel);border:1.5px solid var(--border);border-radius:14px;
+  overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.4);transition:box-shadow .3s}
+.barrier-card.unlocked{box-shadow:0 0 20px var(--glow,rgba(0,229,255,.15))}
+.barrier-card.solved{border-color:var(--green)}
+
+.barrier-header{padding:12px 16px;display:flex;align-items:center;gap:10px;
+  border-bottom:1px solid var(--border);cursor:pointer;transition:background .2s}
+.barrier-header:hover{background:rgba(255,255,255,.02)}
+.barrier-icon{font-size:1.5rem}
+.barrier-info{flex:1}
+.barrier-name{font-family:'Orbitron',sans-serif;font-size:.78rem;font-weight:700;
+  color:var(--text);letter-spacing:.5px}
+.barrier-unit{font-size:.68rem;color:var(--dim);margin-top:2px;letter-spacing:.3px}
+.barrier-status{font-size:.72rem;font-weight:800;padding:3px 10px;border-radius:20px;
+  white-space:nowrap}
+.bs-locked{background:rgba(58,74,106,.2);color:var(--dim);border:1px solid var(--dim)}
+.bs-open{background:rgba(0,229,255,.1);color:var(--teal);border:1px solid rgba(0,229,255,.3)}
+.bs-solved{background:rgba(0,255,136,.1);color:var(--green);border:1px solid rgba(0,255,136,.3)}
+
+.barrier-body{display:none;padding:14px 16px}
+.barrier-body.open{display:block}
+
+/* AXIOM message per barrier */
+.axiom-msg{background:rgba(255,68,68,.05);border-left:3px solid var(--red);
+  padding:8px 12px;font-size:.8rem;color:var(--text);line-height:1.55;
+  margin-bottom:14px;border-radius:0 6px 6px 0;font-style:italic}
+.axiom-msg span{color:var(--red);font-style:normal;font-weight:800}
+
+/* ── QUESTION ── */
+.q-item{background:var(--panel2);border:1.5px solid var(--border);border-radius:10px;
+  padding:12px 14px;margin-bottom:10px;transition:border-color .3s}
+.q-item.q-correct{border-color:var(--green)}
+.q-item.q-wrong{border-color:var(--red)}
+.q-tier{font-family:'Orbitron',sans-serif;font-size:.6rem;padding:2px 9px;
+  border-radius:20px;letter-spacing:.5px;display:inline-block;margin-bottom:7px}
+.qt-bronze{background:rgba(205,127,50,.12);color:#cd7f32;border:1px solid rgba(205,127,50,.3)}
+.qt-silver{background:rgba(168,169,173,.12);color:#a8a9ad;border:1px solid rgba(168,169,173,.3)}
+.qt-gold{background:rgba(245,197,24,.12);color:var(--gold);border:1px solid rgba(245,197,24,.3)}
+.q-text{font-size:.9rem;line-height:1.6;color:var(--text);margin-bottom:10px}
+.q-text .math{font-family:'Courier New',monospace;background:rgba(0,229,255,.08);
+  color:var(--teal);padding:1px 6px;border-radius:3px;font-size:.88rem}
+.ans-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.ans-inp{flex:1;min-width:120px;max-width:180px;background:rgba(255,255,255,.04);
+  border:1.5px solid var(--border);border-radius:7px;color:var(--text);
+  font-family:'Orbitron',sans-serif;font-size:.85rem;padding:7px 11px;
+  outline:none;text-align:center;transition:border-color .2s}
+.ans-inp:focus{border-color:var(--teal)}
+.ans-inp.correct{border-color:var(--green);background:rgba(0,255,136,.06);color:var(--green)}
+.ans-inp.wrong{border-color:var(--red);background:rgba(255,68,68,.06);color:var(--red)}
+.fire-btn{padding:7px 16px;background:var(--teal);color:var(--bg);border:none;
+  border-radius:7px;font-family:'Orbitron',sans-serif;font-size:.7rem;font-weight:700;
+  cursor:pointer;transition:all .15s;letter-spacing:.5px;white-space:nowrap}
+.fire-btn:hover{background:#33eeff;transform:scale(1.04)}
+.fire-btn:disabled{background:var(--dim);cursor:default;transform:none}
+.hint-btn{padding:7px 12px;background:transparent;border:1.5px solid rgba(245,197,24,.3);
+  border-radius:7px;color:var(--gold);font-family:'Nunito',sans-serif;font-size:.78rem;
+  font-weight:700;cursor:pointer;transition:all .15s;white-space:nowrap}
+.hint-btn:hover{background:rgba(245,197,24,.08)}
+.hint-box{background:rgba(245,197,24,.06);border:1px solid rgba(245,197,24,.2);
+  border-radius:7px;padding:8px 12px;font-size:.8rem;color:var(--text);
+  line-height:1.55;margin-top:8px;display:none}
+.hint-box.show{display:block}
+.hint-box strong{color:var(--gold)}
+.q-fb{margin-top:8px;font-size:.82rem;font-weight:700;padding:7px 11px;
+  border-radius:7px;display:none;line-height:1.4}
+.q-fb.ok{display:block;background:rgba(0,255,136,.08);color:var(--green);
+  border:1px solid rgba(0,255,136,.2)}
+.q-fb.bad{display:block;background:rgba(255,68,68,.07);color:var(--red);
+  border:1px solid rgba(255,68,68,.18)}
+
+/* Attempts dots */
+.attempts-row{display:flex;gap:5px;margin-top:7px;align-items:center}
+.att-dot{width:8px;height:8px;border-radius:50%;background:var(--teal);transition:all .2s}
+.att-dot.used{background:var(--red)}
+.att-dot.ok{background:var(--green)}
+
+/* Key earned */
+.key-earned{text-align:center;padding:16px;background:rgba(245,197,24,.06);
+  border-top:1px solid rgba(245,197,24,.15);display:none}
+.key-earned.show{display:block}
+.key-earned-icon{font-size:2.5rem;animation:spin .6s ease}
+@keyframes spin{0%{transform:rotate(-20deg) scale(0.5)}60%{transform:rotate(5deg) scale(1.2)}100%{transform:rotate(0) scale(1)}}
+.key-earned-txt{font-family:'Orbitron',sans-serif;font-size:.82rem;color:var(--gold);
+  margin-top:6px;letter-spacing:.5px}
+.mr-g-cheer{font-size:.8rem;color:var(--teal);margin-top:6px;line-height:1.5;
+  font-style:italic}
+
+/* ── FINAL OVERRIDE ── */
+.override-card{background:var(--panel);border:2px solid var(--purple);border-radius:16px;
+  padding:28px;text-align:center;margin-top:24px;display:none;
+  box-shadow:0 0 40px rgba(180,77,255,.15)}
+.override-card.show{display:block}
+.override-title{font-family:'VT323',monospace;font-size:clamp(2rem,6vw,3.5rem);
+  color:var(--purple);letter-spacing:3px;margin-bottom:8px;
+  text-shadow:0 0 20px rgba(180,77,255,.5)}
+.override-sub{font-size:.85rem;color:var(--dim);margin-bottom:20px;line-height:1.6}
+.override-code-display{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;
+  margin-bottom:20px}
+.code-seg{font-family:'VT323',monospace;font-size:2rem;color:var(--green);
+  background:rgba(0,255,136,.06);border:2px solid rgba(0,255,136,.3);
+  border-radius:8px;padding:8px 14px;min-width:50px;text-align:center;
+  letter-spacing:2px}
+.override-inp-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:14px}
+.override-inp{background:rgba(255,255,255,.05);border:2px solid var(--purple);
+  border-radius:8px;color:var(--text);font-family:'VT323',monospace;font-size:1.8rem;
+  padding:8px 14px;outline:none;width:180px;text-align:center;letter-spacing:3px;
+  transition:border-color .2s}
+.override-inp:focus{border-color:var(--green)}
+.override-btn{padding:12px 28px;background:var(--purple);color:white;border:none;
+  border-radius:10px;font-family:'Orbitron',sans-serif;font-size:.85rem;font-weight:700;
+  cursor:pointer;transition:all .2s;letter-spacing:.5px}
+.override-btn:hover{background:#cc66ff;transform:scale(1.05)}
+
+/* ── VICTORY ── */
+.victory-card{background:var(--panel);border:2px solid var(--gold);border-radius:16px;
+  padding:32px;text-align:center;margin-top:24px;display:none;
+  box-shadow:0 0 60px rgba(245,197,24,.2)}
+.victory-card.show{display:block;animation:victoryPop .5s ease}
+@keyframes victoryPop{0%{transform:scale(0.8);opacity:0}100%{transform:scale(1);opacity:1}}
+.victory-big{font-family:'VT323',monospace;font-size:clamp(3rem,10vw,6rem);
+  color:var(--gold);letter-spacing:4px;text-shadow:0 0 40px rgba(245,197,24,.6);
+  line-height:1}
+.victory-sub{font-size:.9rem;color:var(--text);margin:12px 0 20px;line-height:1.7}
+.victory-sub strong{color:var(--gold)}
+.mr-g-free{background:rgba(0,229,255,.06);border:1.5px solid rgba(0,229,255,.2);
+  border-radius:10px;padding:14px 18px;max-width:560px;margin:0 auto 20px;
+  font-size:.9rem;line-height:1.7;color:var(--text);text-align:left}
+.mr-g-free .speaker{font-family:'Orbitron',sans-serif;font-size:.62rem;
+  color:var(--teal);letter-spacing:1.5px;margin-bottom:6px}
+.mr-g-free em{color:var(--gold);font-style:normal}
+.trophy-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:16px 0}
+.trophy-item{background:rgba(245,197,24,.08);border:1.5px solid rgba(245,197,24,.25);
+  border-radius:10px;padding:10px 16px;text-align:center}
+.trophy-icon{font-size:1.8rem}
+.trophy-label{font-family:'Orbitron',sans-serif;font-size:.6rem;color:var(--gold);
+  margin-top:4px;letter-spacing:.5px}
+.trophy-score{font-family:'VT323',monospace;font-size:1.4rem;color:var(--text)}
+
+/* ── SUBMISSION ── */
+.sub-card{background:var(--panel);border:1.5px solid var(--border);border-radius:14px;
+  padding:22px;margin-top:20px}
+.sub-title{font-family:'Orbitron',sans-serif;font-size:.85rem;color:var(--green);margin-bottom:6px}
+.sub-note{font-size:.8rem;color:var(--dim);margin-bottom:14px;line-height:1.5}
+.gen-btn{padding:10px 22px;background:var(--green);color:var(--bg);border:none;
+  border-radius:8px;font-family:'Orbitron',sans-serif;font-size:.78rem;font-weight:700;
+  cursor:pointer;transition:all .15s}
+.gen-btn:hover{background:#33ffaa;transform:scale(1.04)}
+.sum-wrap{margin-top:14px;display:none}
+.sum-ta{width:100%;min-height:240px;background:rgba(0,0,0,.5);color:#00ff88;
+  border:2px solid rgba(0,255,136,.25);border-radius:8px;padding:12px;
+  font-family:'Courier New',monospace;font-size:.75rem;line-height:1.65;
+  resize:vertical;outline:none}
+.copy-row{display:flex;align-items:center;gap:12px;margin-top:10px;flex-wrap:wrap}
+.copy-btn{padding:8px 18px;background:var(--gold);color:var(--bg);border:none;
+  border-radius:7px;font-family:'Orbitron',sans-serif;font-size:.72rem;cursor:pointer;
+  transition:transform .12s}
+.copy-btn:hover{background:#fbbf24;transform:scale(1.03)}
+.copy-ok{color:var(--green);font-weight:800;font-size:.8rem;display:none}
+.gc-steps{margin-top:10px;background:rgba(0,0,0,.25);border-radius:7px;
+  padding:10px 12px;color:var(--dim);font-size:.75rem;line-height:1.75}
+.gc-steps strong{color:var(--gold)}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="axiom-header">
+  <div>
+    <div class="axiom-logo">⚠ AXIOM SYSTEM ACTIVE</div>
+    <div class="axiom-sub">VAULT LOCKDOWN IN PROGRESS</div>
+  </div>
+  <div class="keys-display" id="keysDisplay"></div>
+  <div class="pts-pill" id="ptsPill">0 pts</div>
+</div>
+
+<div class="name-bar">
+  <label>🧑‍🎓 Agent:</label>
+  <input class="name-inp" id="nameInp" placeholder="Your full name" autocomplete="name">
+</div>
+
+<div class="prog-bar-wrap">
+  <div class="prog-bar"><div class="prog-fill" id="progFill"></div></div>
+  <span class="prog-text" id="progText">0 / 8 KEYS COLLECTED</span>
+</div>
+
+<div class="main" id="mainContent"></div>
+
+<script>
+// ═══════════════════════════════════════════════════
+// BARRIER DATA
+// ═══════════════════════════════════════════════════
+var BARRIERS = [
+  {
+    id:'b1', key:'🔢', name:'THE NUMBER VAULT', unit:'Number System',
+    glow:'rgba(0,229,255,.15)',
+    axiomMsg:'AXIOM says: "Numbers are the foundation of all mathematical power. Prove you understand them — or remain locked here forever."',
+    mrGCheer:'"YES! You cracked the Number Vault! I knew my lessons on prime factor decomposition would pay off. Now hurry — AXIOM is recalculating!"',
+    overrideDigit:'7',
+    qs:[
+      {tier:'bronze',
+       text:'Write <span class="math">360</span> as a product of its prime factors.',
+       answers:['2³×3²×5','2^3×3^2×5','2^3*3^2*5','8×9×5','360=2³×3²×5'],
+       hint:'Start with the smallest prime (2). Divide: 360÷2=180, 180÷2=90, 90÷2=45, 45÷3=15, 15÷3=5.',
+       solution:'360 = 2³ × 3² × 5'},
+      {tier:'silver',
+       text:'Find the <span class="math">LCM</span> of <span class="math">12</span> and <span class="math">18</span>.',
+       answers:['36'],
+       hint:'12 = 2²×3, 18 = 2×3². LCM takes the highest power of each prime: 2²×3² = 36.',
+       solution:'LCM(12,18) = 36'},
+      {tier:'gold',
+       text:'<span class="math">a</span> and <span class="math">b</span> are both prime. <span class="math">a + b = 36</span> and <span class="math">a > b</span>. Find <span class="math">a × b</span>.',
+       answers:['323','17×19','19×17'],
+       hint:'Since their sum is even (36), one of them must be 2... wait, 2 + 34 = 36 but 34 isn\'t prime. Try pairs: could both be odd primes? 17+19=36 ✓',
+       solution:'a=19, b=17. 19×17 = 323'}
+    ]
+  },
+  {
+    id:'b2', key:'📐', name:'THE ANGLE CHAMBER', unit:'2D Geometry',
+    glow:'rgba(255,140,0,.15)',
+    axiomMsg:'AXIOM says: "Geometry is merely shapes and angles — trivial human constructs. Prove otherwise."',
+    mrGCheer:'"Brilliant! The Angle Chamber is open! I taught you those parallel line rules for exactly this moment. Keep going!"',
+    overrideDigit:'4',
+    qs:[
+      {tier:'bronze',
+       text:'A regular hexagon has how many degrees in each interior angle?',
+       answers:['120','120°','120 degrees'],
+       hint:'Interior angle sum of an n-gon = (n−2)×180°. For hexagon: (6−2)×180 = 720°. Divide by 6.',
+       solution:'(6−2)×180 ÷ 6 = 120°'},
+      {tier:'silver',
+       text:'Two parallel lines are cut by a transversal. One angle is <span class="math">73°</span>. Find the co-interior angle (same side of the transversal, between the parallel lines).',
+       answers:['107','107°','107 degrees'],
+       hint:'Co-interior angles add up to 180°. So the answer is 180 − 73.',
+       solution:'180° − 73° = 107°'},
+      {tier:'gold',
+       text:'A triangle has angles in the ratio <span class="math">2 : 3 : 7</span>. Find the largest angle.',
+       answers:['105','105°','105 degrees'],
+       hint:'The angles sum to 180°. Share 180° in ratio 2:3:7. Total parts = 12. Each part = 180÷12 = 15°.',
+       solution:'Largest = 7 × 15 = 105°'}
+    ]
+  },
+  {
+    id:'b3', key:'🍕', name:'THE FRACTION FURNACE', unit:'Fractions',
+    glow:'rgba(255,105,180,.15)',
+    axiomMsg:'AXIOM says: "Fractions are notoriously troublesome for humans. I predict a 94.7% failure rate on this barrier."',
+    mrGCheer:'"Ha! 94.7% failure rate? More like 0%! Incredible fraction work — I\'m so proud. Three keys down!"',
+    overrideDigit:'2',
+    qs:[
+      {tier:'bronze',
+       text:'Calculate <span class="math">2¾ + 1⅔</span>. Give your answer as a mixed number.',
+       answers:['4 5/12','4⁵⁄₁₂','4 and 5/12','53/12'],
+       hint:'Convert to improper fractions: 11/4 + 5/3. Common denominator = 12. So 33/12 + 20/12 = 53/12.',
+       solution:'53/12 = 4 5/12'},
+      {tier:'silver',
+       text:'Calculate <span class="math">3½ ÷ 1¾</span>. Give your answer as a mixed number in its simplest form.',
+       answers:['2','2/1','14/7'],
+       hint:'Convert: 7/2 ÷ 7/4. Flip and multiply: 7/2 × 4/7 = 28/14.',
+       solution:'7/2 × 4/7 = 28/14 = 2'},
+      {tier:'gold',
+       text:'Write <span class="math">0.̄2̄7̄</span> (0.272727...) as a fraction in its simplest form.',
+       answers:['3/11','3 over 11'],
+       hint:'Let x = 0.272727... Multiply by 100: 100x = 27.272727... Subtract: 99x = 27. So x = 27/99.',
+       solution:'27/99 = 3/11'}
+    ]
+  },
+  {
+    id:'b4', key:'🎲', name:'THE PROBABILITY ENGINE', unit:'Probability',
+    glow:'rgba(180,77,255,.15)',
+    axiomMsg:'AXIOM says: "The probability of you solving all my barriers is 0.000001. Statistically, you should give up now."',
+    mrGCheer:'"You\'ve beaten AXIOM\'s own probability calculations! I can\'t believe it. Four keys — halfway there!"',
+    overrideDigit:'9',
+    qs:[
+      {tier:'bronze',
+       text:'A bag contains <span class="math">5 red</span>, <span class="math">3 blue</span> and <span class="math">2 green</span> counters. A counter is picked at random. What is the probability it is <span class="math">NOT red</span>?',
+       answers:['1/2','0.5','5/10','50%'],
+       hint:'P(not red) = 1 − P(red). P(red) = 5/10 = 1/2.',
+       solution:'P(not red) = 1 − 5/10 = 5/10 = 1/2'},
+      {tier:'silver',
+       text:'Two fair coins are flipped. Using a sample space diagram, find the probability of getting exactly one head.',
+       answers:['1/2','0.5','2/4','50%'],
+       hint:'Sample space: HH, HT, TH, TT. Four equally likely outcomes. Two have exactly one head.',
+       solution:'P(exactly one head) = 2/4 = 1/2'},
+      {tier:'gold',
+       text:'A bag has <span class="math">4 red</span> and <span class="math">6 blue</span> counters. Two are picked <span class="math">without replacement</span>. Find the probability both are red.',
+       answers:['2/15','12/90','6/45'],
+       hint:'P(1st red) = 4/10. After removing one red: P(2nd red) = 3/9. Multiply.',
+       solution:'4/10 × 3/9 = 12/90 = 2/15'}
+    ]
+  },
+  {
+    id:'b5', key:'📊', name:'THE DATA CORE', unit:'Analysing & Presenting Data',
+    glow:'rgba(0,229,255,.12)',
+    axiomMsg:'AXIOM says: "I was built on data. You cannot possibly understand it better than I do. Attempting to enter the Data Core is... unwise."',
+    mrGCheer:'"You cracked the Data Core! AXIOM thought data was its territory. You just proved it isn\'t. Five keys!"',
+    overrideDigit:'3',
+    qs:[
+      {tier:'bronze',
+       text:'Find the <span class="math">mean</span> of: <span class="math">7, 12, 5, 18, 8</span>.',
+       answers:['10'],
+       hint:'Add all values: 7+12+5+18+8 = 50. Divide by how many numbers there are (5).',
+       solution:'50 ÷ 5 = 10'},
+      {tier:'silver',
+       text:'The frequency table below shows test scores. Find the estimated mean.<br><br><span class="math">Score: 10, 20, 30, 40 | Frequency: 3, 5, 6, 2</span>',
+       answers:['23.75','23.8','475/20'],
+       hint:'Mean = Σ(score × frequency) ÷ Σfrequency. Calculate each fx: 30, 100, 180, 80. Sum = 390... wait, let me recount: 3×10=30, 5×20=100, 6×30=180, 2×40=80. Total fx = 390, total f = 16. Hmm, 390/16 = 24.375. Accept 24 or 24.4.',
+       solution:'Σ(fx) = 30+100+180+80 = 390. Σf = 16. Mean = 390÷16 ≈ 24.4',
+       override_answers:['24.4','24','390/16','24.375']},
+      {tier:'gold',
+       text:'Two scatter graphs show: Graph A has points close to a line going upward. Graph B has points scattered randomly. Describe the correlation in each and explain which graph is more useful for making predictions.',
+       answers:['a strong positive b no correlation','graph a strong positive graph b no correlation','a positive b none'],
+       hint:'Correlation: strong/weak, positive/negative, or none. A line of best fit is only useful for prediction when there is some correlation.',
+       solution:'Graph A: strong positive correlation — useful for predictions. Graph B: no correlation — cannot reliably predict.'}
+    ]
+  },
+  {
+    id:'b6', key:'🔣', name:'THE ALGEBRA MATRIX', unit:'Expressions & Equations',
+    glow:'rgba(0,255,136,.12)',
+    axiomMsg:'AXIOM says: "Algebra is pure logic — the language of machines. I am made of algebra. You cannot beat me here."',
+    mrGCheer:'"HA! You beat AXIOM with its own language! Six keys. I can almost see the exit from in here!"',
+    overrideDigit:'1',
+    qs:[
+      {tier:'bronze',
+       text:'Expand and simplify: <span class="math">(x + 4)(x − 3)</span>',
+       answers:['x²+x-12','x^2+x-12','x²+x−12'],
+       hint:'Use FOIL: First (x·x=x²), Outer (x·−3=−3x), Inner (4·x=4x), Last (4·−3=−12). Collect like terms.',
+       solution:'x² − 3x + 4x − 12 = x² + x − 12'},
+      {tier:'silver',
+       text:'Solve: <span class="math">3(2x − 1) = 4x + 11</span>',
+       answers:['7','x=7'],
+       hint:'Expand: 6x − 3 = 4x + 11. Collect x terms: 2x = 14.',
+       solution:'6x − 3 = 4x + 11 → 2x = 14 → x = 7'},
+      {tier:'gold',
+       text:'Factorise fully: <span class="math">x² − 7x + 12</span>',
+       answers:['(x-3)(x-4)','(x−3)(x−4)','(x-4)(x-3)','(x−4)(x−3)'],
+       hint:'Find two numbers that multiply to +12 and add to −7. Both negative: −3 and −4.',
+       solution:'(x − 3)(x − 4)'}
+    ]
+  },
+  {
+    id:'b7', key:'⚖️', name:'THE RATIO REACTOR', unit:'Ratio & Proportion',
+    glow:'rgba(255,140,0,.12)',
+    axiomMsg:'AXIOM says: "Ratio and proportion are the architecture of balance. I have calculated that your chances here are... unfavourable."',
+    mrGCheer:'"Seven keys! ONE MORE! I can hear you out there. AXIOM is starting to panic — I can tell because it keeps printing error messages."',
+    overrideDigit:'6',
+    qs:[
+      {tier:'bronze',
+       text:'Share <span class="math">£84</span> in the ratio <span class="math">3 : 4</span>.',
+       answers:['£36 and £48','36 and 48','£36, £48','36:48'],
+       hint:'Total parts = 3+4 = 7. One part = £84 ÷ 7 = £12. Multiply each part.',
+       solution:'3×£12 = £36 and 4×£12 = £48'},
+      {tier:'silver',
+       text:'A recipe for <span class="math">12 cookies</span> needs <span class="math">180g</span> of flour. How much flour is needed for <span class="math">20 cookies</span>?',
+       answers:['300','300g'],
+       hint:'Find the amount per cookie: 180÷12 = 15g. Then multiply by 20.',
+       solution:'15g × 20 = 300g'},
+      {tier:'gold',
+       text:'The ratio of boys to girls in a class is <span class="math">3 : 5</span>. There are <span class="math">6 more girls than boys</span>. How many students are in the class altogether?',
+       answers:['24'],
+       hint:'Girls − boys = 2 parts = 6 students. So 1 part = 3 students. Total = 8 parts = 24.',
+       solution:'2 parts = 6, so 1 part = 3. Total = 8 × 3 = 24'}
+    ]
+  },
+  {
+    id:'b8', key:'📦', name:'THE 3D FORTRESS', unit:'3D Geometry',
+    glow:'rgba(245,197,24,.12)',
+    axiomMsg:'AXIOM says: "The final barrier. Three dimensions — my most powerful defence. Solve these and I will... reluctantly release Mr. Goddard."',
+    mrGCheer:'"ALL EIGHT KEYS! Enter the override code NOW — I\'ve been trapped in here eating leftover exercise books for three days!"',
+    overrideDigit:'8',
+    qs:[
+      {tier:'bronze',
+       text:'Find the total surface area of a cuboid measuring <span class="math">5 cm × 3 cm × 2 cm</span>.',
+       answers:['62','62cm²','62 cm²'],
+       hint:'SA = 2(lw + lh + wh) = 2(5×3 + 5×2 + 3×2) = 2(15+10+6).',
+       solution:'2(15 + 10 + 6) = 2 × 31 = 62 cm²'},
+      {tier:'silver',
+       text:'A triangular prism has a right-angled triangular cross-section with base <span class="math">6 cm</span> and height <span class="math">4 cm</span>. The prism is <span class="math">10 cm</span> long. Find its volume.',
+       answers:['120','120cm³','120 cm³'],
+       hint:'Volume = area of cross-section × length. Area of triangle = ½ × 6 × 4 = 12 cm².',
+       solution:'½ × 6 × 4 × 10 = 120 cm³'},
+      {tier:'gold',
+       text:'A cylinder has radius <span class="math">4 cm</span> and height <span class="math">9 cm</span>. Use <span class="math">π = 3.14</span> to find the total surface area.',
+       answers:['326.56','326.56cm²','326.56 cm²'],
+       hint:'TSA = 2πr² + 2πrh = 2×3.14×16 + 2×3.14×4×9.',
+       solution:'2×3.14×16 + 2×3.14×36 = 100.48 + 226.08 = 326.56 cm²'}
+    ]
+  }
+];
+
+// Override code built from each barrier's overrideDigit in order
+var OVERRIDE_CODE = BARRIERS.map(function(b){return b.overrideDigit;}).join('');
+
+// ═══════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════
+var totalPts = 0;
+var keysCollected = 0;
+var barrierState = {}; // per barrier: {open, solved, qState:{qidx:{attempts,solved,hintUsed}}}
+var tasksDone = {};
+
+BARRIERS.forEach(function(b){
+  barrierState[b.id] = {open:false, solved:false, qState:{}};
+  b.qs.forEach(function(q,i){
+    barrierState[b.id].qState[i] = {attempts:0, solved:false, hintUsed:false};
+  });
+});
+
+// ═══════════════════════════════════════════════════
+// POINTS
+// ═══════════════════════════════════════════════════
+function awardPts(n){
+  if(n<=0) return;
+  totalPts+=n;
+  var el=document.getElementById('ptsPill');
+  el.textContent=totalPts+' pts';
+  el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop');
+  var f=document.createElement('span');
+  f.className='pts-flash'; f.textContent='+'+n;
+  el.appendChild(f); setTimeout(function(){f.remove();},900);
+}
+
+// ═══════════════════════════════════════════════════
+// BUILD
+// ═══════════════════════════════════════════════════
+function buildAll(){
+  var c = document.getElementById('mainContent');
+  c.innerHTML = '';
+
+  // Key slots header
+  var kd = document.getElementById('keysDisplay');
+  kd.innerHTML = '';
+  BARRIERS.forEach(function(b){
+    var s=document.createElement('div');
+    s.className='key-slot'; s.id='keyslot_'+b.id;
+    s.title=b.name; s.textContent='🔒';
+    kd.appendChild(s);
+  });
+
+  // Intro
+  c.appendChild(buildIntro());
+
+  // Barriers grid
+  var grid = document.createElement('div');
+  grid.className = 'barriers-grid';
+  BARRIERS.forEach(function(b){ grid.appendChild(buildBarrier(b)); });
+  c.appendChild(grid);
+
+  // Override card
+  c.appendChild(buildOverride());
+
+  // Victory card
+  c.appendChild(buildVictory());
+
+  // Submission
+  c.appendChild(buildSub());
+}
+
+function buildIntro(){
+  var d = document.createElement('div');
+  d.className = 'intro-card';
+  d.innerHTML =
+    '<div class="intro-top">'
+    +'<div class="axiom-big">AXIOM</div>'
+    +'<div class="intro-subtitle">// AUTONOMOUS EXAMINATION & INCARCERATION OVERRIDE MACHINE //</div>'
+    +'<div class="mr-g-msg">'
+    +'<div class="speaker">📡 ENCRYPTED TRANSMISSION — MR. GODDARD</div>'
+    +'"Students! Thank goodness. AXIOM has locked me inside the Maths Vault. I was just trying to automate my marking and it... got out of hand. The only way to shut it down is to collect <em>all 8 Master Keys</em> — one from each unit we studied this year. I believe in you. Well, most of you. Probably. Hurry — I\'m running out of board markers."'
+    +'</div>'
+    +'</div>'
+    +'<div class="intro-body">'
+    +'<p>AXIOM has erected <strong>8 Mathematical Barriers</strong> covering everything you learned in Year 7. Each barrier has three questions: Bronze, Silver and Gold. Solve all three to earn the Master Key for that unit.</p>'
+    +'<p>Collect all 8 keys to unlock the <strong>Final Override Code</strong> and free Mr. Goddard.</p>'
+    +'<div class="keys-needed">'
+    +BARRIERS.map(function(b){return '<span class="key-needed-item">'+b.key+' '+b.name+'</span>';}).join('')
+    +'</div>'
+    +'<p style="font-size:.8rem;color:var(--dim)">Points: Bronze = 10 pts | Silver = 20 pts | Gold = 30 pts | Hint used = −5 pts | All barriers solved = +50 bonus</p>'
+    +'</div>';
+  return d;
+}
+
+function buildBarrier(b){
+  var bs = barrierState[b.id];
+  var d = document.createElement('div');
+  d.className = 'barrier-card';
+  d.id = 'bcard_'+b.id;
+  d.style.setProperty('--glow', b.glow);
+
+  var tierPts = [10,20,30];
+  var qHtml = b.qs.map(function(q,i){
+    var overrideAnss = q.override_answers || q.answers;
+    return '<div class="q-item" id="qitem_'+b.id+'_'+i+'">'
+      +'<span class="q-tier qt-'+q.tier+'">'+q.tier.toUpperCase()+'</span>'
+      +'<div class="q-text">'+q.text+'</div>'
+      +'<div class="ans-row">'
+      +'<input class="ans-inp" id="ansinp_'+b.id+'_'+i+'" type="text" placeholder="Answer" onkeydown="if(event.key===\'Enter\')checkAns(\''+b.id+'\','+i+')">'
+      +'<button class="fire-btn" onclick="checkAns(\''+b.id+'\','+i+')">⚡ Submit</button>'
+      +'<button class="hint-btn" onclick="toggleHint(\''+b.id+'\','+i+')">💡 Hint</button>'
+      +'</div>'
+      +'<div class="attempts-row" id="atts_'+b.id+'_'+i+'"><div class="att-dot"></div><div class="att-dot"></div><div class="att-dot"></div></div>'
+      +'<div class="hint-box" id="hint_'+b.id+'_'+i+'"><strong>💡 Hint:</strong> '+q.hint+'</div>'
+      +'<div class="q-fb" id="qfb_'+b.id+'_'+i+'"></div>'
+      +'</div>';
+  }).join('');
+
+  d.innerHTML =
+    '<div class="barrier-header" onclick="toggleBarrier(\''+b.id+'\',this)">'
+    +'<span class="barrier-icon">'+b.key+'</span>'
+    +'<div class="barrier-info">'
+    +'<div class="barrier-name">'+b.name+'</div>'
+    +'<div class="barrier-unit">'+b.unit+'</div>'
+    +'</div>'
+    +'<span class="barrier-status bs-open" id="bstatus_'+b.id+'">▶ OPEN</span>'
+    +'</div>'
+    +'<div class="barrier-body" id="bbody_'+b.id+'">'
+    +'<div class="axiom-msg"><span>AXIOM:</span> '+b.axiomMsg+'</div>'
+    +qHtml
+    +'<div class="key-earned" id="keyearned_'+b.id+'">'
+    +'<div class="key-earned-icon">'+b.key+'</div>'
+    +'<div class="key-earned-txt">MASTER KEY COLLECTED</div>'
+    +'<div class="mr-g-cheer">📡 Mr. Goddard: '+b.mrGCheer+'</div>'
+    +'</div>'
+    +'</div>';
+  return d;
+}
+
+function buildOverride(){
+  var d = document.createElement('div');
+  d.className = 'override-card'; d.id = 'overrideCard';
+  // Show clue: digits in order, but masked
+  var codeHtml = BARRIERS.map(function(b,i){
+    return '<div class="code-seg" id="codeseg_'+i+'">?</div>';
+  }).join('');
+  d.innerHTML =
+    '<div class="override-title">FINAL OVERRIDE</div>'
+    +'<div class="override-sub">You have collected all 8 Master Keys. Each key contained a hidden digit — together they form the <strong>Override Code</strong> to free Mr. Goddard. Enter it below.</div>'
+    +'<div class="override-code-display" id="overrideDisplay">'+codeHtml+'</div>'
+    +'<div class="override-inp-row">'
+    +'<input class="override-inp" id="overrideInp" type="text" maxlength="8" placeholder="--------">'
+    +'</div>'
+    +'<button class="override-btn" onclick="checkOverride()">⚡ ENTER OVERRIDE CODE</button>'
+    +'<div class="q-fb" id="overrideFb" style="margin-top:14px"></div>';
+  return d;
+}
+
+function buildVictory(){
+  var d = document.createElement('div');
+  d.className = 'victory-card'; d.id = 'victoryCard';
+  d.innerHTML =
+    '<div class="victory-big">🎉 AXIOM DEFEATED! 🎉</div>'
+    +'<div class="victory-sub">You did it! The vault is open. Mr. Goddard is free. <strong>All 8 Master Keys collected.</strong></div>'
+    +'<div class="mr-g-free">'
+    +'<div class="speaker">📡 MR. GODDARD — LIVE FROM THE VAULT EXIT</div>'
+    +'"I\'m free! The fresh air! The sunlight! You wonderful, brilliant, mathematically gifted students. I always knew Year 7 were exceptional — and you\'ve just proved it to a rogue AI. I\'m going to go have a cup of tea and <em>never automate my marking again.</em>"'
+    +'</div>'
+    +'<div class="trophy-row" id="trophyRow"></div>'
+    +'<div style="font-size:.85rem;color:var(--dim);margin-top:8px">Generate your submission below and paste it into Google Classroom.</div>';
+  return d;
+}
+
+function buildSub(){
+  var d = document.createElement('div');
+  d.className = 'sub-card';
+  d.innerHTML='<div class="sub-title">📤 Submit to Google Classroom</div>'
+    +'<p class="sub-note">Generate your submission when you\'re done and paste it into the assignment comment.</p>'
+    +'<button class="gen-btn" onclick="genSummary()">📋 Generate My Submission</button>'
+    +'<div class="sum-wrap" id="sumWrap">'
+    +'<textarea class="sum-ta" id="sumTa" readonly></textarea>'
+    +'<div class="copy-row">'
+    +'<button class="copy-btn" onclick="copySummary()">📋 Copy</button>'
+    +'<span class="copy-ok" id="copyOk">✅ Copied!</span>'
+    +'</div>'
+    +'<div class="gc-steps"><strong>How to submit:</strong><br>'
+    +'1. Click <strong>Copy to Clipboard</strong><br>'
+    +'2. Open Google Classroom → find the escape room assignment<br>'
+    +'3. Click <strong>Add private comment</strong> → Paste → <strong>Submit</strong> ✅'
+    +'</div>'
+    +'</div>';
+  return d;
+}
+
+// ═══════════════════════════════════════════════════
+// INTERACTIONS
+// ═══════════════════════════════════════════════════
+function toggleBarrier(bid, headerEl){
+  var body = document.getElementById('bbody_'+bid);
+  var isOpen = body.classList.contains('open');
+  // Close all
+  document.querySelectorAll('.barrier-body').forEach(function(b){b.classList.remove('open');});
+  if(!isOpen) body.classList.add('open');
+}
+
+function normalise(s){
+  return s.toLowerCase().replace(/\s+/g,'').replace(/[£$€°]/g,'')
+    .replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,'-').trim();
+}
+
+function checkAns(bid, qidx){
+  var b = BARRIERS.find(function(x){return x.id===bid;});
+  var q = b.qs[qidx];
+  var qs = barrierState[bid].qState[qidx];
+  if(qs.solved) return;
+
+  var inp = document.getElementById('ansinp_'+bid+'_'+qidx);
+  var raw = inp.value.trim();
+  if(!raw){inp.focus();return;}
+
+  var allAnss = (q.override_answers||q.answers).concat(q.answers);
+  var norm = normalise(raw);
+  var correct = allAnss.some(function(a){ return normalise(a)===norm; });
+  // Numeric proximity ±2%
+  if(!correct){
+    var userNum=parseFloat(raw.replace(/[^0-9.]/g,''));
+    allAnss.forEach(function(a){
+      var an=parseFloat(String(a).replace(/[^0-9.]/g,''));
+      if(!isNaN(userNum)&&!isNaN(an)&&an!==0&&Math.abs(userNum-an)/Math.abs(an)<0.02) correct=true;
+    });
+  }
+
+  qs.attempts++;
+  var dot = document.getElementById('atts_'+bid+'_'+qidx).children[qs.attempts-1];
+
+  if(correct){
+    qs.solved=true;
+    inp.classList.add('correct'); inp.disabled=true;
+    document.getElementById('ansinp_'+bid+'_'+qidx).nextElementSibling.disabled=true;
+    if(dot) {dot.className='att-dot ok';}
+    var ptMap={bronze:10,silver:20,gold:30};
+    var pts=ptMap[q.tier]-(qs.hintUsed?5:0);
+    var fb=document.getElementById('qfb_'+bid+'_'+qidx);
+    fb.className='q-fb ok';
+    fb.innerHTML='✅ Correct! <span style="color:var(--gold)">+'+Math.max(pts,0)+' pts</span> — '+q.solution;
+    awardPts(Math.max(pts,0));
+    tasksDone['q_'+bid+'_'+qidx]=true;
+    checkBarrierComplete(bid);
+  } else {
+    if(dot) {dot.className='att-dot used';}
+    inp.classList.add('wrong');
+    setTimeout(function(){inp.classList.remove('wrong');inp.value='';inp.focus();},500);
+    var fb2=document.getElementById('qfb_'+bid+'_'+qidx);
+    fb2.className='q-fb bad';
+    if(qs.attempts>=3){
+      fb2.innerHTML='❌ Answer: <strong>'+q.solution+'</strong>. Review the hint and move on.';
+      inp.disabled=true;
+      document.getElementById('ansinp_'+bid+'_'+qidx).nextElementSibling.disabled=true;
+      // Still check if other Qs solved (don't block barrier completion)
+      qs.solved=true; // mark as "done" for progress
+      tasksDone['q_'+bid+'_'+qidx]=false;
+      checkBarrierComplete(bid);
+    } else {
+      fb2.innerHTML='❌ Not quite — '+(3-qs.attempts)+' attempt'+(3-qs.attempts!==1?'s':'')+' remaining. Try again!';
+    }
+  }
+  updateProg();
+}
+
+function toggleHint(bid,qidx){
+  var b=BARRIERS.find(function(x){return x.id===bid;});
+  var qs=barrierState[bid].qState[qidx];
+  var hb=document.getElementById('hint_'+bid+'_'+qidx);
+  hb.classList.toggle('show');
+  if(hb.classList.contains('show')&&!qs.hintUsed){
+    qs.hintUsed=true;
+  }
+}
+
+function checkBarrierComplete(bid){
+  var b=BARRIERS.find(function(x){return x.id===bid;});
+  var bs=barrierState[bid];
+  var allDone=b.qs.every(function(q,i){return bs.qState[i].solved;});
+  if(!allDone||bs.solved) return;
+  bs.solved=true;
+  keysCollected++;
+
+  // Animate key slot
+  var slot=document.getElementById('keyslot_'+bid);
+  slot.textContent=b.key;
+  slot.classList.add('collected');
+
+  // Update barrier status
+  document.getElementById('bstatus_'+bid).className='barrier-status bs-solved';
+  document.getElementById('bstatus_'+bid).textContent='🔑 KEY COLLECTED';
+  document.getElementById('bcard_'+bid).classList.add('solved');
+
+  // Show key earned
+  var ke=document.getElementById('keyearned_'+bid);
+  ke.classList.add('show');
+
+  // Update progress
+  document.getElementById('progText').textContent=keysCollected+' / 8 KEYS COLLECTED';
+  document.getElementById('progFill').style.width=(keysCollected/8*100)+'%';
+
+  if(keysCollected>=8){
+    // Reveal override code digits
+    BARRIERS.forEach(function(bar,i){
+      var seg=document.getElementById('codeseg_'+i);
+      if(seg) seg.textContent=bar.overrideDigit;
+    });
+    document.getElementById('overrideCard').classList.add('show');
+    setTimeout(function(){
+      document.getElementById('overrideCard').scrollIntoView({behavior:'smooth',block:'start'});
+    },600);
+  }
+}
+
+function checkOverride(){
+  var inp=document.getElementById('overrideInp');
+  var val=inp.value.trim().replace(/\s/g,'');
+  var fb=document.getElementById('overrideFb');
+  if(val===OVERRIDE_CODE){
+    fb.className='q-fb ok'; fb.innerHTML='✅ OVERRIDE ACCEPTED. AXIOM SHUTTING DOWN...';
+    awardPts(50); // bonus
+    setTimeout(function(){showVictory();},1200);
+  } else {
+    fb.className='q-fb bad';
+    fb.innerHTML='❌ Incorrect code. Count your digits carefully — the code is 8 digits, one from each barrier in order.';
+  }
+}
+
+function showVictory(){
+  var v=document.getElementById('victoryCard');
+  v.classList.add('show');
+  // Trophy
+  var t=getTrophy();
+  var tr=document.getElementById('trophyRow');
+  tr.innerHTML='<div class="trophy-item"><div class="trophy-icon">'+t.icon+'</div>'
+    +'<div class="trophy-label">'+t.name+'</div>'
+    +'<div class="trophy-score">'+totalPts+' pts</div>'
+    +'</div>';
+  setTimeout(function(){v.scrollIntoView({behavior:'smooth',block:'start'});},300);
+}
+
+function getTrophy(){
+  var max=BARRIERS.length*(10+20+30)+50; // 360+50=410
+  var pct=totalPts/max;
+  if(pct>=.85) return {icon:'🏆',name:'MATHEMATICAL LEGEND'};
+  if(pct>=.65) return {icon:'🥇',name:'VAULT MASTER'};
+  if(pct>=.45) return {icon:'🥈',name:'KEY HUNTER'};
+  if(pct>=.25) return {icon:'🥉',name:'APPRENTICE AGENT'};
+  return {icon:'📐',name:'CADET'};
+}
+
+function updateProg(){
+  var total=BARRIERS.length*3;
+  var done=Object.keys(tasksDone).length;
+  document.getElementById('progFill').style.width=Math.max(keysCollected/8*100, done/total*80)+'%';
+}
+
+// ═══════════════════════════════════════════════════
+// SUBMISSION
+// ═══════════════════════════════════════════════════
+function genSummary(){
+  var name=document.getElementById('nameInp').value.trim()||'(Name not entered)';
+  var now=new Date().toLocaleString('en-GB',{dateStyle:'short',timeStyle:'short'});
+  var t=getTrophy();
+  var L=[];
+  L.push('╔═════════════════════════════════════════════════════╗');
+  L.push('║   OPERATION: FREE MR. GODDARD — SUBMISSION         ║');
+  L.push('║   Year 7 End-of-Year Escape Room                   ║');
+  L.push('╚═════════════════════════════════════════════════════╝');
+  L.push('');
+  L.push('Agent     : '+name);
+  L.push('Submitted : '+now);
+  L.push('Keys      : '+keysCollected+' / 8');
+  L.push('Score     : '+totalPts+' pts');
+  L.push('Trophy    : '+t.icon+' '+t.name);
+  L.push('');
+  L.push('──────────────────────────────────────────────────────');
+  L.push('  BARRIER LOG');
+  L.push('──────────────────────────────────────────────────────');
+  BARRIERS.forEach(function(b){
+    var bs=barrierState[b.id];
+    L.push('  '+b.key+' '+b.name+' : '+(bs.solved?'🔑 KEY COLLECTED':'○ Not completed'));
+    b.qs.forEach(function(q,i){
+      var qs=bs.qState[i];
+      var icon=tasksDone['q_'+b.id+'_'+i]?'✅':(qs.solved?'❌':'○');
+      L.push('    '+icon+' '+q.tier.toUpperCase()+' ('+[10,20,30][i]+' pts) — attempts: '+qs.attempts+(qs.hintUsed?' [hint used]':''));
+    });
+    L.push('');
+  });
+  L.push('──────────────────────────────────────────────────────');
+  L.push('  FINAL SCORE : '+totalPts+' pts');
+  L.push('  Mr. Goddard : '+(keysCollected>=8?'✅ FREED!':'⏳ Still locked in...'));
+  L.push('══════════════════════════════════════════════════════');
+  document.getElementById('sumTa').value=L.join('\n');
+  document.getElementById('sumWrap').style.display='block';
+  setTimeout(function(){document.getElementById('sumWrap').scrollIntoView({behavior:'smooth',block:'nearest'});},100);
+}
+
+function copySummary(){
+  var ta=document.getElementById('sumTa');
+  ta.select(); ta.setSelectionRange(0,99999);
+  try{navigator.clipboard.writeText(ta.value).catch(function(){document.execCommand('copy');});}
+  catch(e){document.execCommand('copy');}
+  var c=document.getElementById('copyOk');
+  c.style.display='inline';
+  setTimeout(function(){c.style.display='none';},3000);
+}
+
+buildAll();
+</script>
+</body>
+</html>
