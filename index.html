@@ -45,6 +45,31 @@ html, body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* ── VANTA BACKGROUND ── */
+#vanta-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ── ANIMATION BASE STATES ── */
+.wordmark,
+.folder-wrap,
+.donate-footer {
+  position: relative;
+  z-index: 1;
+}
+
+.card {
+  will-change: transform, opacity;
+}
+
+/* Tab switch animation helper */
+.panel {
+  will-change: opacity, transform;
+}
+
 /* ── WORDMARK ── */
 .wordmark {
   text-align: center;
@@ -374,15 +399,25 @@ html, body {
   .card-grid { grid-template-columns: 1fr; }
 }
 </style>
+<!-- Three.js (required by Vanta) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+<!-- Vanta NET -->
+<script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js"></script>
+<!-- GSAP -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<!-- Lenis smooth scroll -->
+<script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/bundled/lenis.min.js"></script>
 </head>
 <body>
 
-<div class="wordmark">
+<div id="vanta-bg"></div>
+
+<div class="wordmark" id="wordmark">
   <h1>Mr. Goddard's Maths</h1>
   <p>KS3 &nbsp;·&nbsp; IGCSE &nbsp;·&nbsp; IB</p>
 </div>
 
-<div class="folder-wrap">
+<div class="folder-wrap" id="folderWrap">
 
   <!-- TABS -->
   <div class="tabs">
@@ -863,6 +898,143 @@ function openTab(tab) {
     </a>
   </div>
 </div>
+
+<script>
+// ─────────────────────────────────────────────────────────────
+// LENIS — smooth scrolling
+// ─────────────────────────────────────────────────────────────
+const lenis = new Lenis({
+  duration: 1.2,
+  easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+  smooth: true,
+  smoothTouch: false, // off on touch so iPad students aren't affected
+});
+function lenisRaf(time) {
+  lenis.raf(time);
+  requestAnimationFrame(lenisRaf);
+}
+requestAnimationFrame(lenisRaf);
+
+// ─────────────────────────────────────────────────────────────
+// VANTA — animated background (desktop only)
+// ─────────────────────────────────────────────────────────────
+if (window.innerWidth > 768 && typeof VANTA !== 'undefined') {
+  VANTA.NET({
+    el: '#vanta-bg',
+    THREE: THREE,
+    mouseControls: true,
+    touchControls: false,
+    gyroControls: false,
+    minHeight: 200,
+    minWidth: 200,
+    scale: 1.0,
+    scaleMobile: 1.0,
+    color: 0xf5b800,        // gold nodes — matches --folder-body
+    backgroundColor: 0x1c1c1e, // matches body background
+    points: 9.0,
+    maxDistance: 22.0,
+    spacing: 18.0,
+    showDots: true,
+  });
+}
+
+// ─────────────────────────────────────────────────────────────
+// GSAP — page load entrance sequence
+// ─────────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+
+  // 1. Wordmark fades + slides down from above
+  tl.fromTo('#wordmark',
+    { opacity: 0, y: -28 },
+    { opacity: 1, y: 0, duration: 0.7 }
+  );
+
+  // 2. Folder tabs slide up
+  tl.fromTo('.tabs',
+    { opacity: 0, y: 16 },
+    { opacity: 1, y: 0, duration: 0.5 },
+    '-=0.3'
+  );
+
+  // 3. Folder body scales up from slightly below
+  tl.fromTo('#folderWrap .folder-body',
+    { opacity: 0, scale: 0.97, y: 20 },
+    { opacity: 1, scale: 1, y: 0, duration: 0.65 },
+    '-=0.2'
+  );
+
+  // 4. Cards stagger in — each 60ms apart
+  tl.fromTo('#panel-ks3 .card',
+    { opacity: 0, y: 22 },
+    { opacity: 1, y: 0, duration: 0.45, stagger: 0.07 },
+    '-=0.3'
+  );
+
+  // 5. Donate footer fades up last
+  tl.fromTo('.donate-footer',
+    { opacity: 0, y: 14 },
+    { opacity: 1, y: 0, duration: 0.4 },
+    '-=0.1'
+  );
+});
+
+// ─────────────────────────────────────────────────────────────
+// GSAP — tab switch animation
+// Wraps the existing openTab function
+// ─────────────────────────────────────────────────────────────
+const _originalOpenTab = openTab;
+window.openTab = function(tab) {
+  // Find the currently visible panel
+  const current = document.querySelector('.panel.active');
+
+  if (current) {
+    // Slide current out to the left
+    gsap.to(current.querySelectorAll('.card, .card-soon, .ib-sub-hd'), {
+      opacity: 0,
+      y: -10,
+      duration: 0.18,
+      stagger: 0.03,
+      ease: 'power2.in',
+      onComplete: () => {
+        // Run original tab logic
+        _originalOpenTab(tab);
+
+        // Animate new panel's cards in
+        const next = document.getElementById('panel-' + tab);
+        if (next) {
+          const items = next.querySelectorAll('.card, .card-soon, .ib-sub-hd');
+          // Reset first
+          gsap.set(items, { opacity: 0, y: 18 });
+          gsap.to(items, {
+            opacity: 1,
+            y: 0,
+            duration: 0.38,
+            stagger: 0.055,
+            ease: 'power3.out',
+          });
+        }
+      }
+    });
+  } else {
+    _originalOpenTab(tab);
+  }
+};
+
+// ─────────────────────────────────────────────────────────────
+// GSAP — card hover micro-lift (smoother than CSS)
+// ─────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.card:not(.card-soon)').forEach(card => {
+    card.addEventListener('mouseenter', () => {
+      gsap.to(card, { y: -4, scale: 1.012, duration: 0.22, ease: 'power2.out' });
+    });
+    card.addEventListener('mouseleave', () => {
+      gsap.to(card, { y: 0, scale: 1, duration: 0.3, ease: 'power2.out' });
+    });
+  });
+});
+</script>
 
 </body>
 </html>
